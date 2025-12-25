@@ -20,80 +20,80 @@ export const HeroSection = () => {
       <Globe3D />
       
       {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto pt-16 sm:pt-0">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1, ease: "easeOut" }}
           className="flex flex-col items-center"
         >
           {/* Decorative bracket */}
           <motion.p
-            className="font-mono text-primary/80 mb-6 text-sm tracking-widest"
+            className="font-mono text-primary/80 mb-4 sm:mb-6 text-xs sm:text-sm tracking-widest"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
           >
             {"<developer>"}
           </motion.p>
 
           {/* Name */}
           <motion.h1
-            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 leading-none"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 sm:mb-8 leading-none"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
           >
             <span className="gradient-text animate-gradient">MATTHEW</span>
           </motion.h1>
 
           {/* Title */}
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground mb-3 tracking-wide"
+            className="text-base sm:text-lg md:text-xl text-muted-foreground mb-2 sm:mb-3 tracking-wide"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
           >
             Senior Full-Stack Developer
           </motion.p>
 
           <motion.p
-            className="text-base md:text-lg text-primary/90 font-mono tracking-wider"
+            className="text-sm sm:text-base md:text-lg text-primary/90 font-mono tracking-wider px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
           >
             Custom Code • AI Innovation • Prompt Engineering
           </motion.p>
 
           {/* Closing bracket */}
           <motion.p
-            className="font-mono text-primary/80 mt-6 text-sm tracking-widest"
+            className="font-mono text-primary/80 mt-4 sm:mt-6 text-xs sm:text-sm tracking-widest"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
           >
             {"</developer>"}
           </motion.p>
 
           {/* Social Links */}
           <motion.div
-            className="flex items-center justify-center gap-6 mt-10"
+            className="flex items-center justify-center gap-4 sm:gap-6 mt-8 sm:mt-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 0.9, duration: 0.8 }}
           >
             <button
               onClick={openWhatsApp}
-              className="p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
+              className="p-2.5 sm:p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
             >
-              <MessageCircle className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </button>
             <a
               href={`mailto:${EMAIL}`}
-              className="p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
+              className="p-2.5 sm:p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
             >
-              <Mail className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+              <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
           </motion.div>
         </motion.div>
@@ -101,14 +101,14 @@ export const HeroSection = () => {
 
       {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+        className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 10, 0] }}
-        transition={{ delay: 1, duration: 2, repeat: Infinity }}
+        transition={{ delay: 1.2, duration: 2.5, repeat: Infinity }}
       >
         <a href="#skills" className="flex flex-col items-center text-muted-foreground hover:text-primary transition-colors">
-          <span className="font-mono text-sm mb-2">Scroll</span>
-          <ChevronDown className="w-5 h-5" />
+          <span className="font-mono text-xs sm:text-sm mb-2">Scroll</span>
+          <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
         </a>
       </motion.div>
     </section>

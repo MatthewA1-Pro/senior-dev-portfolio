@@ -181,65 +181,65 @@ const ProjectCard = ({ project, index, onPreview }: { project: Project; index: n
   return (
     <motion.div
       className={`glass-card overflow-hidden group ${
-        project.featured ? "md:col-span-2 md:row-span-2" : ""
+        project.featured ? "sm:col-span-2 lg:row-span-2" : ""
       }`}
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ delay: index * 0.15, duration: 0.6, ease: "easeOut" }}
-      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+      transition={{ delay: index * 0.2, duration: 0.7, ease: "easeOut" }}
+      whileHover={{ y: -8, transition: { duration: 0.4 } }}
     >
       {/* Image */}
       <div className="relative overflow-hidden aspect-video">
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         
         {/* Links overlay */}
-        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-400">
           {/* Byakugan Preview Button */}
           <button
             onClick={() => onPreview(project)}
-            className="p-2 rounded-full bg-purple-500/80 backdrop-blur-sm hover:bg-purple-400 text-white transition-colors"
+            className="p-1.5 sm:p-2 rounded-full bg-purple-500/80 backdrop-blur-sm hover:bg-purple-400 text-white transition-colors"
             title="Byakugan Preview"
           >
-            <Eye className="w-5 h-5" />
+            <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           {project.liveUrl && (
             <a
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="p-1.5 sm:p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground transition-colors"
             >
-              <ExternalLink className="w-5 h-5" />
+              <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
             </a>
           )}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+      <div className="p-4 sm:p-6">
+        <div className="flex items-start justify-between mb-2 sm:mb-3">
+          <h3 className="text-lg sm:text-xl font-bold group-hover:text-primary transition-colors">
             {project.title}
           </h3>
-          <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground group-hover:text-primary transition-colors" />
         </div>
         
-        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+        <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
           {project.description}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="px-2 py-1 text-xs font-mono rounded-md bg-muted text-muted-foreground"
+              className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-mono rounded-md bg-muted text-muted-foreground"
             >
               {tag}
             </span>
@@ -260,52 +260,52 @@ export const ProjectsSection = () => {
   };
 
   return (
-    <section id="projects" className="py-32 relative">
+    <section id="projects" className="py-16 sm:py-24 lg:py-32 relative">
       {/* Background effects */}
       <div className="absolute inset-0 grid-bg opacity-20" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/10 rounded-full blur-3xl" />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7 }}
         >
           <motion.p 
-            className="font-mono text-primary mb-2"
+            className="font-mono text-primary mb-2 text-xs sm:text-sm"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
           >
             {"// Featured Work"}
           </motion.p>
           <motion.h2 
-            className="text-4xl md:text-5xl font-bold mb-4"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.4 }}
           >
             <span className="gradient-text">Project Showcase</span>
           </motion.h2>
           <motion.p 
-            className="text-muted-foreground max-w-2xl mx-auto"
+            className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
           >
             A selection of projects showcasing full-stack development. Click the{" "}
-            <Eye className="w-4 h-4 inline text-purple-400" /> icon for a Byakugan preview.
+            <Eye className="w-3 h-3 sm:w-4 sm:h-4 inline text-purple-400" /> icon for a Byakugan preview.
           </motion.p>
         </motion.div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {projects.map((project, index) => (
             <ProjectCard 
               key={project.title} 
