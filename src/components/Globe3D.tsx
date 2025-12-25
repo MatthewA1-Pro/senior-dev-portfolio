@@ -764,23 +764,30 @@ export const Globe3D = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [voicesPlayed, setVoicesPlayed] = useState({ rasengan: false, chidori: false });
   
-  // Speak jutsu name loudly
+  // Speak jutsu name in authentic Japanese anime style
   const speakJutsu = useCallback((jutsuName: string) => {
     if (!hasInteracted) return;
     
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(jutsuName);
-      utterance.rate = 0.7;
-      utterance.pitch = 0.5;
+      utterance.rate = 0.6; // Slower, dramatic
+      utterance.pitch = 0.35; // Deep, intense voice
       utterance.volume = 1;
+      utterance.lang = 'ja-JP'; // Japanese for authentic pronunciation
       
-      // Try to find a good voice
+      // Find Japanese voice first, then fallback to deep male voice
       const voices = speechSynthesis.getVoices();
+      const japaneseVoice = voices.find(v => v.lang.includes('ja'));
       const deepVoice = voices.find(v => 
-        v.name.includes('Male') || v.name.includes('David') || v.name.includes('Alex')
+        v.name.includes('Male') || v.name.includes('Takumi') || v.name.includes('Ichiro')
       );
-      if (deepVoice) utterance.voice = deepVoice;
+      
+      if (japaneseVoice) {
+        utterance.voice = japaneseVoice;
+      } else if (deepVoice) {
+        utterance.voice = deepVoice;
+      }
       
       speechSynthesis.speak(utterance);
     }
@@ -801,16 +808,16 @@ export const Globe3D = () => {
     };
   }, []);
   
-  // Play jutsu voices after interaction
+  // Play jutsu voices after interaction - Japanese style
   useEffect(() => {
     if (hasInteracted && !voicesPlayed.rasengan) {
       const timer1 = setTimeout(() => {
-        speakJutsu("Rasengan!");
+        speakJutsu("螺旋丸！"); // "Rasengan!" in Japanese kanji
         setVoicesPlayed(prev => ({ ...prev, rasengan: true }));
       }, 500);
       
       const timer2 = setTimeout(() => {
-        speakJutsu("Chidori!");
+        speakJutsu("千鳥！"); // "Chidori!" in Japanese kanji
         setVoicesPlayed(prev => ({ ...prev, chidori: true }));
       }, 2500);
       
@@ -821,14 +828,14 @@ export const Globe3D = () => {
     }
   }, [hasInteracted, voicesPlayed.rasengan, speakJutsu]);
   
-  // Handle jutsu activation from scene
+  // Handle jutsu activation from scene - authentic Japanese pronunciation
   const handleJutsuActivate = useCallback((jutsu: string) => {
     const jutsuNames: Record<string, string> = {
-      'amaterasu': 'Amaterasu!',
-      'susanoo': 'Susanoo!',
-      'rasengan': 'Rasengan!',
-      'chidori': 'Chidori!',
-      'sixpaths': 'Six Paths Sage Mode!'
+      'amaterasu': '天照！', // Amaterasu - Itachi/Sasuke style
+      'susanoo': '須佐能乎！', // Susanoo - deep, powerful
+      'rasengan': '螺旋丸！', // Rasengan - Naruto style
+      'chidori': '千鳥！', // Chidori - Sasuke style
+      'sixpaths': '六道仙人モード！' // Rikudou Sennin Mode
     };
     speakJutsu(jutsuNames[jutsu] || jutsu);
   }, [speakJutsu]);
