@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 
 interface Petal {
   id: number;
@@ -13,12 +13,14 @@ interface Petal {
 
 export const SakuraPetals = () => {
   const [petals, setPetals] = useState<Petal[]>([]);
+  const [windActive, setWindActive] = useState(false);
+  const [windDirection, setWindDirection] = useState(1); // 1 = right, -1 = left
 
   useEffect(() => {
     // Generate petals
     const generatePetals = () => {
       const newPetals: Petal[] = [];
-      for (let i = 0; i < 25; i++) {
+      for (let i = 0; i < 30; i++) {
         newPetals.push({
           id: i,
           x: Math.random() * 100,
@@ -35,8 +37,56 @@ export const SakuraPetals = () => {
     generatePetals();
   }, []);
 
+  // Wind gust effect - triggers occasionally
+  useEffect(() => {
+    const triggerWind = () => {
+      setWindDirection(Math.random() > 0.5 ? 1 : -1);
+      setWindActive(true);
+      
+      // Wind lasts 2-4 seconds
+      const windDuration = 2000 + Math.random() * 2000;
+      setTimeout(() => setWindActive(false), windDuration);
+    };
+
+    // Initial wind after 3 seconds
+    const initialTimer = setTimeout(triggerWind, 3000);
+    
+    // Random wind gusts every 8-15 seconds
+    const interval = setInterval(() => {
+      if (Math.random() > 0.3) { // 70% chance of wind
+        triggerWind();
+      }
+    }, 8000 + Math.random() * 7000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const getWindOffset = (baseSwayAmount: number) => {
+    if (!windActive) return baseSwayAmount;
+    return baseSwayAmount * 2.5 * windDirection;
+  };
+
+  const getWindDuration = (baseDuration: number) => {
+    if (!windActive) return baseDuration;
+    return baseDuration * 0.6; // 40% faster during wind
+  };
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-[2]">
+      {/* Wind indicator - subtle blur effect */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{
+          background: windActive 
+            ? `linear-gradient(${windDirection > 0 ? '90deg' : '270deg'}, transparent 0%, hsl(340 70% 80% / 0.03) 50%, transparent 100%)`
+            : 'transparent'
+        }}
+        transition={{ duration: 0.5 }}
+      />
+
       {petals.map((petal) => (
         <motion.div
           key={petal.id}
@@ -45,18 +95,22 @@ export const SakuraPetals = () => {
             left: `${petal.x}%`,
             top: -30,
           }}
-          initial={{ y: -30, opacity: 0 }}
+          initial={{ y: -30, opacity: 0, x: 0 }}
           animate={{
             y: ["0vh", "110vh"],
-            x: [0, petal.swayAmount, -petal.swayAmount, petal.swayAmount / 2, 0],
-            rotate: [petal.rotation, petal.rotation + 360],
+            x: windActive 
+              ? [0, getWindOffset(petal.swayAmount), getWindOffset(petal.swayAmount) * 1.5, getWindOffset(petal.swayAmount) * 0.8, 0]
+              : [0, petal.swayAmount, -petal.swayAmount, petal.swayAmount / 2, 0],
+            rotate: windActive 
+              ? [petal.rotation, petal.rotation + 720]
+              : [petal.rotation, petal.rotation + 360],
             opacity: [0, 1, 1, 1, 0],
           }}
           transition={{
-            duration: petal.duration,
+            duration: getWindDuration(petal.duration),
             delay: petal.delay,
             repeat: Infinity,
-            ease: "linear",
+            ease: windActive ? "easeOut" : "linear",
             times: [0, 0.1, 0.9, 0.95, 1],
           }}
         >
@@ -88,8 +142,8 @@ export const SakuraPetals = () => {
         </motion.div>
       ))}
       
-      {/* Additional smaller petals for depth */}
-      {petals.slice(0, 15).map((petal, index) => (
+      {/* Additional smaller petals for depth - more affected by wind */}
+      {petals.slice(0, 18).map((petal) => (
         <motion.div
           key={`small-${petal.id}`}
           className="absolute opacity-60"
@@ -97,18 +151,22 @@ export const SakuraPetals = () => {
             left: `${(petal.x + 30) % 100}%`,
             top: -20,
           }}
-          initial={{ y: -20, opacity: 0 }}
+          initial={{ y: -20, opacity: 0, x: 0 }}
           animate={{
             y: ["0vh", "110vh"],
-            x: [0, -petal.swayAmount * 0.7, petal.swayAmount * 0.7, 0],
-            rotate: [petal.rotation + 45, petal.rotation + 405],
+            x: windActive 
+              ? [0, getWindOffset(petal.swayAmount) * 1.8, getWindOffset(petal.swayAmount) * 2, getWindOffset(petal.swayAmount), 0]
+              : [0, -petal.swayAmount * 0.7, petal.swayAmount * 0.7, 0],
+            rotate: windActive 
+              ? [petal.rotation + 45, petal.rotation + 765]
+              : [petal.rotation + 45, petal.rotation + 405],
             opacity: [0, 0.6, 0.6, 0.6, 0],
           }}
           transition={{
-            duration: petal.duration * 1.2,
+            duration: getWindDuration(petal.duration * 1.2) * (windActive ? 0.7 : 1),
             delay: petal.delay + 5,
             repeat: Infinity,
-            ease: "linear",
+            ease: windActive ? "easeOut" : "linear",
             times: [0, 0.1, 0.9, 0.95, 1],
           }}
         >
@@ -124,6 +182,45 @@ export const SakuraPetals = () => {
               ry="10"
               fill="hsl(340, 75%, 80%)"
               opacity={0.7}
+            />
+          </svg>
+        </motion.div>
+      ))}
+
+      {/* Extra tiny petals that appear during wind */}
+      {windActive && petals.slice(0, 12).map((petal) => (
+        <motion.div
+          key={`wind-${petal.id}`}
+          className="absolute"
+          style={{
+            left: windDirection > 0 ? '-5%' : '105%',
+            top: `${20 + Math.random() * 60}%`,
+          }}
+          initial={{ opacity: 0, x: 0 }}
+          animate={{
+            x: windDirection > 0 ? ['0vw', '120vw'] : ['0vw', '-120vw'],
+            y: [0, 100 + Math.random() * 200],
+            rotate: [0, 720 * windDirection],
+            opacity: [0, 0.8, 0.8, 0],
+          }}
+          transition={{
+            duration: 3 + Math.random() * 2,
+            delay: Math.random() * 1,
+            ease: "easeOut",
+          }}
+        >
+          <svg
+            width={petal.size * 0.5}
+            height={petal.size * 0.5}
+            viewBox="0 0 24 24"
+          >
+            <ellipse
+              cx="12"
+              cy="12"
+              rx="5"
+              ry="8"
+              fill="hsl(345, 70%, 82%)"
+              opacity={0.6}
             />
           </svg>
         </motion.div>
