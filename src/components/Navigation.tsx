@@ -49,7 +49,7 @@ export const Navigation = () => {
         <div className={`absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-0'}`} />
         
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between relative z-10">
-          <a href="#home" className="font-mono text-lg sm:text-xl font-bold group">
+          <a href="#home" className="font-display text-xl sm:text-2xl tracking-wider group">
             <span className="text-primary group-hover:drop-shadow-[0_0_8px_hsl(var(--primary))] transition-all duration-300">M</span>
             <span className="text-foreground">.</span>
           </a>

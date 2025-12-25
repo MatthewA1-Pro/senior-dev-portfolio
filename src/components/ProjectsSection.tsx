@@ -284,7 +284,7 @@ export const ProjectsSection = () => {
             {"// Featured Work"}
           </motion.p>
           <motion.h2 
-            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4"
+            className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

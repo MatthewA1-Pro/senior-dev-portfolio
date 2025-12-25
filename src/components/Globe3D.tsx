@@ -629,14 +629,14 @@ const SusanooRibcage = ({ isActive, mouse }: { isActive: boolean; mouse: { x: nu
     <group ref={groupRef}>
       {ribs.map((points, i) => (
         <mesh key={i}>
-          <tubeGeometry args={[new THREE.CatmullRomCurve3(points), 12, 0.025, 6, false]} />
-          <meshBasicMaterial color="#7c4dff" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
+          <tubeGeometry args={[new THREE.CatmullRomCurve3(points), 20, 0.02, 12, false]} />
+          <meshBasicMaterial color="#9c4dff" transparent opacity={0.2} blending={THREE.AdditiveBlending} />
         </mesh>
       ))}
       {ribs.map((points, i) => (
         <mesh key={`mirror-${i}`} scale={[-1, 1, 1]}>
-          <tubeGeometry args={[new THREE.CatmullRomCurve3(points), 12, 0.025, 6, false]} />
-          <meshBasicMaterial color="#7c4dff" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
+          <tubeGeometry args={[new THREE.CatmullRomCurve3(points), 20, 0.02, 12, false]} />
+          <meshBasicMaterial color="#9c4dff" transparent opacity={0.2} blending={THREE.AdditiveBlending} />
         </mesh>
       ))}
     </group>

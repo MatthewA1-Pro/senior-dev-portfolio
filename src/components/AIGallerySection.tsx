@@ -25,7 +25,7 @@ const aiProjects: AIProject[] = [
     url: "https://self-map-maker.lovable.app",
     result: "Interactive visualization app built with AI-assisted development",
     icon: <Wand2 className="w-6 h-6" />,
-    gradient: "from-neon-pink to-neon-purple",
+    gradient: "from-red-600 to-purple-600",
     image: projectSelfmapmaker,
   },
   {
@@ -35,7 +35,7 @@ const aiProjects: AIProject[] = [
     url: "https://insure-hub-ai.lovable.app",
     result: "Complete insurance SaaS with AI-powered recommendations",
     icon: <Sparkles className="w-6 h-6" />,
-    gradient: "from-neon-cyan to-neon-green",
+    gradient: "from-orange-500 to-amber-500",
     image: projectInsurehubai,
   },
 ];
@@ -278,7 +278,7 @@ export const AIGallerySection = () => {
             {"// AI-Powered Development"}
           </motion.p>
           <motion.h2 
-            className="text-4xl md:text-5xl font-bold mb-4"
+            className="text-4xl md:text-5xl font-display tracking-wide mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -314,7 +314,7 @@ export const AIGallerySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              <span className="w-2 h-2 rounded-full bg-neon-cyan animate-glow-pulse" />
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-glow-pulse" />
               <span>Prompt Engineering Expert</span>
             </motion.div>
             <motion.div 
@@ -324,7 +324,7 @@ export const AIGallerySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
             >
-              <span className="w-2 h-2 rounded-full bg-neon-purple animate-glow-pulse" />
+              <span className="w-2 h-2 rounded-full bg-purple-600 animate-glow-pulse" />
               <span>AI Agent Development</span>
             </motion.div>
             <motion.div 
@@ -334,7 +334,7 @@ export const AIGallerySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
-              <span className="w-2 h-2 rounded-full bg-neon-pink animate-glow-pulse" />
+              <span className="w-2 h-2 rounded-full bg-red-600 animate-glow-pulse" />
               <span>No-Code Platform Mastery</span>
             </motion.div>
             <motion.div 
@@ -344,7 +344,7 @@ export const AIGallerySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.6 }}
             >
-              <span className="w-2 h-2 rounded-full bg-neon-green animate-glow-pulse" />
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-glow-pulse" />
               <span>LLM Integration Specialist</span>
             </motion.div>
           </div>
