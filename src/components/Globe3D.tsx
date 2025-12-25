@@ -1,29 +1,61 @@
-import { useRef, useMemo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Sphere, OrbitControls, Float, Torus, Box, Icosahedron } from "@react-three/drei";
+import { useRef, useMemo, useState, useEffect } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Sphere, Float, Trail } from "@react-three/drei";
 import * as THREE from "three";
 
-// Particle System
-const ParticleField = () => {
+// Mouse position tracker
+const useMousePosition = () => {
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMouse({
+        x: (e.clientX / window.innerWidth) * 2 - 1,
+        y: -(e.clientY / window.innerHeight) * 2 + 1
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+  
+  return mouse;
+};
+
+// Chakra Energy Particles (Naruto style)
+const ChakraParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
   const particlesRef = useRef<THREE.Points>(null);
   
   const particles = useMemo(() => {
     const positions = [];
-    const count = 500;
+    const colors = [];
+    const count = 400;
+    
     for (let i = 0; i < count; i++) {
-      positions.push(
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20,
-        (Math.random() - 0.5) * 20
-      );
+      // Spiral pattern like chakra flow
+      const angle = (i / count) * Math.PI * 8;
+      const radius = 2 + Math.sin(i * 0.1) * 1.5;
+      const x = Math.cos(angle) * radius + (Math.random() - 0.5) * 2;
+      const y = (Math.random() - 0.5) * 6;
+      const z = Math.sin(angle) * radius + (Math.random() - 0.5) * 2;
+      positions.push(x, y, z);
+      
+      // Naruto orange and Sasuke purple/blue colors
+      if (i % 2 === 0) {
+        colors.push(1, 0.5, 0.1); // Naruto orange
+      } else {
+        colors.push(0.4, 0.2, 0.8); // Sasuke purple
+      }
     }
-    return new Float32Array(positions);
+    return {
+      positions: new Float32Array(positions),
+      colors: new Float32Array(colors)
+    };
   }, []);
 
   useFrame(({ clock }) => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.02;
-      particlesRef.current.rotation.x = clock.getElapsedTime() * 0.01;
+      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.1 + mouse.x * 0.5;
+      particlesRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.2) * 0.3 + mouse.y * 0.3;
     }
   });
 
@@ -32,245 +64,283 @@ const ParticleField = () => {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={particles.length / 3}
-          array={particles}
+          count={particles.positions.length / 3}
+          array={particles.positions}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="attributes-color"
+          count={particles.colors.length / 3}
+          array={particles.colors}
           itemSize={3}
         />
       </bufferGeometry>
       <pointsMaterial
-        color="#00ffff"
-        size={0.02}
+        size={0.08}
         transparent
-        opacity={0.6}
+        opacity={0.8}
+        vertexColors
         sizeAttenuation
+        blending={THREE.AdditiveBlending}
       />
     </points>
   );
 };
 
-// Animated Ring
-const AnimatedRing = ({ radius, color, speed }: { radius: number; color: string; speed: number }) => {
-  const ringRef = useRef<THREE.Mesh>(null);
+// Rasengan-style Energy Orb
+const RasenganOrb = ({ mouse }: { mouse: { x: number; y: number } }) => {
+  const orbRef = useRef<THREE.Mesh>(null);
+  const innerRef = useRef<THREE.Mesh>(null);
   
   useFrame(({ clock }) => {
-    if (ringRef.current) {
-      ringRef.current.rotation.x = clock.getElapsedTime() * speed;
-      ringRef.current.rotation.z = clock.getElapsedTime() * speed * 0.5;
+    if (orbRef.current) {
+      orbRef.current.rotation.x = clock.getElapsedTime() * 2;
+      orbRef.current.rotation.z = clock.getElapsedTime() * 1.5;
+      orbRef.current.position.x = mouse.x * 0.5;
+      orbRef.current.position.y = mouse.y * 0.5;
     }
-  });
-
-  return (
-    <Torus ref={ringRef} args={[radius, 0.02, 16, 100]}>
-      <meshStandardMaterial
-        color={color}
-        emissive={color}
-        emissiveIntensity={0.8}
-        transparent
-        opacity={0.6}
-      />
-    </Torus>
-  );
-};
-
-// Floating Cube with edges
-const FloatingCube = ({ position, size, color }: { position: [number, number, number]; size: number; color: string }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
-  
-  useFrame(({ clock }) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x = clock.getElapsedTime() * 0.3;
-      meshRef.current.rotation.y = clock.getElapsedTime() * 0.2;
-    }
-  });
-
-  return (
-    <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.8}>
-      <Box ref={meshRef} args={[size, size, size]} position={position}>
-        <meshStandardMaterial
-          color={color}
-          wireframe
-          transparent
-          opacity={0.4}
-        />
-      </Box>
-    </Float>
-  );
-};
-
-// Main Globe with connections
-const GlobeWithConnections = () => {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const pointsRef = useRef<THREE.Points>(null);
-
-  const points = useMemo(() => {
-    const positions = [];
-    const count = 300;
-    for (let i = 0; i < count; i++) {
-      const phi = Math.acos(-1 + (2 * i) / count);
-      const theta = Math.sqrt(count * Math.PI) * phi;
-      const x = Math.cos(theta) * Math.sin(phi) * 2;
-      const y = Math.sin(theta) * Math.sin(phi) * 2;
-      const z = Math.cos(phi) * 2;
-      positions.push(x, y, z);
-    }
-    return new Float32Array(positions);
-  }, []);
-
-  useFrame(({ clock }) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = clock.getElapsedTime() * 0.08;
-    }
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y = clock.getElapsedTime() * 0.08;
+    if (innerRef.current) {
+      innerRef.current.rotation.y = -clock.getElapsedTime() * 3;
+      const scale = 1 + Math.sin(clock.getElapsedTime() * 4) * 0.1;
+      innerRef.current.scale.set(scale, scale, scale);
     }
   });
 
   return (
     <group>
-      {/* Main globe wireframe */}
-      <Sphere ref={meshRef} args={[2, 48, 48]}>
-        <meshStandardMaterial
-          color="#0a1628"
-          wireframe
+      {/* Outer swirling energy */}
+      <mesh ref={orbRef}>
+        <torusGeometry args={[1.8, 0.03, 16, 100]} />
+        <meshBasicMaterial
+          color="#ff7b00"
           transparent
-          opacity={0.25}
+          opacity={0.6}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      
+      {/* Inner core */}
+      <Sphere ref={innerRef} args={[1.2, 32, 32]}>
+        <meshBasicMaterial
+          color="#4fc3f7"
+          transparent
+          opacity={0.15}
+          blending={THREE.AdditiveBlending}
         />
       </Sphere>
-
-      {/* Inner glow sphere */}
-      <Sphere args={[1.9, 32, 32]}>
+      
+      {/* Glow effect */}
+      <Sphere args={[1.5, 32, 32]}>
         <meshBasicMaterial
-          color="#00ffff"
+          color="#ff9500"
           transparent
-          opacity={0.03}
-        />
-      </Sphere>
-
-      {/* Outer glow */}
-      <Sphere args={[2.3, 32, 32]}>
-        <meshBasicMaterial
-          color="#8b5cf6"
-          transparent
-          opacity={0.02}
+          opacity={0.05}
           side={THREE.BackSide}
         />
       </Sphere>
-
-      {/* Data points */}
-      <points ref={pointsRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={points.length / 3}
-            array={points}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <pointsMaterial
-          color="#00ffff"
-          size={0.04}
-          transparent
-          opacity={0.9}
-          sizeAttenuation
-        />
-      </points>
-
-      {/* Orbital rings */}
-      <AnimatedRing radius={2.8} color="#00ffff" speed={0.15} />
-      <AnimatedRing radius={3.2} color="#8b5cf6" speed={-0.1} />
-      <AnimatedRing radius={3.6} color="#ec4899" speed={0.08} />
     </group>
   );
 };
 
-// Floating Icosahedron
-const FloatingIcosahedron = ({ position, size, color }: { position: [number, number, number]; size: number; color: string }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
+// Chidori Lightning Effect (Sasuke style)
+const ChidoriLightning = ({ mouse }: { mouse: { x: number; y: number } }) => {
+  const lightningRef = useRef<THREE.Group>(null);
   
+  const bolts = useMemo(() => {
+    const boltData = [];
+    for (let i = 0; i < 8; i++) {
+      const points = [];
+      const angle = (i / 8) * Math.PI * 2;
+      let x = Math.cos(angle) * 2;
+      let y = 0;
+      let z = Math.sin(angle) * 2;
+      
+      for (let j = 0; j < 10; j++) {
+        points.push(new THREE.Vector3(
+          x + (Math.random() - 0.5) * 0.3,
+          y + j * 0.15,
+          z + (Math.random() - 0.5) * 0.3
+        ));
+        x += (Math.random() - 0.5) * 0.5;
+        z += (Math.random() - 0.5) * 0.5;
+      }
+      boltData.push(points);
+    }
+    return boltData;
+  }, []);
+
   useFrame(({ clock }) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x = clock.getElapsedTime() * 0.2;
-      meshRef.current.rotation.z = clock.getElapsedTime() * 0.15;
+    if (lightningRef.current) {
+      lightningRef.current.rotation.y = clock.getElapsedTime() * 0.5 + mouse.x * 1;
+      lightningRef.current.position.y = Math.sin(clock.getElapsedTime() * 2) * 0.2;
     }
   });
 
   return (
-    <Float speed={2} rotationIntensity={0.4} floatIntensity={1}>
-      <Icosahedron ref={meshRef} args={[size]} position={position}>
-        <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={0.6}
-          transparent
-          opacity={0.8}
-        />
-      </Icosahedron>
+    <group ref={lightningRef}>
+      {bolts.map((points, i) => (
+        <line key={i}>
+          <bufferGeometry>
+            <bufferAttribute
+              attach="attributes-position"
+              count={points.length}
+              array={new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))}
+              itemSize={3}
+            />
+          </bufferGeometry>
+          <lineBasicMaterial
+            color="#7c4dff"
+            transparent
+            opacity={0.6}
+            blending={THREE.AdditiveBlending}
+          />
+        </line>
+      ))}
+    </group>
+  );
+};
+
+// Floating Sharingan-inspired element
+const SharinganElement = ({ position, color }: { position: [number, number, number]; color: string }) => {
+  const ref = useRef<THREE.Mesh>(null);
+  
+  useFrame(({ clock }) => {
+    if (ref.current) {
+      ref.current.rotation.z = clock.getElapsedTime() * 2;
+    }
+  });
+
+  return (
+    <Float speed={3} rotationIntensity={0.2} floatIntensity={1.5}>
+      <group position={position}>
+        {/* Outer ring */}
+        <mesh ref={ref}>
+          <torusGeometry args={[0.3, 0.02, 16, 32]} />
+          <meshBasicMaterial color={color} transparent opacity={0.8} />
+        </mesh>
+        {/* Inner elements */}
+        {[0, 1, 2].map((i) => (
+          <mesh key={i} rotation={[0, 0, (i * Math.PI * 2) / 3]}>
+            <circleGeometry args={[0.08, 16]} />
+            <meshBasicMaterial color={color} transparent opacity={0.9} side={THREE.DoubleSide} />
+          </mesh>
+        ))}
+      </group>
     </Float>
   );
 };
 
-// Simple floating element
-const FloatingElement = ({ position, color, size }: { position: [number, number, number]; color: string; size: number }) => {
+// Energy Trail Orb
+const EnergyOrb = ({ position, color, mouse }: { position: [number, number, number]; color: string; mouse: { x: number; y: number } }) => {
+  const ref = useRef<THREE.Mesh>(null);
+  
+  useFrame(({ clock }) => {
+    if (ref.current) {
+      ref.current.position.x = position[0] + Math.sin(clock.getElapsedTime() + position[1]) * 0.5 + mouse.x * 0.3;
+      ref.current.position.y = position[1] + Math.cos(clock.getElapsedTime() * 1.5) * 0.3 + mouse.y * 0.3;
+      ref.current.position.z = position[2] + Math.sin(clock.getElapsedTime() * 0.8) * 0.5;
+    }
+  });
+
   return (
-    <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-      <mesh position={position}>
-        <octahedronGeometry args={[size]} />
-        <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={0.5}
-          transparent
-          opacity={0.8}
-        />
+    <Trail
+      width={0.5}
+      length={8}
+      color={color}
+      attenuation={(t) => t * t}
+    >
+      <mesh ref={ref} position={position}>
+        <sphereGeometry args={[0.1, 16, 16]} />
+        <meshBasicMaterial color={color} transparent opacity={0.9} />
       </mesh>
-    </Float>
+    </Trail>
+  );
+};
+
+// Swirling Seal Pattern
+const SealPattern = ({ mouse }: { mouse: { x: number; y: number } }) => {
+  const sealRef = useRef<THREE.Group>(null);
+  
+  useFrame(({ clock }) => {
+    if (sealRef.current) {
+      sealRef.current.rotation.z = clock.getElapsedTime() * 0.3;
+      sealRef.current.rotation.x = mouse.y * 0.2;
+      sealRef.current.rotation.y = mouse.x * 0.2;
+    }
+  });
+
+  return (
+    <group ref={sealRef} position={[0, 0, -1]}>
+      {[1.5, 2, 2.5, 3].map((radius, i) => (
+        <mesh key={i} rotation={[Math.PI / 2, 0, i * 0.5]}>
+          <torusGeometry args={[radius, 0.015, 8, 64]} />
+          <meshBasicMaterial
+            color={i % 2 === 0 ? "#ff6b00" : "#9c27b0"}
+            transparent
+            opacity={0.3 - i * 0.05}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+// Main Scene
+const Scene = ({ mouse }: { mouse: { x: number; y: number } }) => {
+  const { camera } = useThree();
+  
+  useFrame(() => {
+    camera.position.x = mouse.x * 0.5;
+    camera.position.y = mouse.y * 0.3;
+    camera.lookAt(0, 0, 0);
+  });
+
+  return (
+    <>
+      <fog attach="fog" args={['#0a0a0a', 8, 20]} />
+      <ambientLight intensity={0.2} />
+      <pointLight position={[5, 5, 5]} intensity={0.5} color="#ff7b00" />
+      <pointLight position={[-5, -5, 5]} intensity={0.4} color="#7c4dff" />
+      <pointLight position={[0, 5, -5]} intensity={0.3} color="#4fc3f7" />
+      
+      {/* Chakra particles */}
+      <ChakraParticles mouse={mouse} />
+      
+      {/* Central energy orb */}
+      <RasenganOrb mouse={mouse} />
+      
+      {/* Lightning effects */}
+      <ChidoriLightning mouse={mouse} />
+      
+      {/* Seal pattern */}
+      <SealPattern mouse={mouse} />
+      
+      {/* Sharingan elements */}
+      <SharinganElement position={[3, 2, -1]} color="#e53935" />
+      <SharinganElement position={[-3.5, -1.5, 0]} color="#e53935" />
+      <SharinganElement position={[2.5, -2.5, 1]} color="#e53935" />
+      
+      {/* Energy orbs with trails */}
+      <EnergyOrb position={[3, 1, 0]} color="#ff9800" mouse={mouse} />
+      <EnergyOrb position={[-3, -1, 1]} color="#7c4dff" mouse={mouse} />
+      <EnergyOrb position={[0, 3, -1]} color="#4fc3f7" mouse={mouse} />
+      <EnergyOrb position={[-2, 2, 0.5]} color="#ff5722" mouse={mouse} />
+      <EnergyOrb position={[2, -2, -0.5]} color="#9c27b0" mouse={mouse} />
+    </>
   );
 };
 
 export const Globe3D = () => {
+  const mouse = useMousePosition();
+  
   return (
     <div className="absolute inset-0 opacity-90">
       <Canvas
-        camera={{ position: [0, 0, 7], fov: 55 }}
+        camera={{ position: [0, 0, 6], fov: 60 }}
         gl={{ antialias: true, alpha: true }}
       >
-        <fog attach="fog" args={['#0a0a0a', 5, 25]} />
-        <ambientLight intensity={0.15} />
-        <pointLight position={[10, 10, 10]} intensity={0.6} color="#00ffff" />
-        <pointLight position={[-10, -10, -10]} intensity={0.4} color="#8b5cf6" />
-        <pointLight position={[0, 10, 0]} intensity={0.3} color="#ec4899" />
-        
-        {/* Background particles */}
-        <ParticleField />
-        
-        {/* Main globe */}
-        <GlobeWithConnections />
-        
-        {/* Floating geometric elements */}
-        <FloatingElement position={[4, 2.5, -2]} color="#00ffff" size={0.18} />
-        <FloatingElement position={[-4, -2, 0]} color="#8b5cf6" size={0.15} />
-        <FloatingElement position={[3, -3, 1]} color="#ec4899" size={0.12} />
-        <FloatingElement position={[-3, 3.5, 0.5]} color="#22c55e" size={0.1} />
-        <FloatingElement position={[5, 0.5, -3]} color="#00ffff" size={0.2} />
-        <FloatingElement position={[-5, 1.5, 1]} color="#8b5cf6" size={0.16} />
-        
-        {/* Floating cubes */}
-        <FloatingCube position={[-4.5, -3, -1]} size={0.4} color="#00ffff" />
-        <FloatingCube position={[4.5, 3, -2]} size={0.35} color="#8b5cf6" />
-        <FloatingCube position={[-3, 4, 1]} size={0.3} color="#ec4899" />
-        
-        {/* Floating icosahedrons */}
-        <FloatingIcosahedron position={[5, -2, 0]} size={0.25} color="#22c55e" />
-        <FloatingIcosahedron position={[-5, 2.5, -1]} size={0.2} color="#00ffff" />
-        
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          autoRotate
-          autoRotateSpeed={0.3}
-          maxPolarAngle={Math.PI / 1.8}
-          minPolarAngle={Math.PI / 2.2}
-        />
+        <Scene mouse={mouse} />
       </Canvas>
     </div>
   );
