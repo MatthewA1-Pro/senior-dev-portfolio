@@ -44,10 +44,9 @@ export const HeroSection = () => {
             </span>
           </motion.div>
 
-          {/* Name - with text shadow for better visibility */}
+          {/* Name - clean styling without excess glow */}
           <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display tracking-wider mb-6 sm:mb-8 leading-none drop-shadow-2xl"
-            style={{ textShadow: '0 0 40px hsl(var(--primary) / 0.8), 0 4px 20px rgba(0,0,0,0.9)' }}
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display tracking-wider mb-6 sm:mb-8 leading-none"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
@@ -55,9 +54,9 @@ export const HeroSection = () => {
             <span className="gradient-text animate-gradient">MATTHEW</span>
           </motion.h1>
 
-          {/* Title */}
+          {/* Title - with background for visibility */}
           <motion.p
-            className="text-base sm:text-lg md:text-xl text-muted-foreground mb-2 sm:mb-3 tracking-wide"
+            className="text-base sm:text-lg md:text-xl text-foreground font-medium mb-2 sm:mb-3 tracking-wide px-4 py-2 bg-background/70 backdrop-blur-sm rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
