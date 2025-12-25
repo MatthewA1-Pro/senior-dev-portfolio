@@ -14,11 +14,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Oswald", "Noto Sans JP", "system-ui", "sans-serif"],
-        display: ["Anton", "Bangers", "sans-serif"],
-        heading: ["Permanent Marker", "Bangers", "sans-serif"],
-        mono: ["Oswald", "monospace"],
-        brush: ["Permanent Marker", "cursive"],
+        sans: ["Noto Sans JP", "system-ui", "sans-serif"],
+        display: ["Cinzel", "Shippori Mincho", "serif"],
+        heading: ["Kaushan Script", "cursive"],
+        mono: ["Noto Sans JP", "monospace"],
+        brush: ["Kaushan Script", "cursive"],
+        japanese: ["Shippori Mincho", "Sawarabi Mincho", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -54,14 +55,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Naruto theme colors
-        naruto: {
-          orange: "hsl(var(--naruto-orange))",
-          red: "hsl(var(--sharingan-red))",
-          purple: "hsl(var(--susanoo-purple))",
-          gold: "hsl(var(--six-paths-gold))",
-          blue: "hsl(var(--rasengan-blue))",
-          black: "hsl(var(--amaterasu-black))",
+        // Anime theme colors
+        anime: {
+          crimson: "hsl(var(--anime-crimson))",
+          gold: "hsl(var(--anime-gold))",
+          sakura: "hsl(var(--anime-sakura))",
+          indigo: "hsl(var(--anime-indigo))",
+          ember: "hsl(var(--anime-ember))",
+          shadow: "hsl(var(--anime-shadow))",
         },
       },
       borderRadius: {
@@ -94,6 +95,14 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "ink-spread": {
+          "0%": { transform: "scale(0)", opacity: "1" },
+          "100%": { transform: "scale(2)", opacity: "0" },
+        },
+        "brush-stroke": {
+          "0%": { width: "0%" },
+          "100%": { width: "100%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -102,6 +111,8 @@ export default {
         "slide-up": "slide-up 0.8s ease-out forwards",
         "scale-in": "scale-in 0.5s ease-out forwards",
         shimmer: "shimmer 2s linear infinite",
+        "ink-spread": "ink-spread 1s ease-out forwards",
+        "brush-stroke": "brush-stroke 0.8s ease-out forwards",
       },
     },
   },

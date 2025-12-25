@@ -32,19 +32,19 @@ export const HeroSection = () => {
           transition={{ duration: 1, ease: "easeOut" }}
           className="flex flex-col items-center"
         >
-          {/* Naruto-style decorative element */}
+          {/* Anime-style decorative element */}
           <motion.div
             className="mb-6 sm:mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            <span className="text-primary/80 text-sm sm:text-base md:text-lg tracking-[0.3em] uppercase">
-              忍者の道 — Way of the Shinobi
+            <span className="text-accent text-sm sm:text-base md:text-lg tracking-[0.2em] font-japanese">
+              運命を切り開く — Forging My Destiny
             </span>
           </motion.div>
 
-          {/* Name - larger with subtle outline */}
+          {/* Name - elegant anime typography */}
           <motion.h1
             className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display tracking-wider mb-8 sm:mb-10 leading-none"
             initial={{ opacity: 0, y: 30 }}
@@ -54,9 +54,9 @@ export const HeroSection = () => {
             <span className="gradient-text animate-gradient">MATTHEW</span>
           </motion.h1>
 
-          {/* Title - larger with border outline */}
+          {/* Title - with anime-styled border */}
           <motion.p
-            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground font-semibold mb-3 sm:mb-4 tracking-wide px-6 py-3 bg-background/80 backdrop-blur-sm rounded-xl border border-primary/30"
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground font-semibold mb-3 sm:mb-4 tracking-wide px-6 py-3 glass-card"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
@@ -65,7 +65,7 @@ export const HeroSection = () => {
           </motion.p>
 
           <motion.p
-            className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary tracking-wider px-4"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-secondary tracking-wider px-4 font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.8 }}
@@ -73,15 +73,15 @@ export const HeroSection = () => {
             Custom Code • AI Innovation • Prompt Engineering
           </motion.p>
 
-          {/* Naruto-style bottom element */}
+          {/* Anime-style bottom element */}
           <motion.div
             className="mt-6 sm:mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8 }}
           >
-            <span className="text-secondary/70 text-sm sm:text-base tracking-[0.2em]">
-              ⚡ 術を極める — Mastering the Art ⚡
+            <span className="text-accent/80 text-sm sm:text-base tracking-[0.15em] font-japanese">
+              ✦ 伝説になる ✦ Becoming Legend
             </span>
           </motion.div>
 
@@ -94,13 +94,13 @@ export const HeroSection = () => {
           >
             <button
               onClick={openWhatsApp}
-              className="p-2.5 sm:p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
+              className="p-2.5 sm:p-3 rounded-full glass-card hover:anime-border transition-all duration-300 group"
             >
               <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </button>
             <a
               href={`mailto:${EMAIL}`}
-              className="p-2.5 sm:p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
+              className="p-2.5 sm:p-3 rounded-full glass-card hover:anime-border transition-all duration-300 group"
             >
               <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </a>
