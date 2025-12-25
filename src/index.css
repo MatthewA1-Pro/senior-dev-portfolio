@@ -4,54 +4,54 @@
 
 @layer base {
   :root {
-    /* Naruto-themed dark background */
-    --background: 0 0% 5%;
-    --foreground: 35 100% 95%;
+    /* Anime-themed deep background - like midnight sky */
+    --background: 230 25% 8%;
+    --foreground: 40 30% 95%;
 
-    --card: 0 0% 8%;
-    --card-foreground: 35 100% 95%;
+    --card: 230 20% 12%;
+    --card-foreground: 40 30% 95%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 35 100% 95%;
+    --popover: 230 20% 12%;
+    --popover-foreground: 40 30% 95%;
 
-    /* Naruto Orange as primary */
-    --primary: 25 100% 50%;
-    --primary-foreground: 0 0% 5%;
+    /* Crimson Red as primary - blood moon / intense scenes */
+    --primary: 350 85% 55%;
+    --primary-foreground: 40 30% 95%;
 
-    /* Sharingan Red as secondary */
-    --secondary: 0 85% 45%;
-    --secondary-foreground: 35 100% 95%;
+    /* Deep Gold as secondary - honorable/legendary */
+    --secondary: 42 90% 55%;
+    --secondary-foreground: 230 25% 8%;
 
-    --muted: 0 0% 12%;
-    --muted-foreground: 35 30% 60%;
+    --muted: 230 15% 18%;
+    --muted-foreground: 40 20% 65%;
 
-    /* Susanoo Purple as accent */
-    --accent: 270 70% 50%;
-    --accent-foreground: 35 100% 95%;
+    /* Sakura Pink as accent */
+    --accent: 340 70% 70%;
+    --accent-foreground: 230 25% 8%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 35 100% 95%;
+    --destructive-foreground: 40 30% 95%;
 
-    --border: 25 50% 20%;
-    --input: 25 50% 20%;
-    --ring: 25 100% 50%;
+    --border: 350 30% 25%;
+    --input: 350 30% 25%;
+    --ring: 350 85% 55%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Naruto theme colors */
-    --naruto-orange: 25 100% 50%;
-    --sharingan-red: 0 85% 45%;
-    --susanoo-purple: 270 70% 50%;
-    --six-paths-gold: 45 100% 50%;
-    --rasengan-blue: 200 100% 60%;
-    --amaterasu-black: 270 50% 10%;
+    /* Anime theme colors */
+    --anime-crimson: 350 85% 55%;
+    --anime-gold: 42 90% 55%;
+    --anime-sakura: 340 70% 70%;
+    --anime-indigo: 240 60% 50%;
+    --anime-ember: 20 90% 50%;
+    --anime-shadow: 260 50% 25%;
 
-    /* Glow effects */
-    --glow-orange: 0 0 20px hsl(25 100% 50% / 0.5), 0 0 40px hsl(25 100% 50% / 0.3);
-    --glow-red: 0 0 20px hsl(0 85% 45% / 0.5), 0 0 40px hsl(0 85% 45% / 0.3);
-    --glow-purple: 0 0 20px hsl(270 70% 50% / 0.5), 0 0 40px hsl(270 70% 50% / 0.3);
-    --glow-gold: 0 0 20px hsl(45 100% 50% / 0.5), 0 0 40px hsl(45 100% 50% / 0.3);
-    --glow-blue: 0 0 20px hsl(200 100% 60% / 0.5), 0 0 40px hsl(200 100% 60% / 0.3);
+    /* Soft glow effects - more organic */
+    --glow-crimson: 0 0 30px hsl(350 85% 55% / 0.4), 0 0 60px hsl(350 85% 55% / 0.2);
+    --glow-gold: 0 0 30px hsl(42 90% 55% / 0.4), 0 0 60px hsl(42 90% 55% / 0.2);
+    --glow-sakura: 0 0 30px hsl(340 70% 70% / 0.4), 0 0 60px hsl(340 70% 70% / 0.2);
+    --glow-indigo: 0 0 30px hsl(240 60% 50% / 0.4), 0 0 60px hsl(240 60% 50% / 0.2);
+    --glow-ember: 0 0 30px hsl(20 90% 50% / 0.4), 0 0 60px hsl(20 90% 50% / 0.2);
   }
 }
 
@@ -62,6 +62,9 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    background-image: 
+      radial-gradient(ellipse at 20% 0%, hsl(var(--anime-indigo) / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, hsl(var(--anime-crimson) / 0.06) 0%, transparent 50%);
   }
 
   html {
@@ -70,58 +73,98 @@
 }
 
 @layer components {
+  /* Anime-style glass card with soft edges */
   .glass-card {
-    @apply bg-card/60 backdrop-blur-xl border border-primary/20 rounded-xl;
-    box-shadow: 0 4px 30px hsl(var(--primary) / 0.1);
+    @apply bg-card/50 backdrop-blur-lg border border-primary/15 rounded-lg;
+    box-shadow: 
+      0 8px 32px hsl(var(--anime-shadow) / 0.3),
+      inset 0 1px 0 hsl(var(--foreground) / 0.05);
   }
 
-  .naruto-text {
-    @apply text-primary font-display tracking-wider;
-    text-shadow: var(--glow-orange);
+  /* Brush stroke text effect */
+  .brush-text {
+    @apply text-primary font-brush tracking-wide;
+    text-shadow: 2px 2px 4px hsl(var(--anime-shadow) / 0.5);
   }
 
-  .sharingan-text {
-    @apply text-secondary font-display;
-    text-shadow: var(--glow-red);
+  /* Crimson accent text */
+  .crimson-text {
+    @apply text-primary font-display;
+    text-shadow: var(--glow-crimson);
   }
 
-  .neon-border {
-    @apply border-primary/50;
-    box-shadow: var(--glow-orange);
+  /* Soft border glow */
+  .anime-border {
+    @apply border-primary/40;
+    box-shadow: var(--glow-crimson);
   }
 
+  /* Gradient text - anime style warm colors */
   .gradient-text {
     @apply bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent font-display;
     background-size: 200% auto;
   }
 
-  .six-paths-text {
-    @apply bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 bg-clip-text text-transparent;
+  /* Golden legendary text */
+  .legendary-text {
+    @apply bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-clip-text text-transparent;
     background-size: 200% auto;
-    text-shadow: var(--glow-gold);
+    filter: drop-shadow(0 0 8px hsl(var(--anime-gold) / 0.5));
   }
 
-  /* Naruto swirl pattern instead of grid */
+  /* Anime-style background with flowing gradients */
   .grid-bg {
-    background: radial-gradient(circle at 50% 50%, hsl(var(--naruto-orange) / 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 20% 80%, hsl(var(--sharingan-red) / 0.03) 0%, transparent 30%),
-                radial-gradient(circle at 80% 20%, hsl(var(--susanoo-purple) / 0.03) 0%, transparent 30%);
+    background: 
+      radial-gradient(ellipse at 30% 20%, hsl(var(--anime-crimson) / 0.06) 0%, transparent 40%),
+      radial-gradient(ellipse at 70% 80%, hsl(var(--anime-indigo) / 0.05) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 50%, hsl(var(--anime-sakura) / 0.03) 0%, transparent 60%);
   }
 
+  /* Anime card with depth */
   .jutsu-card {
-    @apply bg-card/70 backdrop-blur-xl border border-primary/30 rounded-xl;
-    box-shadow: 0 0 20px hsl(var(--naruto-orange) / 0.15), inset 0 1px 0 hsl(var(--primary) / 0.1);
+    @apply bg-card/60 backdrop-blur-lg border border-primary/20 rounded-lg;
+    box-shadow: 
+      0 4px 24px hsl(var(--anime-shadow) / 0.4),
+      0 0 0 1px hsl(var(--primary) / 0.1),
+      inset 0 1px 0 hsl(var(--foreground) / 0.05);
   }
 
-  /* Chakra flow animation */
+  /* Flowing energy animation */
   .chakra-flow {
     background: linear-gradient(90deg, 
       transparent 0%, 
-      hsl(var(--rasengan-blue) / 0.3) 50%, 
+      hsl(var(--anime-sakura) / 0.3) 50%, 
       transparent 100%
     );
     background-size: 200% 100%;
     animation: chakra-flow 3s ease-in-out infinite;
+  }
+
+  /* Ink brush underline */
+  .ink-underline {
+    position: relative;
+  }
+  .ink-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      hsl(var(--primary)) 20%, 
+      hsl(var(--primary)) 80%, 
+      transparent 100%
+    );
+    border-radius: 2px;
+    opacity: 0.7;
+  }
+
+  /* Sakura petal style decorative element */
+  .sakura-accent {
+    @apply text-accent;
+    filter: drop-shadow(0 0 6px hsl(var(--anime-sakura) / 0.4));
   }
 }
 
@@ -146,14 +189,18 @@
     animation: gradient 8s ease infinite;
     background-size: 200% auto;
   }
+
+  .animate-brush {
+    animation: brush-stroke 0.8s ease-out forwards;
+  }
 }
 
 @keyframes float {
   0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translateY(0px);
   }
   50% {
-    transform: translateY(-20px) rotate(2deg);
+    transform: translateY(-15px);
   }
 }
 
@@ -163,8 +210,8 @@
     filter: brightness(1);
   }
   50% {
-    opacity: 0.8;
-    filter: brightness(1.2);
+    opacity: 0.85;
+    filter: brightness(1.15);
   }
 }
 
@@ -189,9 +236,18 @@
   }
 }
 
-/* Custom scrollbar */
+@keyframes brush-stroke {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Custom scrollbar - anime styled */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -199,10 +255,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.3);
-  border-radius: 4px;
+  background: linear-gradient(180deg, hsl(var(--primary) / 0.4), hsl(var(--secondary) / 0.4));
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.5);
+  background: linear-gradient(180deg, hsl(var(--primary) / 0.6), hsl(var(--secondary) / 0.6));
 }
