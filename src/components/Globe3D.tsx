@@ -879,103 +879,27 @@ const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: 
 
 export const Globe3D = () => {
   const { mouse, isHovering } = useMousePosition();
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [voicesPlayed, setVoicesPlayed] = useState({ rasengan: false, chidori: false });
   const [currentHandSeal, setCurrentHandSeal] = useState<"rasengan" | "chidori" | "amaterasu" | "susanoo" | "kamui" | "sixpaths" | null>(null);
-  const [pendingJutsu, setPendingJutsu] = useState<string | null>(null);
   
-  // Speak jutsu name in authentic Japanese anime style
-  const speakJutsu = useCallback((jutsuName: string) => {
-    if (!hasInteracted) return;
-    
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(jutsuName);
-      utterance.rate = 0.6; // Slower, dramatic
-      utterance.pitch = 0.35; // Deep, intense voice
-      utterance.volume = 1;
-      utterance.lang = 'ja-JP'; // Japanese for authentic pronunciation
-      
-      // Find Japanese voice first, then fallback to deep male voice
-      const voices = speechSynthesis.getVoices();
-      const japaneseVoice = voices.find(v => v.lang.includes('ja'));
-      const deepVoice = voices.find(v => 
-        v.name.includes('Male') || v.name.includes('Takumi') || v.name.includes('Ichiro')
-      );
-      
-      if (japaneseVoice) {
-        utterance.voice = japaneseVoice;
-      } else if (deepVoice) {
-        utterance.voice = deepVoice;
-      }
-      
-      speechSynthesis.speak(utterance);
-    }
-  }, [hasInteracted]);
-  
-  // Enable audio on user interaction
-  useEffect(() => {
-    const enableAudio = () => {
-      setHasInteracted(true);
-    };
-    
-    window.addEventListener('click', enableAudio);
-    window.addEventListener('touchstart', enableAudio);
-    
-    return () => {
-      window.removeEventListener('click', enableAudio);
-      window.removeEventListener('touchstart', enableAudio);
-    };
+  // Handle hand seal completion - no sound
+  const handleHandSealComplete = useCallback(() => {
+    setCurrentHandSeal(null);
   }, []);
   
-  // Play jutsu voices after interaction with hand seals first
-  useEffect(() => {
-    if (hasInteracted && !voicesPlayed.rasengan) {
-      // Show Rasengan hand seals first
-      const timer1 = setTimeout(() => {
-        setCurrentHandSeal("rasengan");
-        setPendingJutsu("螺旋丸！");
-        setVoicesPlayed(prev => ({ ...prev, rasengan: true }));
-      }, 500);
-      
-      // Show Chidori hand seals
-      const timer2 = setTimeout(() => {
-        setCurrentHandSeal("chidori");
-        setPendingJutsu("千鳥！");
-        setVoicesPlayed(prev => ({ ...prev, chidori: true }));
-      }, 3000);
-      
-      return () => {
-        clearTimeout(timer1);
-        clearTimeout(timer2);
-      };
-    }
-  }, [hasInteracted, voicesPlayed.rasengan]);
-  
-  // Handle hand seal completion - speak the jutsu
-  const handleHandSealComplete = useCallback(() => {
-    if (pendingJutsu) {
-      speakJutsu(pendingJutsu);
-      setPendingJutsu(null);
-    }
-    setCurrentHandSeal(null);
-  }, [pendingJutsu, speakJutsu]);
-  
-  // Handle jutsu activation from scene - show hand seals then speak
+  // Handle jutsu activation from scene - show hand seals only (no sound)
   const handleJutsuActivate = useCallback((jutsu: string) => {
-    const jutsuMap: Record<string, { seal: "rasengan" | "chidori" | "amaterasu" | "susanoo" | "kamui" | "sixpaths"; voice: string }> = {
-      'amaterasu': { seal: 'amaterasu', voice: '天照！' },
-      'susanoo': { seal: 'susanoo', voice: '須佐能乎！' },
-      'rasengan': { seal: 'rasengan', voice: '螺旋丸！' },
-      'chidori': { seal: 'chidori', voice: '千鳥！' },
-      'sixpaths': { seal: 'sixpaths', voice: '六道仙人モード！' },
-      'kamui': { seal: 'kamui', voice: '神威！' }
+    const jutsuMap: Record<string, "rasengan" | "chidori" | "amaterasu" | "susanoo" | "kamui" | "sixpaths"> = {
+      'amaterasu': 'amaterasu',
+      'susanoo': 'susanoo',
+      'rasengan': 'rasengan',
+      'chidori': 'chidori',
+      'sixpaths': 'sixpaths',
+      'kamui': 'kamui'
     };
     
-    const config = jutsuMap[jutsu];
-    if (config) {
-      setCurrentHandSeal(config.seal);
-      setPendingJutsu(config.voice);
+    const seal = jutsuMap[jutsu];
+    if (seal) {
+      setCurrentHandSeal(seal);
     }
   }, []);
   
