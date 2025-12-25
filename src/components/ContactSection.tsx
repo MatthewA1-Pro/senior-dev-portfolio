@@ -30,7 +30,7 @@ export const ContactSection = () => {
   ];
 
   const contactInfo = [
-    { icon: <Mail className="w-5 h-5" />, label: "matthew@example.com" },
+    { icon: <Mail className="w-5 h-5" />, label: "base44.dev@gmail.com" },
     { icon: <MapPin className="w-5 h-5" />, label: "Available Worldwide" },
     { icon: <Phone className="w-5 h-5" />, label: "Remote & On-site" },
   ];

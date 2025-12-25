@@ -5,69 +5,57 @@ interface AIProject {
   title: string;
   description: string;
   platform: string;
-  prompt?: string;
+  url: string;
   result: string;
   icon: React.ReactNode;
   gradient: string;
-  stats?: { label: string; value: string }[];
 }
 
 const aiProjects: AIProject[] = [
   {
-    title: "SaaS Dashboard Builder",
-    description: "Complete analytics dashboard built entirely with AI-assisted development in under 4 hours.",
-    platform: "Lovable",
-    prompt: "Create a modern analytics dashboard with real-time charts, user management, and dark theme...",
-    result: "Fully functional SaaS product with auth, payments, and admin panel",
+    title: "Humindly",
+    description: "Mental wellness platform helping users track their emotional health with AI-powered insights and personalized recommendations.",
+    platform: "Custom Code",
+    url: "https://humindly.fr",
+    result: "Full-stack mental health application with user authentication and data visualization",
     icon: <Sparkles className="w-6 h-6" />,
     gradient: "from-neon-cyan to-neon-purple",
-    stats: [
-      { label: "Build Time", value: "4 hrs" },
-      { label: "Components", value: "50+" },
-      { label: "Lines Saved", value: "10k+" },
-    ],
   },
   {
-    title: "E-commerce Store Generator",
-    description: "AI-generated complete e-commerce solution with product management, cart, and checkout flow.",
-    platform: "Cursor + GPT-4",
-    prompt: "Build a modern e-commerce platform with Stripe integration and inventory management...",
-    result: "Production-ready store deployed and serving real customers",
+    title: "Ichra Navigator",
+    description: "Healthcare benefits navigation platform simplifying ICHRA compliance and employee health plan selection.",
+    platform: "Full-Stack Development",
+    url: "https://ichranavigator.com",
+    result: "Enterprise-grade healthcare SaaS with complex business logic",
     icon: <Zap className="w-6 h-6" />,
     gradient: "from-neon-purple to-neon-pink",
-    stats: [
-      { label: "Build Time", value: "6 hrs" },
-      { label: "Features", value: "25+" },
-      { label: "Revenue", value: "$10k+" },
-    ],
   },
   {
-    title: "AI Chatbot Framework",
-    description: "Custom chatbot framework with context memory, tool use, and multi-modal capabilities.",
-    platform: "OpenAI + LangChain",
-    prompt: "Design an extensible chatbot framework with RAG capabilities and custom tool integration...",
-    result: "Reusable SDK adopted by 3 enterprise clients",
+    title: "Join The World",
+    description: "Global community platform connecting travelers and digital nomads for authentic local experiences.",
+    platform: "Custom Code",
+    url: "https://jointheworld.co",
+    result: "Social platform with real-time features and location-based services",
     icon: <MessageSquare className="w-6 h-6" />,
     gradient: "from-neon-green to-neon-cyan",
-    stats: [
-      { label: "Clients", value: "3" },
-      { label: "Messages/day", value: "50k+" },
-      { label: "Accuracy", value: "94%" },
-    ],
   },
   {
-    title: "Automated Code Review Agent",
-    description: "AI agent that reviews pull requests, suggests improvements, and auto-fixes common issues.",
-    platform: "Anthropic Claude",
-    prompt: "Create an autonomous code review agent that understands context and provides actionable feedback...",
-    result: "Reduced code review time by 60% for development team",
+    title: "Self Map Maker",
+    description: "AI-powered self-discovery tool that generates personalized mind maps and insights based on user reflections.",
+    platform: "Lovable",
+    url: "https://self-map-maker.lovable.app",
+    result: "Interactive visualization app built with AI-assisted development",
     icon: <Wand2 className="w-6 h-6" />,
     gradient: "from-neon-pink to-neon-purple",
-    stats: [
-      { label: "Time Saved", value: "60%" },
-      { label: "PRs Reviewed", value: "500+" },
-      { label: "Issues Found", value: "2k+" },
-    ],
+  },
+  {
+    title: "InsureHub AI",
+    description: "AI-driven insurance platform that simplifies policy comparison and provides intelligent coverage recommendations.",
+    platform: "Lovable",
+    url: "https://insure-hub-ai.lovable.app",
+    result: "Complete insurance SaaS with AI-powered recommendations",
+    icon: <Sparkles className="w-6 h-6" />,
+    gradient: "from-neon-cyan to-neon-green",
   },
 ];
 
@@ -99,32 +87,21 @@ const AIProjectCard = ({ project, index }: { project: AIProject; index: number }
         {project.description}
       </p>
 
-      {/* Prompt Preview */}
-      {project.prompt && (
-        <div className="mb-4 p-3 rounded-lg bg-muted/50 border-l-2 border-primary">
-          <p className="font-mono text-xs text-muted-foreground italic line-clamp-2">
-            "{project.prompt}"
-          </p>
-        </div>
-      )}
-
       {/* Result */}
       <div className="flex items-center gap-2 text-sm text-primary mb-4">
         <ArrowRight className="w-4 h-4" />
         <span className="font-medium">{project.result}</span>
       </div>
 
-      {/* Stats */}
-      {project.stats && (
-        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
-          {project.stats.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="text-lg font-bold text-primary">{stat.value}</p>
-              <p className="text-xs text-muted-foreground">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Visit Link */}
+      <a
+        href={project.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-primary transition-colors"
+      >
+        Visit Site <ArrowRight className="w-3 h-3" />
+      </a>
     </motion.div>
   );
 };
