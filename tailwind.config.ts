@@ -14,8 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Space Grotesk", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "monospace"],
+        sans: ["Rajdhani", "system-ui", "sans-serif"],
+        display: ["Russo One", "Bebas Neue", "sans-serif"],
+        heading: ["Orbitron", "sans-serif"],
+        mono: ["Rajdhani", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,11 +53,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        neon: {
-          cyan: "hsl(var(--neon-cyan))",
-          purple: "hsl(var(--neon-purple))",
-          pink: "hsl(var(--neon-pink))",
-          green: "hsl(var(--neon-green))",
+        // Naruto theme colors
+        naruto: {
+          orange: "hsl(var(--naruto-orange))",
+          red: "hsl(var(--sharingan-red))",
+          purple: "hsl(var(--susanoo-purple))",
+          gold: "hsl(var(--six-paths-gold))",
+          blue: "hsl(var(--rasengan-blue))",
+          black: "hsl(var(--amaterasu-black))",
         },
       },
       borderRadius: {

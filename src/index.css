@@ -2,49 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-
 @layer base {
   :root {
-    --background: 220 20% 4%;
-    --foreground: 210 40% 98%;
+    /* Naruto-themed dark background */
+    --background: 0 0% 5%;
+    --foreground: 35 100% 95%;
 
-    --card: 220 20% 6%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 35 100% 95%;
 
-    --popover: 220 20% 6%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 35 100% 95%;
 
-    --primary: 180 100% 50%;
-    --primary-foreground: 220 20% 4%;
+    /* Naruto Orange as primary */
+    --primary: 25 100% 50%;
+    --primary-foreground: 0 0% 5%;
 
-    --secondary: 270 100% 60%;
-    --secondary-foreground: 210 40% 98%;
+    /* Sharingan Red as secondary */
+    --secondary: 0 85% 45%;
+    --secondary-foreground: 35 100% 95%;
 
-    --muted: 220 20% 12%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 35 30% 60%;
 
-    --accent: 180 100% 50%;
-    --accent-foreground: 220 20% 4%;
+    /* Susanoo Purple as accent */
+    --accent: 270 70% 50%;
+    --accent-foreground: 35 100% 95%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 35 100% 95%;
 
-    --border: 220 20% 15%;
-    --input: 220 20% 15%;
-    --ring: 180 100% 50%;
+    --border: 25 50% 20%;
+    --input: 25 50% 20%;
+    --ring: 25 100% 50%;
 
     --radius: 0.75rem;
 
-    /* Custom neon colors */
-    --neon-cyan: 180 100% 50%;
-    --neon-purple: 270 100% 60%;
-    --neon-pink: 320 100% 60%;
-    --neon-green: 150 100% 50%;
+    /* Naruto theme colors */
+    --naruto-orange: 25 100% 50%;
+    --sharingan-red: 0 85% 45%;
+    --susanoo-purple: 270 70% 50%;
+    --six-paths-gold: 45 100% 50%;
+    --rasengan-blue: 200 100% 60%;
+    --amaterasu-black: 270 50% 10%;
 
     /* Glow effects */
-    --glow-cyan: 0 0 20px hsl(180 100% 50% / 0.5), 0 0 40px hsl(180 100% 50% / 0.3);
-    --glow-purple: 0 0 20px hsl(270 100% 60% / 0.5), 0 0 40px hsl(270 100% 60% / 0.3);
+    --glow-orange: 0 0 20px hsl(25 100% 50% / 0.5), 0 0 40px hsl(25 100% 50% / 0.3);
+    --glow-red: 0 0 20px hsl(0 85% 45% / 0.5), 0 0 40px hsl(0 85% 45% / 0.3);
+    --glow-purple: 0 0 20px hsl(270 70% 50% / 0.5), 0 0 40px hsl(270 70% 50% / 0.3);
+    --glow-gold: 0 0 20px hsl(45 100% 50% / 0.5), 0 0 40px hsl(45 100% 50% / 0.3);
+    --glow-blue: 0 0 20px hsl(200 100% 60% / 0.5), 0 0 40px hsl(200 100% 60% / 0.3);
   }
 }
 
@@ -64,41 +71,46 @@
 
 @layer components {
   .glass-card {
-    @apply bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl;
+    @apply bg-card/60 backdrop-blur-xl border border-primary/20 rounded-xl;
+    box-shadow: 0 4px 30px hsl(var(--primary) / 0.1);
   }
 
-  .neon-text {
-    @apply text-primary;
-    text-shadow: var(--glow-cyan);
+  .naruto-text {
+    @apply text-primary font-display tracking-wider;
+    text-shadow: var(--glow-orange);
   }
 
-  .neon-text-purple {
-    @apply text-secondary;
-    text-shadow: var(--glow-purple);
+  .sharingan-text {
+    @apply text-secondary font-display;
+    text-shadow: var(--glow-red);
   }
 
   .neon-border {
     @apply border-primary/50;
-    box-shadow: var(--glow-cyan);
+    box-shadow: var(--glow-orange);
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent font-display;
     background-size: 200% auto;
+  }
+
+  .six-paths-text {
+    @apply bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 bg-clip-text text-transparent;
+    background-size: 200% auto;
+    text-shadow: var(--glow-gold);
   }
 
   .grid-bg {
     background-image: 
-      linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px);
+      linear-gradient(to right, hsl(var(--naruto-orange) / 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--sharingan-red) / 0.1) 1px, transparent 1px);
     background-size: 50px 50px;
   }
 
-  .code-rain {
-    background: linear-gradient(180deg, 
-      transparent 0%, 
-      hsl(var(--primary) / 0.05) 50%, 
-      transparent 100%);
+  .jutsu-card {
+    @apply bg-card/70 backdrop-blur-xl border border-primary/30 rounded-xl;
+    box-shadow: 0 0 20px hsl(var(--naruto-orange) / 0.15), inset 0 1px 0 hsl(var(--primary) / 0.1);
   }
 }
 

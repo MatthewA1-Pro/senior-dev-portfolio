@@ -72,7 +72,7 @@ export const ContactSection = () => {
           transition={{ duration: 0.6 }}
         >
           <p className="font-mono text-primary mb-2 text-xs sm:text-sm">{"// Get In Touch"}</p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4">
             <span className="gradient-text">Let's Connect</span>
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
@@ -208,9 +208,9 @@ export const ContactSection = () => {
               </div>
 
               {/* Availability Status */}
-              <div className="mt-8 p-4 rounded-lg bg-neon-green/10 border border-neon-green/30">
+              <div className="mt-8 p-4 rounded-lg bg-orange-500/10 border border-orange-500/30">
                 <div className="flex items-center gap-3">
-                  <span className="w-3 h-3 rounded-full bg-neon-green animate-glow-pulse" />
+                  <span className="w-3 h-3 rounded-full bg-orange-500 animate-glow-pulse" />
                   <span className="font-mono text-sm text-foreground">
                     Currently available for new projects
                   </span>

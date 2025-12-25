@@ -17,7 +17,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Languages",
     icon: <Code2 className="w-6 h-6" />,
-    color: "from-neon-cyan to-neon-cyan/50",
+    color: "from-orange-500 to-orange-600",
     skills: [
       { name: "JavaScript/TypeScript", level: 95 },
       { name: "Python", level: 90 },
@@ -29,7 +29,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Frontend",
     icon: <Palette className="w-6 h-6" />,
-    color: "from-neon-purple to-neon-purple/50",
+    color: "from-red-600 to-red-700",
     skills: [
       { name: "React/Next.js", level: 95 },
       { name: "Vue.js", level: 85 },
@@ -41,7 +41,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Backend",
     icon: <Terminal className="w-6 h-6" />,
-    color: "from-neon-green to-neon-green/50",
+    color: "from-purple-600 to-purple-700",
     skills: [
       { name: "Node.js/Express", level: 95 },
       { name: "FastAPI/Django", level: 90 },
@@ -53,7 +53,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Database",
     icon: <Database className="w-6 h-6" />,
-    color: "from-neon-pink to-neon-pink/50",
+    color: "from-amber-500 to-amber-600",
     skills: [
       { name: "PostgreSQL", level: 90 },
       { name: "MongoDB", level: 90 },
@@ -65,7 +65,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Cloud & DevOps",
     icon: <Cloud className="w-6 h-6" />,
-    color: "from-neon-cyan to-neon-purple",
+    color: "from-orange-600 to-red-600",
     skills: [
       { name: "AWS/GCP", level: 85 },
       { name: "Docker/Kubernetes", level: 80 },
@@ -77,7 +77,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "AI & No-Code",
     icon: <Brain className="w-6 h-6" />,
-    color: "from-neon-purple to-neon-pink",
+    color: "from-purple-500 to-red-500",
     skills: [
       { name: "Lovable/Cursor", level: 95 },
       { name: "Prompt Engineering", level: 95 },
@@ -157,7 +157,7 @@ export const SkillsSection = () => {
           transition={{ duration: 0.6 }}
         >
           <p className="font-mono text-primary mb-2 text-xs sm:text-sm">{"// Skills & Expertise"}</p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4">
             <span className="gradient-text">Tech Stack</span>
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">

@@ -39,7 +39,7 @@ export const HeroSection = () => {
 
           {/* Name */}
           <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 sm:mb-8 leading-none"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display tracking-wider mb-6 sm:mb-8 leading-none"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}

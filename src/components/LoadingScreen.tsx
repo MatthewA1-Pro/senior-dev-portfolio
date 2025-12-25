@@ -213,7 +213,7 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ delay: 0.3 }}
           >
-            <motion.h1 className="font-mono text-4xl md:text-6xl font-bold tracking-wider">
+            <motion.h1 className="font-display text-4xl md:text-6xl tracking-widest">
               <span className="gradient-text animate-gradient">MATTHEW</span>
             </motion.h1>
           </motion.div>
