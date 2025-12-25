@@ -4,8 +4,6 @@ import { ExternalLink, ArrowUpRight } from "lucide-react";
 import projectHumindly from "@/assets/project-humindly.png";
 import projectIchranavigator from "@/assets/project-ichranavigator.png";
 import projectJointheworld from "@/assets/project-jointheworld.png";
-import projectSelfmapmaker from "@/assets/project-selfmapmaker.png";
-import projectInsurehubai from "@/assets/project-insurehubai.png";
 
 interface Project {
   title: string;
@@ -39,20 +37,6 @@ const projects: Project[] = [
     image: projectJointheworld,
     tags: ["React", "Node.js", "Real-time", "PostgreSQL"],
     liveUrl: "https://jointheworld.co",
-  },
-  {
-    title: "Self Map Maker",
-    description: "AI-powered self-discovery tool that generates personalized mind maps and insights based on user reflections.",
-    image: projectSelfmapmaker,
-    tags: ["Lovable", "React", "AI Integration", "Visualization"],
-    liveUrl: "https://self-map-maker.lovable.app",
-  },
-  {
-    title: "InsureHub AI",
-    description: "AI-driven insurance contracting platform connecting agents with carriers for fast approvals and competitive commissions.",
-    image: projectInsurehubai,
-    tags: ["Lovable", "React", "TypeScript", "Supabase"],
-    liveUrl: "https://insure-hub-ai.lovable.app",
   },
 ];
 
