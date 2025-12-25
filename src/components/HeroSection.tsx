@@ -1,8 +1,16 @@
 import { motion } from "framer-motion";
 import { Globe3D } from "./Globe3D";
-import { ChevronDown, Github, Linkedin, Mail } from "lucide-react";
+import { ChevronDown, Mail, MessageCircle } from "lucide-react";
+
+const WHATSAPP_NUMBER = "+2349138508184";
+const EMAIL = "base44.dev@gmail.com";
 
 export const HeroSection = () => {
+  const openWhatsApp = () => {
+    const message = encodeURIComponent("Hi Matthew! I'd like to discuss a project with you.");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${message}`, '_blank');
+  };
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Grid background */}
@@ -74,24 +82,14 @@ export const HeroSection = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={openWhatsApp}
               className="p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
             >
-              <Github className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-            </a>
+              <MessageCircle className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+            </button>
             <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
-            >
-              <Linkedin className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-            </a>
-            <a
-              href="mailto:matthew@example.com"
+              href={`mailto:${EMAIL}`}
               className="p-3 rounded-full glass-card hover:neon-border transition-all duration-300 group"
             >
               <Mail className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
