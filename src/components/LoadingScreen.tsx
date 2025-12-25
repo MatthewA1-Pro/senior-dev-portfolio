@@ -1,30 +1,71 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
-import { useJutsuSounds } from "@/hooks/useJutsuSounds";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 interface LoadingScreenProps {
   onComplete: () => void;
 }
 
+// Jutsu voice announcer
+const useJutsuVoice = () => {
+  const speak = useCallback((text: string, volume: number = 1) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.8;
+      utterance.pitch = 0.6;
+      utterance.volume = Math.min(1, volume);
+      
+      // Try to get a deeper voice
+      const voices = speechSynthesis.getVoices();
+      const maleVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Daniel'));
+      if (maleVoice) {
+        utterance.voice = maleVoice;
+      }
+      
+      speechSynthesis.speak(utterance);
+    }
+  }, []);
+
+  return { speak };
+};
+
 export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<'loading' | 'kamui'>('loading');
-  const { playKamuiSound, playSixPathsSound } = useJutsuSounds();
-  const soundPlayedRef = useRef(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const { speak } = useJutsuVoice();
+
+  // Enable audio on any interaction
+  useEffect(() => {
+    const enableAudio = () => {
+      setHasInteracted(true);
+      // Immediately speak Kamui when user interacts
+      speak("Kamui!", 1);
+    };
+
+    window.addEventListener('click', enableAudio, { once: true });
+    window.addEventListener('touchstart', enableAudio, { once: true });
+    window.addEventListener('keydown', enableAudio, { once: true });
+
+    return () => {
+      window.removeEventListener('click', enableAudio);
+      window.removeEventListener('touchstart', enableAudio);
+      window.removeEventListener('keydown', enableAudio);
+    };
+  }, [speak]);
 
   useEffect(() => {
-    // Play Six Paths sound on mount
-    if (!soundPlayedRef.current) {
-      soundPlayedRef.current = true;
-      setTimeout(() => playSixPathsSound(), 300);
-    }
-
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setPhase('kamui');
-          playKamuiSound();
+          // Speak when Kamui activates
+          if (hasInteracted) {
+            speak("Kamui! Dimension shift!", 1);
+          }
           setTimeout(onComplete, 1500);
           return 100;
         }
@@ -33,14 +74,27 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
     }, 150);
 
     return () => clearInterval(interval);
-  }, [onComplete, playKamuiSound, playSixPathsSound]);
+  }, [onComplete, speak, hasInteracted]);
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background overflow-hidden"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background overflow-hidden cursor-pointer"
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
+      onClick={() => setHasInteracted(true)}
     >
+      {/* Click prompt */}
+      {!hasInteracted && (
+        <motion.div
+          className="absolute top-20 text-center z-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <p className="font-mono text-sm text-primary animate-pulse">Click anywhere to enable jutsu voices</p>
+        </motion.div>
+      )}
+
       {/* Kamui Swirl Effect */}
       <div className="absolute inset-0 flex items-center justify-center">
         {/* Outer spiraling rings */}
@@ -149,7 +203,7 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
         </div>
       </motion.div>
 
-      {/* Name - appears after eye */}
+      {/* Name */}
       <AnimatePresence>
         {phase === 'loading' && (
           <motion.div

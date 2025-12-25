@@ -91,22 +91,12 @@ const SixPathsAura = ({ mouse }: { mouse: { x: number; y: number } }) => {
         <pointsMaterial size={0.08} transparent opacity={0.7} vertexColors sizeAttenuation blending={THREE.AdditiveBlending} />
       </points>
       
-      {/* Golden aura glow */}
-      <Sphere args={[1.2, 32, 32]}>
-        <meshBasicMaterial color="#ffd700" transparent opacity={0.08} blending={THREE.AdditiveBlending} />
-      </Sphere>
-      
-      {/* Outer golden halo */}
-      <Sphere args={[2, 32, 32]}>
-        <meshBasicMaterial color="#ffb300" transparent opacity={0.04} blending={THREE.AdditiveBlending} side={THREE.BackSide} />
-      </Sphere>
-      
-      {/* Six Paths rings */}
+      {/* Six Paths rings - no blocking spheres */}
       <group ref={ringsRef}>
         {[0, 1, 2].map((i) => (
           <mesh key={i} rotation={[Math.PI / 2, 0, i * Math.PI / 3]}>
-            <torusGeometry args={[1.6 + i * 0.15, 0.01, 8, 64]} />
-            <meshBasicMaterial color="#ffd700" transparent opacity={0.3 - i * 0.08} blending={THREE.AdditiveBlending} />
+            <torusGeometry args={[1.6 + i * 0.15, 0.015, 16, 64]} />
+            <meshBasicMaterial color="#ffd700" transparent opacity={0.4 - i * 0.1} blending={THREE.AdditiveBlending} />
           </mesh>
         ))}
       </group>
@@ -163,10 +153,6 @@ const KuramaChakraCloak = ({ mouse, isActive }: { mouse: { x: number; y: number 
         </bufferGeometry>
         <pointsMaterial size={0.12} transparent opacity={opacity} vertexColors sizeAttenuation blending={THREE.AdditiveBlending} />
       </points>
-      
-      <Sphere args={[2.2, 32, 32]}>
-        <meshBasicMaterial color="#ff6600" transparent opacity={opacity * 0.1} blending={THREE.AdditiveBlending} />
-      </Sphere>
     </group>
   );
 };
@@ -644,53 +630,20 @@ const SusanooRibcage = ({ isActive, mouse }: { isActive: boolean; mouse: { x: nu
       {ribs.map((points, i) => (
         <mesh key={i}>
           <tubeGeometry args={[new THREE.CatmullRomCurve3(points), 12, 0.025, 6, false]} />
-          <meshBasicMaterial color="#7c4dff" transparent opacity={0.1} blending={THREE.AdditiveBlending} />
+          <meshBasicMaterial color="#7c4dff" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
         </mesh>
       ))}
       {ribs.map((points, i) => (
         <mesh key={`mirror-${i}`} scale={[-1, 1, 1]}>
           <tubeGeometry args={[new THREE.CatmullRomCurve3(points), 12, 0.025, 6, false]} />
-          <meshBasicMaterial color="#7c4dff" transparent opacity={0.1} blending={THREE.AdditiveBlending} />
+          <meshBasicMaterial color="#7c4dff" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
         </mesh>
       ))}
-      <Sphere args={[1.7, 32, 32]}>
-        <meshBasicMaterial color="#9c27b0" transparent opacity={opacity.current * 0.06} blending={THREE.AdditiveBlending} side={THREE.BackSide} />
-      </Sphere>
     </group>
   );
 };
 
-// Truth-Seeking Orbs - Six Paths style (no wireframe)
-const TruthSeekingOrb = ({ mouse, index }: { mouse: { x: number; y: number }; index: number }) => {
-  const groupRef = useRef<THREE.Group>(null);
-  
-  useFrame(({ clock }) => {
-    if (groupRef.current) {
-      const time = clock.getElapsedTime() * 0.06 + index * (Math.PI * 2 / 9);
-      const orbitRadius = 1.5;
-      groupRef.current.position.x = Math.cos(time) * orbitRadius + mouse.x * 0.08;
-      groupRef.current.position.z = Math.sin(time) * orbitRadius * 0.35;
-      groupRef.current.position.y = 0.15 + Math.sin(time * 0.5) * 0.08 + mouse.y * 0.05;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {/* Outer golden glow */}
-      <Sphere args={[0.16, 32, 32]}>
-        <meshBasicMaterial color="#ffd700" transparent opacity={0.2} blending={THREE.AdditiveBlending} />
-      </Sphere>
-      {/* Purple outline */}
-      <Sphere args={[0.13, 32, 32]}>
-        <meshBasicMaterial color="#7c4dff" transparent opacity={0.25} blending={THREE.AdditiveBlending} />
-      </Sphere>
-      {/* Black core */}
-      <Sphere args={[0.1, 32, 32]}>
-        <meshBasicMaterial color="#050505" />
-      </Sphere>
-    </group>
-  );
-};
+// Removed TruthSeekingOrb - was causing floating squares
 
 // Chidori Lightning Effect
 const ChidoriLightning = ({ mouse }: { mouse: { x: number; y: number } }) => {
@@ -704,27 +657,31 @@ const ChidoriLightning = ({ mouse }: { mouse: { x: number; y: number } }) => {
 
   return (
     <group ref={groupRef}>
-      {/* Lightning bolts as thin cylinders */}
-      {[...Array(8)].map((_, i) => {
-        const angle = (i / 8) * Math.PI * 2;
-        const length = 0.8 + Math.random() * 0.4;
+      {/* Lightning bolts as thin cylinders with more segments */}
+      {[...Array(10)].map((_, i) => {
+        const angle = (i / 10) * Math.PI * 2;
+        const length = 0.6 + Math.random() * 0.3;
         return (
           <group key={i} rotation={[Math.random() * 0.5, angle, Math.random() * 0.3]}>
             <mesh position={[0, length / 2, 0]}>
-              <cylinderGeometry args={[0.008, 0.015, length, 4]} />
-              <meshBasicMaterial color="#b388ff" transparent opacity={0.7} blending={THREE.AdditiveBlending} />
+              <cylinderGeometry args={[0.006, 0.012, length, 8]} />
+              <meshBasicMaterial color="#b388ff" transparent opacity={0.8} blending={THREE.AdditiveBlending} />
             </mesh>
             {/* Branch */}
-            <mesh position={[0.1, length * 0.6, 0]} rotation={[0, 0, 0.5]}>
-              <cylinderGeometry args={[0.005, 0.01, length * 0.4, 4]} />
-              <meshBasicMaterial color="#7c4dff" transparent opacity={0.5} blending={THREE.AdditiveBlending} />
+            <mesh position={[0.08, length * 0.6, 0]} rotation={[0, 0, 0.5]}>
+              <cylinderGeometry args={[0.004, 0.008, length * 0.35, 8]} />
+              <meshBasicMaterial color="#7c4dff" transparent opacity={0.6} blending={THREE.AdditiveBlending} />
             </mesh>
           </group>
         );
       })}
       {/* Core glow */}
-      <Sphere args={[0.25, 16, 16]}>
-        <meshBasicMaterial color="#7c4dff" transparent opacity={0.3} blending={THREE.AdditiveBlending} />
+      <Sphere args={[0.2, 16, 16]}>
+        <meshBasicMaterial color="#7c4dff" transparent opacity={0.4} blending={THREE.AdditiveBlending} />
+      </Sphere>
+      {/* Inner bright core */}
+      <Sphere args={[0.1, 16, 16]}>
+        <meshBasicMaterial color="#e1bee7" transparent opacity={0.6} blending={THREE.AdditiveBlending} />
       </Sphere>
     </group>
   );
@@ -804,49 +761,77 @@ const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: 
 
 export const Globe3D = () => {
   const { mouse, isHovering } = useMousePosition();
-  const [hasPlayedInitial, setHasPlayedInitial] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [voicesPlayed, setVoicesPlayed] = useState({ rasengan: false, chidori: false });
   
-  const handleJutsuActivate = useCallback((jutsu: string) => {
-    // Play voice and sound
+  // Speak jutsu name loudly
+  const speakJutsu = useCallback((jutsuName: string) => {
+    if (!hasInteracted) return;
+    
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance();
-      utterance.rate = 0.9;
-      utterance.pitch = 0.8;
-      utterance.volume = 0.7;
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(jutsuName);
+      utterance.rate = 0.7;
+      utterance.pitch = 0.5;
+      utterance.volume = 1;
       
-      switch (jutsu) {
-        case 'rasengan':
-          utterance.text = 'Rasengan!';
-          break;
-        case 'chidori':
-          utterance.text = 'Chidori!';
-          break;
-        case 'amaterasu':
-          utterance.text = 'Amaterasu!';
-          break;
-        case 'susanoo':
-          utterance.text = 'Susanoo!';
-          break;
-        case 'sixpaths':
-          utterance.text = 'Six Paths Sage Mode!';
-          break;
-      }
+      // Try to find a good voice
+      const voices = speechSynthesis.getVoices();
+      const deepVoice = voices.find(v => 
+        v.name.includes('Male') || v.name.includes('David') || v.name.includes('Alex')
+      );
+      if (deepVoice) utterance.voice = deepVoice;
       
       speechSynthesis.speak(utterance);
     }
+  }, [hasInteracted]);
+  
+  // Enable audio on user interaction
+  useEffect(() => {
+    const enableAudio = () => {
+      setHasInteracted(true);
+    };
+    
+    window.addEventListener('click', enableAudio);
+    window.addEventListener('touchstart', enableAudio);
+    
+    return () => {
+      window.removeEventListener('click', enableAudio);
+      window.removeEventListener('touchstart', enableAudio);
+    };
   }, []);
   
-  // Play initial jutsu voices on mount
+  // Play jutsu voices after interaction
   useEffect(() => {
-    if (!hasPlayedInitial) {
-      const timer = setTimeout(() => {
-        handleJutsuActivate('rasengan');
-        setTimeout(() => handleJutsuActivate('chidori'), 1500);
-      }, 2000);
-      setHasPlayedInitial(true);
-      return () => clearTimeout(timer);
+    if (hasInteracted && !voicesPlayed.rasengan) {
+      const timer1 = setTimeout(() => {
+        speakJutsu("Rasengan!");
+        setVoicesPlayed(prev => ({ ...prev, rasengan: true }));
+      }, 500);
+      
+      const timer2 = setTimeout(() => {
+        speakJutsu("Chidori!");
+        setVoicesPlayed(prev => ({ ...prev, chidori: true }));
+      }, 2500);
+      
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
     }
-  }, [hasPlayedInitial, handleJutsuActivate]);
+  }, [hasInteracted, voicesPlayed.rasengan, speakJutsu]);
+  
+  // Handle jutsu activation from scene
+  const handleJutsuActivate = useCallback((jutsu: string) => {
+    const jutsuNames: Record<string, string> = {
+      'amaterasu': 'Amaterasu!',
+      'susanoo': 'Susanoo!',
+      'rasengan': 'Rasengan!',
+      'chidori': 'Chidori!',
+      'sixpaths': 'Six Paths Sage Mode!'
+    };
+    speakJutsu(jutsuNames[jutsu] || jutsu);
+  }, [speakJutsu]);
   
   return (
     <div className="absolute inset-0 opacity-80">
