@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useJutsuSounds } from "@/hooks/useJutsuSounds";
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -8,13 +9,22 @@ interface LoadingScreenProps {
 export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<'loading' | 'kamui'>('loading');
+  const { playKamuiSound, playSixPathsSound } = useJutsuSounds();
+  const soundPlayedRef = useRef(false);
 
   useEffect(() => {
+    // Play Six Paths sound on mount
+    if (!soundPlayedRef.current) {
+      soundPlayedRef.current = true;
+      setTimeout(() => playSixPathsSound(), 300);
+    }
+
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setPhase('kamui');
+          playKamuiSound();
           setTimeout(onComplete, 1500);
           return 100;
         }
@@ -23,7 +33,7 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
     }, 150);
 
     return () => clearInterval(interval);
-  }, [onComplete]);
+  }, [onComplete, playKamuiSound, playSixPathsSound]);
 
   return (
     <motion.div

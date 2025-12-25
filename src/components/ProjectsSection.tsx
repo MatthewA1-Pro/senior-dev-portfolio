@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, ArrowUpRight, Eye, X } from "lucide-react";
 import { useState } from "react";
+import { useJutsuSounds } from "@/hooks/useJutsuSounds";
 
 import projectHumindly from "@/assets/project-humindly.png";
 import projectIchranavigator from "@/assets/project-ichranavigator.png";
@@ -45,11 +46,13 @@ const projects: Project[] = [
 const ByakuganPreview = ({ 
   project, 
   isOpen, 
-  onClose 
+  onClose,
+  playSound
 }: { 
   project: Project | null; 
   isOpen: boolean; 
   onClose: () => void;
+  playSound: () => void;
 }) => {
   if (!project || !isOpen) return null;
 
@@ -249,6 +252,12 @@ const ProjectCard = ({ project, index, onPreview }: { project: Project; index: n
 
 export const ProjectsSection = () => {
   const [previewProject, setPreviewProject] = useState<Project | null>(null);
+  const { playByakuganSound } = useJutsuSounds();
+
+  const handlePreview = (project: Project) => {
+    playByakuganSound();
+    setPreviewProject(project);
+  };
 
   return (
     <section id="projects" className="py-32 relative">
@@ -302,7 +311,7 @@ export const ProjectsSection = () => {
               key={project.title} 
               project={project} 
               index={index} 
-              onPreview={setPreviewProject}
+              onPreview={handlePreview}
             />
           ))}
         </div>
@@ -313,6 +322,7 @@ export const ProjectsSection = () => {
         project={previewProject}
         isOpen={!!previewProject}
         onClose={() => setPreviewProject(null)}
+        playSound={playByakuganSound}
       />
     </section>
   );

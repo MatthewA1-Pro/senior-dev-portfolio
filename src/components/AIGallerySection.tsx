@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Wand2, ArrowRight, Eye, X } from "lucide-react";
 import { useState } from "react";
+import { useJutsuSounds } from "@/hooks/useJutsuSounds";
 
 import projectSelfmapmaker from "@/assets/project-selfmapmaker.png";
 import projectInsurehubai from "@/assets/project-insurehubai.png";
@@ -244,6 +245,12 @@ const AIProjectCard = ({ project, index, onPreview }: { project: AIProject; inde
 
 export const AIGallerySection = () => {
   const [previewProject, setPreviewProject] = useState<AIProject | null>(null);
+  const { playByakuganSound } = useJutsuSounds();
+
+  const handlePreview = (project: AIProject) => {
+    playByakuganSound();
+    setPreviewProject(project);
+  };
 
   return (
     <section id="ai-gallery" className="py-32 relative overflow-hidden">
@@ -350,7 +357,7 @@ export const AIGallerySection = () => {
               key={project.title} 
               project={project} 
               index={index}
-              onPreview={setPreviewProject}
+              onPreview={handlePreview}
             />
           ))}
         </div>
