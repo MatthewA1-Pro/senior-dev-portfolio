@@ -318,25 +318,10 @@ const ChakraParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
   );
 };
 
-// Rasengan
+// Rasengan - using torus rings instead of lines for spirals
 const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
   const groupRef = useRef<THREE.Group>(null);
   const spiralsRef = useRef<THREE.Group>(null);
-  
-  const spiralLines = useMemo(() => {
-    const lines = [];
-    for (let s = 0; s < 4; s++) {
-      const points = [];
-      for (let i = 0; i <= 30; i++) {
-        const t = i / 30;
-        const angle = t * Math.PI * 3 + (s * Math.PI * 2) / 4;
-        const radius = 0.5 * (1 - t * 0.2);
-        points.push(new THREE.Vector3(Math.cos(angle) * radius * t, Math.sin(angle) * radius * t, (t - 0.5) * 0.35));
-      }
-      lines.push(points);
-    }
-    return lines;
-  }, []);
 
   useFrame(({ clock }) => {
     if (groupRef.current) {
@@ -344,34 +329,49 @@ const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
       groupRef.current.position.y = mouse.y * 0.2;
     }
     if (spiralsRef.current) {
-      spiralsRef.current.rotation.z = clock.getElapsedTime() * 1;
+      spiralsRef.current.rotation.z = clock.getElapsedTime() * 1.5;
+      spiralsRef.current.rotation.x = clock.getElapsedTime() * 0.8;
     }
   });
 
   return (
     <group ref={groupRef}>
-      <Sphere args={[0.18, 32, 32]}>
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.85} />
+      {/* Bright white core */}
+      <Sphere args={[0.15, 32, 32]}>
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.95} />
       </Sphere>
-      <Sphere args={[0.3, 32, 32]}>
-        <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} blending={THREE.AdditiveBlending} />
+      {/* Inner blue glow */}
+      <Sphere args={[0.25, 32, 32]}>
+        <meshBasicMaterial color="#4fc3f7" transparent opacity={0.5} blending={THREE.AdditiveBlending} />
       </Sphere>
-      <Sphere args={[0.45, 32, 32]}>
-        <meshBasicMaterial color="#29b6f6" transparent opacity={0.2} blending={THREE.AdditiveBlending} />
+      {/* Mid layer */}
+      <Sphere args={[0.4, 32, 32]}>
+        <meshBasicMaterial color="#29b6f6" transparent opacity={0.25} blending={THREE.AdditiveBlending} />
       </Sphere>
-      <Sphere args={[0.6, 32, 32]}>
-        <meshBasicMaterial color="#03a9f4" transparent opacity={0.1} blending={THREE.AdditiveBlending} />
+      {/* Outer glow */}
+      <Sphere args={[0.55, 32, 32]}>
+        <meshBasicMaterial color="#03a9f4" transparent opacity={0.12} blending={THREE.AdditiveBlending} />
       </Sphere>
+      
+      {/* Spinning rings for spiral effect */}
       <group ref={spiralsRef}>
-        {spiralLines.map((points, i) => (
-          <line key={i}>
-            <bufferGeometry>
-              <bufferAttribute attach="attributes-position" count={points.length} array={new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))} itemSize={3} />
-            </bufferGeometry>
-            <lineBasicMaterial color="#81d4fa" transparent opacity={0.45} blending={THREE.AdditiveBlending} />
-          </line>
+        {[0, 1, 2, 3].map((i) => (
+          <mesh key={i} rotation={[i * 0.4, i * 0.6, i * 0.3]}>
+            <torusGeometry args={[0.3 + i * 0.05, 0.012, 8, 32]} />
+            <meshBasicMaterial color="#81d4fa" transparent opacity={0.5 - i * 0.1} blending={THREE.AdditiveBlending} />
+          </mesh>
         ))}
       </group>
+      
+      {/* Energy particles around */}
+      {[...Array(6)].map((_, i) => {
+        const angle = (i / 6) * Math.PI * 2;
+        return (
+          <Sphere key={i} args={[0.03, 8, 8]} position={[Math.cos(angle) * 0.5, Math.sin(angle) * 0.5, 0]}>
+            <meshBasicMaterial color="#4fc3f7" transparent opacity={0.8} blending={THREE.AdditiveBlending} />
+          </Sphere>
+        );
+      })}
     </group>
   );
 };
@@ -546,7 +546,7 @@ const SusanooRibcage = ({ isActive, mouse }: { isActive: boolean; mouse: { x: nu
   );
 };
 
-// Truth-Seeking Orbs - Six Paths style
+// Truth-Seeking Orbs - Six Paths style (no wireframe)
 const TruthSeekingOrb = ({ mouse, index }: { mouse: { x: number; y: number }; index: number }) => {
   const groupRef = useRef<THREE.Group>(null);
   
@@ -562,14 +562,55 @@ const TruthSeekingOrb = ({ mouse, index }: { mouse: { x: number; y: number }; in
 
   return (
     <group ref={groupRef}>
-      <Sphere args={[0.14, 32, 32]}>
-        <meshBasicMaterial color="#ffd700" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
+      {/* Outer golden glow */}
+      <Sphere args={[0.16, 32, 32]}>
+        <meshBasicMaterial color="#ffd700" transparent opacity={0.2} blending={THREE.AdditiveBlending} />
       </Sphere>
+      {/* Purple outline */}
+      <Sphere args={[0.13, 32, 32]}>
+        <meshBasicMaterial color="#7c4dff" transparent opacity={0.25} blending={THREE.AdditiveBlending} />
+      </Sphere>
+      {/* Black core */}
       <Sphere args={[0.1, 32, 32]}>
-        <meshBasicMaterial color="#000000" transparent opacity={0.95} />
+        <meshBasicMaterial color="#050505" />
       </Sphere>
-      <Sphere args={[0.11, 16, 16]}>
-        <meshBasicMaterial color="#1a1a1a" wireframe transparent opacity={0.2} />
+    </group>
+  );
+};
+
+// Chidori Lightning Effect
+const ChidoriLightning = ({ mouse }: { mouse: { x: number; y: number } }) => {
+  const groupRef = useRef<THREE.Group>(null);
+  
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y = clock.getElapsedTime() * 0.3 + mouse.x * 0.5;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Lightning bolts as thin cylinders */}
+      {[...Array(8)].map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2;
+        const length = 0.8 + Math.random() * 0.4;
+        return (
+          <group key={i} rotation={[Math.random() * 0.5, angle, Math.random() * 0.3]}>
+            <mesh position={[0, length / 2, 0]}>
+              <cylinderGeometry args={[0.008, 0.015, length, 4]} />
+              <meshBasicMaterial color="#b388ff" transparent opacity={0.7} blending={THREE.AdditiveBlending} />
+            </mesh>
+            {/* Branch */}
+            <mesh position={[0.1, length * 0.6, 0]} rotation={[0, 0, 0.5]}>
+              <cylinderGeometry args={[0.005, 0.01, length * 0.4, 4]} />
+              <meshBasicMaterial color="#7c4dff" transparent opacity={0.5} blending={THREE.AdditiveBlending} />
+            </mesh>
+          </group>
+        );
+      })}
+      {/* Core glow */}
+      <Sphere args={[0.25, 16, 16]}>
+        <meshBasicMaterial color="#7c4dff" transparent opacity={0.3} blending={THREE.AdditiveBlending} />
       </Sphere>
     </group>
   );
@@ -607,6 +648,11 @@ const Scene = ({ mouse, isHovering }: { mouse: { x: number; y: number }; isHover
       
       {/* Central Rasengan */}
       <Rasengan mouse={mouse} />
+      
+      {/* Chidori Lightning */}
+      <group position={[1.2, 0.3, 0.5]}>
+        <ChidoriLightning mouse={mouse} />
+      </group>
       
       {/* Susanoo Ribcage */}
       <SusanooRibcage isActive={isHovering} mouse={mouse} />
