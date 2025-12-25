@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Send, Github, Linkedin, Twitter, Mail, MapPin, Phone } from "lucide-react";
+import { Send, Mail, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+
+const WHATSAPP_NUMBER = "+2349138508184";
+const EMAIL = "base44.dev@gmail.com";
 
 export const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -23,16 +26,20 @@ export const ContactSection = () => {
     setIsSubmitting(false);
   };
 
+  const openWhatsApp = () => {
+    const message = encodeURIComponent("Hi Matthew! I'd like to discuss a project with you.");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${message}`, '_blank');
+  };
+
   const socialLinks = [
-    { icon: <Github className="w-5 h-5" />, href: "#", label: "GitHub" },
-    { icon: <Linkedin className="w-5 h-5" />, href: "#", label: "LinkedIn" },
-    { icon: <Twitter className="w-5 h-5" />, href: "#", label: "Twitter" },
+    { icon: <Mail className="w-5 h-5" />, href: `mailto:${EMAIL}`, label: "Email" },
+    { icon: <MessageCircle className="w-5 h-5" />, onClick: openWhatsApp, label: "WhatsApp" },
   ];
 
   const contactInfo = [
-    { icon: <Mail className="w-5 h-5" />, label: "base44.dev@gmail.com" },
+    { icon: <Mail className="w-5 h-5" />, label: EMAIL },
+    { icon: <MessageCircle className="w-5 h-5" />, label: WHATSAPP_NUMBER },
     { icon: <MapPin className="w-5 h-5" />, label: "Available Worldwide" },
-    { icon: <Phone className="w-5 h-5" />, label: "Remote & On-site" },
   ];
 
   return (
@@ -155,20 +162,32 @@ export const ContactSection = () => {
               </div>
 
               <div className="border-t border-border pt-6">
-                <h4 className="font-mono text-sm text-muted-foreground mb-4">Follow Me</h4>
+                <h4 className="font-mono text-sm text-muted-foreground mb-4">Connect With Me</h4>
                 <div className="flex gap-4">
                   {socialLinks.map((link) => (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-lg glass-card hover:neon-border transition-all duration-300 group"
-                    >
-                      <span className="text-muted-foreground group-hover:text-primary transition-colors">
-                        {link.icon}
-                      </span>
-                    </a>
+                    link.onClick ? (
+                      <button
+                        key={link.label}
+                        onClick={link.onClick}
+                        className="p-3 rounded-lg glass-card hover:neon-border transition-all duration-300 group"
+                      >
+                        <span className="text-muted-foreground group-hover:text-primary transition-colors">
+                          {link.icon}
+                        </span>
+                      </button>
+                    ) : (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-3 rounded-lg glass-card hover:neon-border transition-all duration-300 group"
+                      >
+                        <span className="text-muted-foreground group-hover:text-primary transition-colors">
+                          {link.icon}
+                        </span>
+                      </a>
+                    )
                   ))}
                 </div>
               </div>
