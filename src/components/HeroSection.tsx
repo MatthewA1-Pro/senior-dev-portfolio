@@ -16,10 +16,15 @@ export const HeroSection = () => {
       {/* Naruto swirl background */}
       <div className="absolute inset-0 grid-bg opacity-50" />
       
-      {/* 3D Globe */}
-      <Globe3D />
+      {/* 3D Globe - pushed back with lower z-index and reduced opacity */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Globe3D />
+      </div>
       
-      {/* Content */}
+      {/* Dark gradient overlay for text contrast */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/60 via-transparent to-background/80 pointer-events-none" />
+      
+      {/* Content - higher z-index for visibility */}
       <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto pt-16 sm:pt-0">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -39,9 +44,10 @@ export const HeroSection = () => {
             </span>
           </motion.div>
 
-          {/* Name */}
+          {/* Name - with text shadow for better visibility */}
           <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display tracking-wider mb-6 sm:mb-8 leading-none"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display tracking-wider mb-6 sm:mb-8 leading-none drop-shadow-2xl"
+            style={{ textShadow: '0 0 40px hsl(var(--primary) / 0.8), 0 4px 20px rgba(0,0,0,0.9)' }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}

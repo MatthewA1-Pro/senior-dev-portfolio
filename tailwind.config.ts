@@ -14,10 +14,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Rajdhani", "system-ui", "sans-serif"],
-        display: ["Russo One", "Bebas Neue", "sans-serif"],
-        heading: ["Orbitron", "sans-serif"],
-        mono: ["Rajdhani", "monospace"],
+        sans: ["Oswald", "Noto Sans JP", "system-ui", "sans-serif"],
+        display: ["Anton", "Bangers", "sans-serif"],
+        heading: ["Permanent Marker", "Bangers", "sans-serif"],
+        mono: ["Oswald", "monospace"],
+        brush: ["Permanent Marker", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",

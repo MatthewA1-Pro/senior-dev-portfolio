@@ -34,9 +34,33 @@ const useMousePosition = () => {
   return { mouse, isHovering };
 };
 
-// Glitter/Snow particles - replacing floating squares
+// Create circular particle texture (not squares)
+const createCircleTexture = () => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d')!;
+  
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+  gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.8)');
+  gradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.3)');
+  gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(32, 32, 32, 0, Math.PI * 2);
+  ctx.fill();
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+};
+
+// Glitter/Snow particles - now circular
 const GlitterParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
   const particlesRef = useRef<THREE.Points>(null);
+  const circleTexture = useMemo(() => createCircleTexture(), []);
   
   const particles = useMemo(() => {
     const positions = [];
@@ -93,12 +117,15 @@ const GlitterParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
         <bufferAttribute attach="attributes-color" count={particles.colors.length / 3} array={particles.colors} itemSize={3} />
       </bufferGeometry>
       <pointsMaterial 
-        size={0.04} 
+        size={0.06} 
         transparent 
         opacity={0.9} 
         vertexColors 
         sizeAttenuation 
-        blending={THREE.AdditiveBlending} 
+        blending={THREE.AdditiveBlending}
+        map={circleTexture}
+        alphaTest={0.01}
+        depthWrite={false}
       />
     </points>
   );
@@ -129,10 +156,11 @@ const SixPathsAura = ({ mouse }: { mouse: { x: number; y: number } }) => {
   );
 };
 
-// Kurama/Nine-Tails Chakra Cloak
+// Kurama/Nine-Tails Chakra Cloak - with circular particles
 const KuramaChakraCloak = ({ mouse, isActive }: { mouse: { x: number; y: number }; isActive: boolean }) => {
   const cloakRef = useRef<THREE.Group>(null);
   const flameParticlesRef = useRef<THREE.Points>(null);
+  const circleTexture = useMemo(() => createCircleTexture(), []);
   
   const particles = useMemo(() => {
     const positions = [];
@@ -176,7 +204,17 @@ const KuramaChakraCloak = ({ mouse, isActive }: { mouse: { x: number; y: number 
           <bufferAttribute attach="attributes-position" count={particles.positions.length / 3} array={particles.positions} itemSize={3} />
           <bufferAttribute attach="attributes-color" count={particles.colors.length / 3} array={particles.colors} itemSize={3} />
         </bufferGeometry>
-        <pointsMaterial size={0.12} transparent opacity={opacity} vertexColors sizeAttenuation blending={THREE.AdditiveBlending} />
+        <pointsMaterial 
+          size={0.15} 
+          transparent 
+          opacity={opacity} 
+          vertexColors 
+          sizeAttenuation 
+          blending={THREE.AdditiveBlending}
+          map={circleTexture}
+          alphaTest={0.01}
+          depthWrite={false}
+        />
       </points>
     </group>
   );
@@ -243,9 +281,10 @@ const AmaterasuFlames = ({ position, isActive }: { position: [number, number, nu
   );
 };
 
-// Sage Mode Particles
+// Sage Mode Particles - circular
 const SageModeParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
   const particlesRef = useRef<THREE.Points>(null);
+  const circleTexture = useMemo(() => createCircleTexture(), []);
   
   const particles = useMemo(() => {
     const positions = [];
@@ -280,14 +319,25 @@ const SageModeParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
         <bufferAttribute attach="attributes-position" count={particles.positions.length / 3} array={particles.positions} itemSize={3} />
         <bufferAttribute attach="attributes-color" count={particles.colors.length / 3} array={particles.colors} itemSize={3} />
       </bufferGeometry>
-      <pointsMaterial size={0.08} transparent opacity={0.45} vertexColors sizeAttenuation blending={THREE.AdditiveBlending} />
+      <pointsMaterial 
+        size={0.1} 
+        transparent 
+        opacity={0.45} 
+        vertexColors 
+        sizeAttenuation 
+        blending={THREE.AdditiveBlending}
+        map={circleTexture}
+        alphaTest={0.01}
+        depthWrite={false}
+      />
     </points>
   );
 };
 
-// Chakra Particles
+// Chakra Particles - circular
 const ChakraParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
   const particlesRef = useRef<THREE.Points>(null);
+  const circleTexture = useMemo(() => createCircleTexture(), []);
   
   const particles = useMemo(() => {
     const positions = [];
@@ -324,7 +374,17 @@ const ChakraParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
         <bufferAttribute attach="attributes-position" count={particles.positions.length / 3} array={particles.positions} itemSize={3} />
         <bufferAttribute attach="attributes-color" count={particles.colors.length / 3} array={particles.colors} itemSize={3} />
       </bufferGeometry>
-      <pointsMaterial size={0.03} transparent opacity={0.35} vertexColors sizeAttenuation blending={THREE.AdditiveBlending} />
+      <pointsMaterial 
+        size={0.05} 
+        transparent 
+        opacity={0.35} 
+        vertexColors 
+        sizeAttenuation 
+        blending={THREE.AdditiveBlending}
+        map={circleTexture}
+        alphaTest={0.01}
+        depthWrite={false}
+      />
     </points>
   );
 };
@@ -334,23 +394,6 @@ const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
   const groupRef = useRef<THREE.Group>(null);
   const spiralsRef = useRef<THREE.Group>(null);
   const outerRingsRef = useRef<THREE.Group>(null);
-  const particlesRef = useRef<THREE.Points>(null);
-
-  // Generate spiral particles
-  const spiralParticles = useMemo(() => {
-    const positions = [];
-    const count = 100;
-    for (let i = 0; i < count; i++) {
-      const t = (i / count) * Math.PI * 6;
-      const r = 0.15 + (i / count) * 0.25;
-      positions.push(
-        Math.cos(t) * r,
-        Math.sin(t) * r,
-        (i / count - 0.5) * 0.3
-      );
-    }
-    return new Float32Array(positions);
-  }, []);
 
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime();
@@ -365,9 +408,6 @@ const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
     if (outerRingsRef.current) {
       outerRingsRef.current.rotation.y = time * 0.6;
       outerRingsRef.current.rotation.x = time * 0.3;
-    }
-    if (particlesRef.current) {
-      particlesRef.current.rotation.z = time * 1.2;
     }
   });
 
@@ -423,13 +463,16 @@ const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
         ))}
       </group>
       
-      {/* Spiral particle trail */}
-      <points ref={particlesRef}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" count={spiralParticles.length / 3} array={spiralParticles} itemSize={3} />
-        </bufferGeometry>
-        <pointsMaterial size={0.02} color="#81d4fa" transparent opacity={0.7} blending={THREE.AdditiveBlending} />
-      </points>
+      {/* Spiral particle trail - using spheres instead of square particles */}
+      {[...Array(20)].map((_, i) => {
+        const t = (i / 20) * Math.PI * 4;
+        const r = 0.2 + (i / 20) * 0.2;
+        return (
+          <Sphere key={i} args={[0.015, 8, 8]} position={[Math.cos(t) * r, Math.sin(t) * r, (i / 20 - 0.5) * 0.2]}>
+            <meshBasicMaterial color="#81d4fa" transparent opacity={0.7 - i * 0.02} blending={THREE.AdditiveBlending} />
+          </Sphere>
+        );
+      })}
       
       {/* Orbiting energy particles */}
       {[...Array(8)].map((_, i) => {
@@ -638,7 +681,75 @@ const SusanooRibcage = ({ isActive, mouse }: { isActive: boolean; mouse: { x: nu
   );
 };
 
-// Removed TruthSeekingOrb - was causing floating squares
+// Truth Seeking Orbs - proper 3D spheres (not square particles)
+const TruthSeekingOrbs = ({ mouse }: { mouse: { x: number; y: number } }) => {
+  const groupRef = useRef<THREE.Group>(null);
+  
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      // Orbit around scene
+      groupRef.current.rotation.y = clock.getElapsedTime() * 0.15 + mouse.x * 0.1;
+      groupRef.current.rotation.x = mouse.y * 0.05;
+    }
+  });
+
+  // 9 orbs arranged in a circle behind the scene
+  const orbCount = 9;
+  
+  return (
+    <group ref={groupRef}>
+      {[...Array(orbCount)].map((_, i) => {
+        const angle = (i / orbCount) * Math.PI * 2;
+        const radius = 2.2;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius * 0.6;
+        const y = Math.sin(angle * 2) * 0.3; // Slight vertical wave
+        
+        return (
+          <Float key={i} speed={1.5} rotationIntensity={0.1} floatIntensity={0.2}>
+            <group position={[x, y, z]}>
+              {/* Core - pure black */}
+              <Sphere args={[0.12, 24, 24]}>
+                <meshBasicMaterial color="#050505" />
+              </Sphere>
+              
+              {/* Dark purple rim */}
+              <Sphere args={[0.13, 24, 24]}>
+                <meshBasicMaterial 
+                  color="#1a0030" 
+                  transparent 
+                  opacity={0.8}
+                  side={THREE.BackSide}
+                />
+              </Sphere>
+              
+              {/* Outer glow */}
+              <Sphere args={[0.18, 16, 16]}>
+                <meshBasicMaterial 
+                  color="#4a0080" 
+                  transparent 
+                  opacity={0.25} 
+                  blending={THREE.AdditiveBlending}
+                  side={THREE.BackSide}
+                />
+              </Sphere>
+              
+              {/* Golden Six Paths highlight */}
+              <Sphere args={[0.14, 16, 16]}>
+                <meshBasicMaterial 
+                  color="#ffd700" 
+                  transparent 
+                  opacity={0.15} 
+                  blending={THREE.AdditiveBlending}
+                />
+              </Sphere>
+            </group>
+          </Float>
+        );
+      })}
+    </group>
+  );
+};
 
 // Chidori Lightning Effect
 const ChidoriLightning = ({ mouse }: { mouse: { x: number; y: number } }) => {
@@ -723,6 +834,9 @@ const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: 
       
       {/* Six Paths Sage Mode Aura */}
       <SixPathsAura mouse={mouse} />
+      
+      {/* Truth Seeking Orbs - orbiting spheres */}
+      <TruthSeekingOrbs mouse={mouse} />
       
       {/* Kurama Chakra Cloak */}
       <KuramaChakraCloak mouse={mouse} isActive={isHovering} />
