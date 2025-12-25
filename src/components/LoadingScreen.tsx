@@ -5,7 +5,7 @@ interface LoadingScreenProps {
   onComplete: () => void;
 }
 
-// Jutsu voice announcer
+// Japanese-style Jutsu voice announcer - Obito/dramatic anime style
 const useJutsuVoice = () => {
   const speak = useCallback((text: string, volume: number = 1) => {
     if ('speechSynthesis' in window) {
@@ -13,15 +13,20 @@ const useJutsuVoice = () => {
       speechSynthesis.cancel();
       
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.8;
-      utterance.pitch = 0.6;
+      utterance.rate = 0.65; // Slower, more dramatic
+      utterance.pitch = 0.4; // Deep, menacing tone like Obito
       utterance.volume = Math.min(1, volume);
+      utterance.lang = 'ja-JP'; // Japanese language for authentic pronunciation
       
-      // Try to get a deeper voice
+      // Try to get a Japanese voice, fallback to deep male voice
       const voices = speechSynthesis.getVoices();
-      const maleVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Daniel'));
-      if (maleVoice) {
-        utterance.voice = maleVoice;
+      const japaneseVoice = voices.find(v => v.lang.includes('ja'));
+      const deepVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Takumi'));
+      
+      if (japaneseVoice) {
+        utterance.voice = japaneseVoice;
+      } else if (deepVoice) {
+        utterance.voice = deepVoice;
       }
       
       speechSynthesis.speak(utterance);
@@ -41,8 +46,8 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   useEffect(() => {
     const enableAudio = () => {
       setHasInteracted(true);
-      // Immediately speak Kamui when user interacts
-      speak("Kamui!", 1);
+      // Immediately speak Kamui in Japanese style - like Obito
+      speak("カムイ", 1); // "Kamui" in Japanese
     };
 
     window.addEventListener('click', enableAudio, { once: true });
@@ -62,9 +67,9 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
         if (prev >= 100) {
           clearInterval(interval);
           setPhase('kamui');
-          // Speak when Kamui activates
+          // Speak when Kamui activates - dramatic Japanese style
           if (hasInteracted) {
-            speak("Kamui! Dimension shift!", 1);
+            speak("神威！時空間移動！", 1); // "Kamui! Jikuukan Idou!" (Space-time migration)
           }
           setTimeout(onComplete, 1500);
           return 100;
