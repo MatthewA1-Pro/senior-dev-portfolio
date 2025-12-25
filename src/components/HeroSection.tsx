@@ -34,19 +34,19 @@ export const HeroSection = () => {
         >
           {/* Naruto-style decorative element */}
           <motion.div
-            className="mb-4 sm:mb-6"
+            className="mb-6 sm:mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            <span className="text-primary/80 text-xs sm:text-sm tracking-[0.3em] uppercase">
+            <span className="text-primary/80 text-sm sm:text-base md:text-lg tracking-[0.3em] uppercase">
               忍者の道 — Way of the Shinobi
             </span>
           </motion.div>
 
-          {/* Name - clean styling without excess glow */}
+          {/* Name - larger with subtle outline */}
           <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display tracking-wider mb-6 sm:mb-8 leading-none"
+            className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display tracking-wider mb-8 sm:mb-10 leading-none"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
@@ -54,9 +54,9 @@ export const HeroSection = () => {
             <span className="gradient-text animate-gradient">MATTHEW</span>
           </motion.h1>
 
-          {/* Title - with background for visibility */}
+          {/* Title - larger with border outline */}
           <motion.p
-            className="text-base sm:text-lg md:text-xl text-foreground font-medium mb-2 sm:mb-3 tracking-wide px-4 py-2 bg-background/70 backdrop-blur-sm rounded-lg"
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground font-semibold mb-3 sm:mb-4 tracking-wide px-6 py-3 bg-background/80 backdrop-blur-sm rounded-xl border border-primary/30"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
@@ -65,7 +65,7 @@ export const HeroSection = () => {
           </motion.p>
 
           <motion.p
-            className="text-sm sm:text-base md:text-lg text-primary/90 tracking-wider px-4"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary tracking-wider px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.8 }}
@@ -75,12 +75,12 @@ export const HeroSection = () => {
 
           {/* Naruto-style bottom element */}
           <motion.div
-            className="mt-4 sm:mt-6"
+            className="mt-6 sm:mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8 }}
           >
-            <span className="text-secondary/60 text-xs tracking-[0.2em]">
+            <span className="text-secondary/70 text-sm sm:text-base tracking-[0.2em]">
               ⚡ 術を極める — Mastering the Art ⚡
             </span>
           </motion.div>
