@@ -1,7 +1,9 @@
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
 import { Sphere, Float } from "@react-three/drei";
 import * as THREE from "three";
+import mangekyoItachiImg from "@/assets/mangekyo-itachi.jpeg";
+import mangekyoSasukeImg from "@/assets/mangekyo-sasuke.jpeg";
 
 // Mouse position tracker with click detection
 const useMousePosition = () => {
@@ -419,14 +421,15 @@ const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
   );
 };
 
-// Mangekyo Sharingan - Itachi (More realistic with detailed pattern)
+// Mangekyo Sharingan - Itachi (Using actual image texture)
 const MangekyoItachi = ({ position }: { position: [number, number, number] }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const patternRef = useRef<THREE.Group>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const texture = useLoader(THREE.TextureLoader, mangekyoItachiImg);
   
   useFrame(({ clock }) => {
-    if (patternRef.current) {
-      patternRef.current.rotation.z = -clock.getElapsedTime() * 0.08;
+    if (meshRef.current) {
+      meshRef.current.rotation.z = -clock.getElapsedTime() * 0.08;
     }
     if (groupRef.current) {
       groupRef.current.position.y = position[1] + Math.sin(clock.getElapsedTime() * 0.15) * 0.03;
@@ -436,154 +439,45 @@ const MangekyoItachi = ({ position }: { position: [number, number, number] }) =>
   return (
     <Float speed={0.5} rotationIntensity={0.01} floatIntensity={0.08}>
       <group ref={groupRef} position={position}>
-        {/* Outer white sclera with subtle shadow */}
-        <mesh position={[0, 0, -0.03]}>
-          <circleGeometry args={[0.42, 64]} />
-          <meshBasicMaterial color="#e8e0d8" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Sclera highlight */}
-        <mesh position={[0, 0, -0.025]}>
-          <circleGeometry args={[0.4, 64]} />
-          <meshBasicMaterial color="#f5f0eb" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Deep red iris base */}
-        <mesh position={[0, 0, -0.01]}>
-          <circleGeometry args={[0.36, 64]} />
-          <meshBasicMaterial color="#8b0000" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Iris gradient layer */}
-        <mesh>
-          <circleGeometry args={[0.33, 64]} />
-          <meshBasicMaterial color="#cc0000" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Inner iris ring */}
-        <mesh position={[0, 0, 0.002]}>
-          <ringGeometry args={[0.12, 0.28, 64]} />
-          <meshBasicMaterial color="#990000" side={THREE.DoubleSide} transparent opacity={0.7} />
-        </mesh>
-        
-        {/* Itachi's curved blade pattern */}
-        <group ref={patternRef} position={[0, 0, 0.006]}>
-          {[0, 1, 2].map((i) => (
-            <group key={i} rotation={[0, 0, (i * Math.PI * 2) / 3]}>
-              {/* Main curved blade */}
-              <mesh position={[0.14, 0.03, 0]} rotation={[0, 0, 0.4]}>
-                <planeGeometry args={[0.14, 0.045]} />
-                <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
-              </mesh>
-              {/* Blade tip */}
-              <mesh position={[0.22, 0.055, 0]}>
-                <circleGeometry args={[0.028, 16]} />
-                <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
-              </mesh>
-              {/* Inner connecting arc */}
-              <mesh position={[0.08, 0, 0]} rotation={[0, 0, 0.2]}>
-                <planeGeometry args={[0.07, 0.025]} />
-                <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
-              </mesh>
-            </group>
-          ))}
-        </group>
-        
-        {/* Central pupil */}
-        <mesh position={[0, 0, 0.012]}>
-          <circleGeometry args={[0.055, 32]} />
-          <meshBasicMaterial color="#050505" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Pupil highlight */}
-        <mesh position={[-0.015, 0.015, 0.014]}>
-          <circleGeometry args={[0.012, 16]} />
-          <meshBasicMaterial color="#333333" side={THREE.DoubleSide} />
+        {/* Mangekyo with image texture */}
+        <mesh ref={meshRef}>
+          <circleGeometry args={[0.45, 64]} />
+          <meshBasicMaterial map={texture} side={THREE.DoubleSide} transparent />
         </mesh>
         
         {/* Subtle red glow */}
-        <Sphere args={[0.48, 16, 16]} position={[0, 0, -0.15]}>
-          <meshBasicMaterial color="#ff0000" transparent opacity={0.06} blending={THREE.AdditiveBlending} />
+        <Sphere args={[0.55, 16, 16]} position={[0, 0, -0.1]}>
+          <meshBasicMaterial color="#ff0000" transparent opacity={0.08} blending={THREE.AdditiveBlending} />
         </Sphere>
       </group>
     </Float>
   );
 };
 
-// Mangekyo Sharingan - Sasuke (Eternal Mangekyo with star pattern)
+// Mangekyo Sharingan - Sasuke (Using actual image texture)
 const MangekyoSasuke = ({ position }: { position: [number, number, number] }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const patternRef = useRef<THREE.Group>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const texture = useLoader(THREE.TextureLoader, mangekyoSasukeImg);
   
   useFrame(({ clock }) => {
-    if (patternRef.current) {
-      patternRef.current.rotation.z = clock.getElapsedTime() * 0.06;
+    if (meshRef.current) {
+      meshRef.current.rotation.z = clock.getElapsedTime() * 0.06;
     }
   });
 
   return (
     <Float speed={0.5} rotationIntensity={0.01} floatIntensity={0.08}>
       <group ref={groupRef} position={position}>
-        {/* Outer white sclera */}
-        <mesh position={[0, 0, -0.03]}>
-          <circleGeometry args={[0.42, 64]} />
-          <meshBasicMaterial color="#e8e0d8" side={THREE.DoubleSide} />
+        {/* Mangekyo with image texture */}
+        <mesh ref={meshRef}>
+          <circleGeometry args={[0.45, 64]} />
+          <meshBasicMaterial map={texture} side={THREE.DoubleSide} transparent />
         </mesh>
         
-        {/* Sclera highlight */}
-        <mesh position={[0, 0, -0.025]}>
-          <circleGeometry args={[0.4, 64]} />
-          <meshBasicMaterial color="#f5f0eb" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Deep red iris */}
-        <mesh position={[0, 0, -0.01]}>
-          <circleGeometry args={[0.36, 64]} />
-          <meshBasicMaterial color="#7a0000" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Iris main layer */}
-        <mesh>
-          <circleGeometry args={[0.33, 64]} />
-          <meshBasicMaterial color="#b71c1c" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Sasuke's 6-pointed star pattern */}
-        <group ref={patternRef} position={[0, 0, 0.006]}>
-          {/* Main 6 spokes */}
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <mesh key={i} rotation={[0, 0, (i * Math.PI) / 3]}>
-              <planeGeometry args={[0.26, 0.035]} />
-              <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
-            </mesh>
-          ))}
-          {/* Inner hexagon ring */}
-          <mesh position={[0, 0, 0.002]}>
-            <ringGeometry args={[0.08, 0.12, 6]} />
-            <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
-          </mesh>
-          {/* Outer ring accent */}
-          <mesh position={[0, 0, 0.001]}>
-            <ringGeometry args={[0.2, 0.22, 64]} />
-            <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} transparent opacity={0.5} />
-          </mesh>
-        </group>
-        
-        {/* Central pupil */}
-        <mesh position={[0, 0, 0.012]}>
-          <circleGeometry args={[0.045, 32]} />
-          <meshBasicMaterial color="#050505" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Pupil highlight */}
-        <mesh position={[-0.012, 0.012, 0.014]}>
-          <circleGeometry args={[0.01, 16]} />
-          <meshBasicMaterial color="#333333" side={THREE.DoubleSide} />
-        </mesh>
-        
-        {/* Purple glow effect */}
-        <Sphere args={[0.48, 16, 16]} position={[0, 0, -0.15]}>
-          <meshBasicMaterial color="#7c4dff" transparent opacity={0.06} blending={THREE.AdditiveBlending} />
+        {/* Subtle purple glow effect */}
+        <Sphere args={[0.55, 16, 16]} position={[0, 0, -0.1]}>
+          <meshBasicMaterial color="#7c4dff" transparent opacity={0.08} blending={THREE.AdditiveBlending} />
         </Sphere>
       </group>
     </Float>
@@ -735,13 +629,13 @@ const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: 
       {/* Chakra particles */}
       <ChakraParticles mouse={mouse} />
       
-      {/* Rasengan - orbiting on the left side */}
-      <group position={[-1.8, 0, 0.8]}>
+      {/* Rasengan - centered */}
+      <group position={[0, 0, 1.2]}>
         <Rasengan mouse={mouse} />
       </group>
       
-      {/* Chidori Lightning - orbiting on the right side */}
-      <group position={[1.8, 0, 0.8]}>
+      {/* Chidori Lightning - centered near Rasengan */}
+      <group position={[0, 0, -1.2]}>
         <ChidoriLightning mouse={mouse} />
       </group>
       
