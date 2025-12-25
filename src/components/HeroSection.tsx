@@ -1,14 +1,47 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Globe3D } from "./Globe3D";
-import { ChevronDown, Mail, MessageCircle } from "lucide-react";
+import { ChevronDown, Mail, MessageCircle, Send, X } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const WHATSAPP_NUMBER = "+2349138508184";
 const EMAIL = "base44.dev1@gmail.com";
 
 export const HeroSection = () => {
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const openWhatsApp = () => {
     const message = encodeURIComponent("Hi Matthew! I'd like to discuss a project with you.");
     window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${message}`, '_blank');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        },
+      });
+
+      if (error) throw error;
+
+      toast.success("Message sent! I'll get back to you soon.");
+      setFormData({ name: "", email: "", message: "" });
+      setShowContactModal(false);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error("Failed to send message. Please try WhatsApp or email directly.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -98,12 +131,12 @@ export const HeroSection = () => {
             >
               <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
             </button>
-            <a
-              href={`mailto:${EMAIL}`}
+            <button
+              onClick={() => setShowContactModal(true)}
               className="p-2.5 sm:p-3 rounded-full glass-card hover:anime-border transition-all duration-300 group"
             >
               <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-            </a>
+            </button>
           </motion.div>
         </motion.div>
       </div>
@@ -120,6 +153,109 @@ export const HeroSection = () => {
           <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
         </a>
       </motion.div>
+
+      {/* Contact Modal */}
+      <AnimatePresence>
+        {showContactModal && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+              onClick={() => setShowContactModal(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            
+            {/* Modal */}
+            <motion.div
+              className="relative w-full max-w-md glass-card p-6 sm:p-8"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowContactModal(false)}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted transition-colors"
+              >
+                <X className="w-5 h-5 text-muted-foreground" />
+              </button>
+              
+              <h3 className="text-xl sm:text-2xl font-display mb-6 gradient-text">Get In Touch</h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="hero-name" className="block font-mono text-sm text-muted-foreground mb-2">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="hero-name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono text-sm"
+                    placeholder="Your name"
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="hero-email" className="block font-mono text-sm text-muted-foreground mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="hero-email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono text-sm"
+                    placeholder="your@email.com"
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="hero-message" className="block font-mono text-sm text-muted-foreground mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    id="hero-message"
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    required
+                    rows={4}
+                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono text-sm resize-none"
+                    placeholder="Tell me about your project..."
+                  />
+                </div>
+
+                <motion.button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {isSubmitting ? (
+                    "Sending..."
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="w-4 h-4" />
+                    </>
+                  )}
+                </motion.button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

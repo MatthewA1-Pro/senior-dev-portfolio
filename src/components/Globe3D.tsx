@@ -1,10 +1,9 @@
-import { useRef, useMemo, useState, useEffect, useCallback } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
 import { Sphere, Float } from "@react-three/drei";
 import * as THREE from "three";
 import mangekyoItachiImg from "@/assets/mangekyo-itachi.jpeg";
 import mangekyoSasukeImg from "@/assets/mangekyo-sasuke.jpeg";
-import { HandSeals } from "./HandSeals";
 
 // Mouse position tracker with click detection
 const useMousePosition = () => {
@@ -794,26 +793,8 @@ const ChidoriLightning = ({ mouse }: { mouse: { x: number; y: number } }) => {
 };
 
 // Main Scene
-const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: number }; isHovering: boolean; onJutsuActivate?: (jutsu: string) => void }) => {
+const Scene = ({ mouse, isHovering }: { mouse: { x: number; y: number }; isHovering: boolean }) => {
   const { camera } = useThree();
-  const [jutsuTriggered, setJutsuTriggered] = useState({
-    rasengan: false,
-    chidori: false,
-    amaterasu: false,
-    susanoo: false
-  });
-  
-  // Trigger voice on first hover
-  useEffect(() => {
-    if (isHovering && !jutsuTriggered.amaterasu) {
-      onJutsuActivate?.('amaterasu');
-      setJutsuTriggered(prev => ({ ...prev, amaterasu: true }));
-    }
-    if (isHovering && !jutsuTriggered.susanoo) {
-      setTimeout(() => onJutsuActivate?.('susanoo'), 500);
-      setJutsuTriggered(prev => ({ ...prev, susanoo: true }));
-    }
-  }, [isHovering, jutsuTriggered, onJutsuActivate]);
   
   useFrame(() => {
     camera.position.x = mouse.x * 0.2;
@@ -864,50 +845,18 @@ const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: 
       <AmaterasuFlames position={[1.5, -1, 0.3]} isActive={isHovering} />
       <AmaterasuFlames position={[-1.5, 1, -0.2]} isActive={isHovering} />
       
-      {/* Mangekyo Sharingan - with Kamui effect on click */}
-      <MangekyoItachi 
-        position={[2.5, 0.8, -0.4]} 
-        onKamui={() => onJutsuActivate?.('kamui')} 
-      />
-      <MangekyoSasuke 
-        position={[-2.5, -0.8, 0]} 
-        onKamui={() => onJutsuActivate?.('kamui')} 
-      />
+      {/* Mangekyo Sharingan */}
+      <MangekyoItachi position={[2.5, 0.8, -0.4]} />
+      <MangekyoSasuke position={[-2.5, -0.8, 0]} />
     </>
   );
 };
 
 export const Globe3D = () => {
   const { mouse, isHovering } = useMousePosition();
-  const [currentHandSeal, setCurrentHandSeal] = useState<"rasengan" | "chidori" | "amaterasu" | "susanoo" | "kamui" | "sixpaths" | null>(null);
-  
-  // Handle hand seal completion - no sound
-  const handleHandSealComplete = useCallback(() => {
-    setCurrentHandSeal(null);
-  }, []);
-  
-  // Handle jutsu activation from scene - show hand seals only (no sound)
-  const handleJutsuActivate = useCallback((jutsu: string) => {
-    const jutsuMap: Record<string, "rasengan" | "chidori" | "amaterasu" | "susanoo" | "kamui" | "sixpaths"> = {
-      'amaterasu': 'amaterasu',
-      'susanoo': 'susanoo',
-      'rasengan': 'rasengan',
-      'chidori': 'chidori',
-      'sixpaths': 'sixpaths',
-      'kamui': 'kamui'
-    };
-    
-    const seal = jutsuMap[jutsu];
-    if (seal) {
-      setCurrentHandSeal(seal);
-    }
-  }, []);
   
   return (
     <div className="absolute inset-0 opacity-80">
-      {/* Hand Seals Overlay */}
-      <HandSeals jutsu={currentHandSeal} onComplete={handleHandSealComplete} />
-      
       {/* Video Background */}
       <video
         autoPlay
@@ -921,7 +870,7 @@ export const Globe3D = () => {
       </video>
       
       <Canvas camera={{ position: [0, 0, 4], fov: 55 }} gl={{ antialias: true, alpha: true }}>
-        <Scene mouse={mouse} isHovering={isHovering} onJutsuActivate={handleJutsuActivate} />
+        <Scene mouse={mouse} isHovering={isHovering} />
       </Canvas>
     </div>
   );
