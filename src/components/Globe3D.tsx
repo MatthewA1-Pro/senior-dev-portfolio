@@ -33,50 +33,81 @@ const useMousePosition = () => {
   return { mouse, isHovering };
 };
 
-// Six Paths Sage Mode - Golden energy aura
-const SixPathsAura = ({ mouse }: { mouse: { x: number; y: number } }) => {
-  const auraRef = useRef<THREE.Points>(null);
-  const ringsRef = useRef<THREE.Group>(null);
+// Glitter/Snow particles - replacing floating squares
+const GlitterParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
+  const particlesRef = useRef<THREE.Points>(null);
   
   const particles = useMemo(() => {
     const positions = [];
+    const sizes = [];
     const colors = [];
-    const count = 250;
+    const count = 400;
     
     for (let i = 0; i < count; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.random() * Math.PI;
-      const radius = 1.5 + Math.random() * 1;
+      // Spread across the whole scene
+      positions.push(
+        (Math.random() - 0.5) * 12,
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 6
+      );
       
-      const x = Math.sin(phi) * Math.cos(theta) * radius;
-      const y = Math.sin(phi) * Math.sin(theta) * radius;
-      const z = Math.cos(phi) * radius * 0.6;
+      sizes.push(Math.random() * 0.05 + 0.02);
       
-      positions.push(x, y, z);
-      
-      // Golden colors
-      const gold = Math.random();
-      if (gold < 0.5) {
-        colors.push(1, 0.85, 0.2); // Bright gold
-      } else if (gold < 0.8) {
-        colors.push(1, 0.7, 0.1); // Deep gold
+      // Golden/white glitter colors
+      const colorType = Math.random();
+      if (colorType < 0.4) {
+        colors.push(1, 0.9, 0.5); // Gold
+      } else if (colorType < 0.7) {
+        colors.push(1, 0.95, 0.8); // Light gold
       } else {
-        colors.push(1, 0.95, 0.6); // Light gold
+        colors.push(1, 1, 1); // White sparkle
       }
     }
+    
     return {
       positions: new Float32Array(positions),
-      colors: new Float32Array(colors)
+      colors: new Float32Array(colors),
+      sizes: new Float32Array(sizes)
     };
   }, []);
 
   useFrame(({ clock }) => {
-    if (auraRef.current) {
-      auraRef.current.rotation.y = clock.getElapsedTime() * 0.05 + mouse.x * 0.05;
-      // Pulsing scale - slower
-      const pulse = 1 + Math.sin(clock.getElapsedTime() * 0.8) * 0.03;
-      auraRef.current.scale.set(pulse, pulse, pulse);
+    if (particlesRef.current) {
+      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.02 + mouse.x * 0.02;
+      particlesRef.current.rotation.x = mouse.y * 0.01;
+      
+      // Twinkle effect
+      const positions = particlesRef.current.geometry.attributes.position.array as Float32Array;
+      for (let i = 1; i < positions.length; i += 3) {
+        positions[i] += Math.sin(clock.getElapsedTime() * 2 + i) * 0.001;
+      }
+      particlesRef.current.geometry.attributes.position.needsUpdate = true;
     }
+  });
+
+  return (
+    <points ref={particlesRef}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" count={particles.positions.length / 3} array={particles.positions} itemSize={3} />
+        <bufferAttribute attach="attributes-color" count={particles.colors.length / 3} array={particles.colors} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial 
+        size={0.04} 
+        transparent 
+        opacity={0.9} 
+        vertexColors 
+        sizeAttenuation 
+        blending={THREE.AdditiveBlending} 
+      />
+    </points>
+  );
+};
+
+// Six Paths Sage Mode - Golden energy aura (no squares)
+const SixPathsAura = ({ mouse }: { mouse: { x: number; y: number } }) => {
+  const ringsRef = useRef<THREE.Group>(null);
+
+  useFrame(({ clock }) => {
     if (ringsRef.current) {
       ringsRef.current.rotation.y = clock.getElapsedTime() * 0.08;
     }
@@ -84,16 +115,7 @@ const SixPathsAura = ({ mouse }: { mouse: { x: number; y: number } }) => {
 
   return (
     <group>
-      {/* Golden particles */}
-      <points ref={auraRef}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" count={particles.positions.length / 3} array={particles.positions} itemSize={3} />
-          <bufferAttribute attach="attributes-color" count={particles.colors.length / 3} array={particles.colors} itemSize={3} />
-        </bufferGeometry>
-        <pointsMaterial size={0.08} transparent opacity={0.7} vertexColors sizeAttenuation blending={THREE.AdditiveBlending} />
-      </points>
-      
-      {/* Six Paths rings - no blocking spheres */}
+      {/* Six Paths rings only - no particles/squares */}
       <group ref={ringsRef}>
         {[0, 1, 2].map((i) => (
           <mesh key={i} rotation={[Math.PI / 2, 0, i * Math.PI / 3]}>
@@ -421,15 +443,36 @@ const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
   );
 };
 
-// Mangekyo Sharingan - Itachi (Using actual image texture)
-const MangekyoItachi = ({ position }: { position: [number, number, number] }) => {
+// Mangekyo Sharingan - Itachi with Kamui effect
+const MangekyoItachi = ({ position, onKamui }: { position: [number, number, number]; onKamui?: () => void }) => {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
+  const [isKamui, setIsKamui] = useState(false);
+  const kamuiProgress = useRef(0);
   const texture = useLoader(THREE.TextureLoader, mangekyoItachiImg);
+  
+  const handleClick = () => {
+    setIsKamui(true);
+    kamuiProgress.current = 0;
+    onKamui?.();
+    setTimeout(() => setIsKamui(false), 2000);
+  };
   
   useFrame(({ clock }) => {
     if (meshRef.current) {
-      meshRef.current.rotation.z = -clock.getElapsedTime() * 0.08;
+      // Base rotation + Kamui spiral acceleration
+      const baseRotation = -clock.getElapsedTime() * 0.08;
+      const kamuiRotation = isKamui ? kamuiProgress.current * 20 : 0;
+      meshRef.current.rotation.z = baseRotation + kamuiRotation;
+      
+      // Kamui suction scale effect
+      if (isKamui) {
+        kamuiProgress.current += 0.02;
+        const suctionScale = Math.max(0.1, 1 - kamuiProgress.current * 0.8);
+        meshRef.current.scale.setScalar(suctionScale);
+      } else {
+        meshRef.current.scale.setScalar(1);
+      }
     }
     if (groupRef.current) {
       groupRef.current.position.y = position[1] + Math.sin(clock.getElapsedTime() * 0.15) * 0.03;
@@ -438,46 +481,103 @@ const MangekyoItachi = ({ position }: { position: [number, number, number] }) =>
 
   return (
     <Float speed={0.5} rotationIntensity={0.01} floatIntensity={0.08}>
-      <group ref={groupRef} position={position}>
+      <group ref={groupRef} position={position} onClick={handleClick}>
         {/* Mangekyo with image texture */}
         <mesh ref={meshRef}>
           <circleGeometry args={[0.45, 64]} />
           <meshBasicMaterial map={texture} side={THREE.DoubleSide} transparent />
         </mesh>
         
-        {/* Subtle red glow */}
+        {/* Kamui spiral rings - visible during suction */}
+        {isKamui && [...Array(5)].map((_, i) => (
+          <mesh key={i} rotation={[0, 0, kamuiProgress.current * (i + 1) * 3]}>
+            <ringGeometry args={[0.1 + i * 0.08, 0.12 + i * 0.08, 32]} />
+            <meshBasicMaterial 
+              color="#ff0000" 
+              transparent 
+              opacity={0.3 - i * 0.05} 
+              blending={THREE.AdditiveBlending} 
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+        ))}
+        
+        {/* Glow - intensifies during Kamui */}
         <Sphere args={[0.55, 16, 16]} position={[0, 0, -0.1]}>
-          <meshBasicMaterial color="#ff0000" transparent opacity={0.08} blending={THREE.AdditiveBlending} />
+          <meshBasicMaterial 
+            color="#ff0000" 
+            transparent 
+            opacity={isKamui ? 0.4 : 0.08} 
+            blending={THREE.AdditiveBlending} 
+          />
         </Sphere>
       </group>
     </Float>
   );
 };
 
-// Mangekyo Sharingan - Sasuke (Using actual image texture)
-const MangekyoSasuke = ({ position }: { position: [number, number, number] }) => {
+// Mangekyo Sharingan - Sasuke with Kamui effect
+const MangekyoSasuke = ({ position, onKamui }: { position: [number, number, number]; onKamui?: () => void }) => {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
+  const [isKamui, setIsKamui] = useState(false);
+  const kamuiProgress = useRef(0);
   const texture = useLoader(THREE.TextureLoader, mangekyoSasukeImg);
+  
+  const handleClick = () => {
+    setIsKamui(true);
+    kamuiProgress.current = 0;
+    onKamui?.();
+    setTimeout(() => setIsKamui(false), 2000);
+  };
   
   useFrame(({ clock }) => {
     if (meshRef.current) {
-      meshRef.current.rotation.z = clock.getElapsedTime() * 0.06;
+      const baseRotation = clock.getElapsedTime() * 0.06;
+      const kamuiRotation = isKamui ? kamuiProgress.current * 20 : 0;
+      meshRef.current.rotation.z = baseRotation + kamuiRotation;
+      
+      if (isKamui) {
+        kamuiProgress.current += 0.02;
+        const suctionScale = Math.max(0.1, 1 - kamuiProgress.current * 0.8);
+        meshRef.current.scale.setScalar(suctionScale);
+      } else {
+        meshRef.current.scale.setScalar(1);
+      }
     }
   });
 
   return (
     <Float speed={0.5} rotationIntensity={0.01} floatIntensity={0.08}>
-      <group ref={groupRef} position={position}>
+      <group ref={groupRef} position={position} onClick={handleClick}>
         {/* Mangekyo with image texture */}
         <mesh ref={meshRef}>
           <circleGeometry args={[0.45, 64]} />
           <meshBasicMaterial map={texture} side={THREE.DoubleSide} transparent />
         </mesh>
         
-        {/* Subtle purple glow effect */}
+        {/* Kamui spiral rings */}
+        {isKamui && [...Array(5)].map((_, i) => (
+          <mesh key={i} rotation={[0, 0, kamuiProgress.current * (i + 1) * 3]}>
+            <ringGeometry args={[0.1 + i * 0.08, 0.12 + i * 0.08, 32]} />
+            <meshBasicMaterial 
+              color="#7c4dff" 
+              transparent 
+              opacity={0.3 - i * 0.05} 
+              blending={THREE.AdditiveBlending}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+        ))}
+        
+        {/* Glow */}
         <Sphere args={[0.55, 16, 16]} position={[0, 0, -0.1]}>
-          <meshBasicMaterial color="#7c4dff" transparent opacity={0.08} blending={THREE.AdditiveBlending} />
+          <meshBasicMaterial 
+            color="#7c4dff" 
+            transparent 
+            opacity={isKamui ? 0.4 : 0.08} 
+            blending={THREE.AdditiveBlending} 
+          />
         </Sphere>
       </group>
     </Float>
@@ -617,6 +717,9 @@ const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: 
       <pointLight position={[-3, -3, 3]} intensity={0.2} color="#7c4dff" />
       <pointLight position={[0, 4, -3]} intensity={0.15} color="#ff7043" />
       
+      {/* Glitter particles - replacing floating squares */}
+      <GlitterParticles mouse={mouse} />
+      
       {/* Six Paths Sage Mode Aura */}
       <SixPathsAura mouse={mouse} />
       
@@ -646,9 +749,15 @@ const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: 
       <AmaterasuFlames position={[1.5, -1, 0.3]} isActive={isHovering} />
       <AmaterasuFlames position={[-1.5, 1, -0.2]} isActive={isHovering} />
       
-      {/* Mangekyo Sharingan - positioned around the scene */}
-      <MangekyoItachi position={[2.5, 0.8, -0.4]} />
-      <MangekyoSasuke position={[-2.5, -0.8, 0]} />
+      {/* Mangekyo Sharingan - with Kamui effect on click */}
+      <MangekyoItachi 
+        position={[2.5, 0.8, -0.4]} 
+        onKamui={() => onJutsuActivate?.('kamui')} 
+      />
+      <MangekyoSasuke 
+        position={[-2.5, -0.8, 0]} 
+        onKamui={() => onJutsuActivate?.('kamui')} 
+      />
     </>
   );
 };
@@ -729,13 +838,26 @@ export const Globe3D = () => {
       'susanoo': '須佐能乎！', // Susanoo - deep, powerful
       'rasengan': '螺旋丸！', // Rasengan - Naruto style
       'chidori': '千鳥！', // Chidori - Sasuke style
-      'sixpaths': '六道仙人モード！' // Rikudou Sennin Mode
+      'sixpaths': '六道仙人モード！', // Rikudou Sennin Mode
+      'kamui': '神威！' // Kamui - Obito style
     };
     speakJutsu(jutsuNames[jutsu] || jutsu);
   }, [speakJutsu]);
   
   return (
     <div className="absolute inset-0 opacity-80">
+      {/* Video Background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"
+        style={{ zIndex: -1 }}
+      >
+        <source src="/videos/sharingan-video.mp4" type="video/mp4" />
+      </video>
+      
       <Canvas camera={{ position: [0, 0, 4], fov: 55 }} gl={{ antialias: true, alpha: true }}>
         <Scene mouse={mouse} isHovering={isHovering} onJutsuActivate={handleJutsuActivate} />
       </Canvas>
