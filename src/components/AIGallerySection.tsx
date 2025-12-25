@@ -1,9 +1,6 @@
 import { motion } from "framer-motion";
-import { Sparkles, Zap, MessageSquare, Wand2, ArrowRight, Users } from "lucide-react";
+import { Sparkles, Wand2, ArrowRight } from "lucide-react";
 
-import projectHumindly from "@/assets/project-humindly.png";
-import projectIchranavigator from "@/assets/project-ichranavigator.png";
-import projectJointheworld from "@/assets/project-jointheworld.png";
 import projectSelfmapmaker from "@/assets/project-selfmapmaker.png";
 import projectInsurehubai from "@/assets/project-insurehubai.png";
 
@@ -20,36 +17,6 @@ interface AIProject {
 
 const aiProjects: AIProject[] = [
   {
-    title: "Humindly",
-    description: "AI-powered recruitment platform combining the speed of AI with human precision to accelerate hiring in Tech, Finance, Pharma & Engineering.",
-    platform: "Custom Code",
-    url: "https://humindly.fr",
-    result: "Full-stack recruitment SaaS with AI matching and candidate management",
-    icon: <Users className="w-6 h-6" />,
-    gradient: "from-neon-cyan to-neon-purple",
-    image: projectHumindly,
-  },
-  {
-    title: "Ichra Navigator",
-    description: "Healthcare benefits navigation platform simplifying ICHRA compliance and employee health plan selection.",
-    platform: "Full-Stack Development",
-    url: "https://ichranavigator.com",
-    result: "Enterprise-grade healthcare SaaS with complex business logic",
-    icon: <Zap className="w-6 h-6" />,
-    gradient: "from-neon-purple to-neon-pink",
-    image: projectIchranavigator,
-  },
-  {
-    title: "Join The World",
-    description: "Global community platform connecting travelers and digital nomads for authentic local experiences.",
-    platform: "Custom Code",
-    url: "https://jointheworld.co",
-    result: "Social platform with real-time features and location-based services",
-    icon: <MessageSquare className="w-6 h-6" />,
-    gradient: "from-neon-green to-neon-cyan",
-    image: projectJointheworld,
-  },
-  {
     title: "Self Map Maker",
     description: "AI-powered self-discovery tool that generates personalized mind maps and insights based on user reflections.",
     platform: "Lovable",
@@ -61,7 +28,7 @@ const aiProjects: AIProject[] = [
   },
   {
     title: "InsureHub AI",
-    description: "AI-driven insurance platform that simplifies policy comparison and provides intelligent coverage recommendations.",
+    description: "AI-driven insurance contracting platform connecting agents with carriers for fast approvals and competitive commissions.",
     platform: "Lovable",
     url: "https://insure-hub-ai.lovable.app",
     result: "Complete insurance SaaS with AI-powered recommendations",
