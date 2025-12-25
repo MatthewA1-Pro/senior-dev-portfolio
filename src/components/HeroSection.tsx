@@ -20,15 +20,16 @@ export const HeroSection = () => {
       <Globe3D />
       
       {/* Content */}
-      <div className="relative z-10 text-center px-4">
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
+          className="flex flex-col items-center"
         >
           {/* Decorative bracket */}
           <motion.p
-            className="font-mono text-primary mb-4"
+            className="font-mono text-primary/80 mb-6 text-sm tracking-widest"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -38,7 +39,7 @@ export const HeroSection = () => {
 
           {/* Name */}
           <motion.h1
-            className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight mb-6"
+            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 leading-none"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -48,7 +49,7 @@ export const HeroSection = () => {
 
           {/* Title */}
           <motion.p
-            className="text-xl md:text-2xl text-muted-foreground mb-2"
+            className="text-lg md:text-xl text-muted-foreground mb-3 tracking-wide"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -57,7 +58,7 @@ export const HeroSection = () => {
           </motion.p>
 
           <motion.p
-            className="text-lg text-primary font-mono"
+            className="text-base md:text-lg text-primary/90 font-mono tracking-wider"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -67,7 +68,7 @@ export const HeroSection = () => {
 
           {/* Closing bracket */}
           <motion.p
-            className="font-mono text-primary mt-4"
+            className="font-mono text-primary/80 mt-6 text-sm tracking-widest"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
