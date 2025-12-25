@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState, useEffect } from "react";
+import { useRef, useMemo, useState, useEffect, useCallback } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Sphere, Float } from "@react-three/drei";
 import * as THREE from "three";
@@ -731,8 +731,26 @@ const ChidoriLightning = ({ mouse }: { mouse: { x: number; y: number } }) => {
 };
 
 // Main Scene
-const Scene = ({ mouse, isHovering }: { mouse: { x: number; y: number }; isHovering: boolean }) => {
+const Scene = ({ mouse, isHovering, onJutsuActivate }: { mouse: { x: number; y: number }; isHovering: boolean; onJutsuActivate?: (jutsu: string) => void }) => {
   const { camera } = useThree();
+  const [jutsuTriggered, setJutsuTriggered] = useState({
+    rasengan: false,
+    chidori: false,
+    amaterasu: false,
+    susanoo: false
+  });
+  
+  // Trigger voice on first hover
+  useEffect(() => {
+    if (isHovering && !jutsuTriggered.amaterasu) {
+      onJutsuActivate?.('amaterasu');
+      setJutsuTriggered(prev => ({ ...prev, amaterasu: true }));
+    }
+    if (isHovering && !jutsuTriggered.susanoo) {
+      setTimeout(() => onJutsuActivate?.('susanoo'), 500);
+      setJutsuTriggered(prev => ({ ...prev, susanoo: true }));
+    }
+  }, [isHovering, jutsuTriggered, onJutsuActivate]);
   
   useFrame(() => {
     camera.position.x = mouse.x * 0.2;
@@ -760,11 +778,13 @@ const Scene = ({ mouse, isHovering }: { mouse: { x: number; y: number }; isHover
       {/* Chakra particles */}
       <ChakraParticles mouse={mouse} />
       
-      {/* Central Rasengan */}
-      <Rasengan mouse={mouse} />
+      {/* Rasengan - orbiting on the left side */}
+      <group position={[-1.8, 0, 0.8]}>
+        <Rasengan mouse={mouse} />
+      </group>
       
-      {/* Chidori Lightning */}
-      <group position={[1.2, 0.3, 0.5]}>
+      {/* Chidori Lightning - orbiting on the right side */}
+      <group position={[1.8, 0, 0.8]}>
         <ChidoriLightning mouse={mouse} />
       </group>
       
@@ -772,30 +792,66 @@ const Scene = ({ mouse, isHovering }: { mouse: { x: number; y: number }; isHover
       <SusanooRibcage isActive={isHovering} mouse={mouse} />
       
       {/* Amaterasu flames - appear on click */}
-      <AmaterasuFlames position={[1.8, -0.8, 0.3]} isActive={isHovering} />
-      <AmaterasuFlames position={[-1.8, 0.8, -0.2]} isActive={isHovering} />
-      <AmaterasuFlames position={[0, -1.2, 0.5]} isActive={isHovering} />
+      <AmaterasuFlames position={[1.5, -1, 0.3]} isActive={isHovering} />
+      <AmaterasuFlames position={[-1.5, 1, -0.2]} isActive={isHovering} />
       
-      {/* Mangekyo Sharingan */}
-      <MangekyoItachi position={[2.8, 1, -0.4]} />
-      <MangekyoSasuke position={[-2.8, -0.5, 0]} />
-      <MangekyoItachi position={[2, -1.3, 0.4]} />
-      
-      {/* Truth-Seeking Orbs - 9 orbs like Six Paths */}
-      {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-        <TruthSeekingOrb key={i} mouse={mouse} index={i} />
-      ))}
+      {/* Mangekyo Sharingan - positioned around the scene */}
+      <MangekyoItachi position={[2.5, 0.8, -0.4]} />
+      <MangekyoSasuke position={[-2.5, -0.8, 0]} />
     </>
   );
 };
 
 export const Globe3D = () => {
   const { mouse, isHovering } = useMousePosition();
+  const [hasPlayedInitial, setHasPlayedInitial] = useState(false);
+  
+  const handleJutsuActivate = useCallback((jutsu: string) => {
+    // Play voice and sound
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance();
+      utterance.rate = 0.9;
+      utterance.pitch = 0.8;
+      utterance.volume = 0.7;
+      
+      switch (jutsu) {
+        case 'rasengan':
+          utterance.text = 'Rasengan!';
+          break;
+        case 'chidori':
+          utterance.text = 'Chidori!';
+          break;
+        case 'amaterasu':
+          utterance.text = 'Amaterasu!';
+          break;
+        case 'susanoo':
+          utterance.text = 'Susanoo!';
+          break;
+        case 'sixpaths':
+          utterance.text = 'Six Paths Sage Mode!';
+          break;
+      }
+      
+      speechSynthesis.speak(utterance);
+    }
+  }, []);
+  
+  // Play initial jutsu voices on mount
+  useEffect(() => {
+    if (!hasPlayedInitial) {
+      const timer = setTimeout(() => {
+        handleJutsuActivate('rasengan');
+        setTimeout(() => handleJutsuActivate('chidori'), 1500);
+      }, 2000);
+      setHasPlayedInitial(true);
+      return () => clearTimeout(timer);
+    }
+  }, [hasPlayedInitial, handleJutsuActivate]);
   
   return (
     <div className="absolute inset-0 opacity-80">
       <Canvas camera={{ position: [0, 0, 4], fov: 55 }} gl={{ antialias: true, alpha: true }}>
-        <Scene mouse={mouse} isHovering={isHovering} />
+        <Scene mouse={mouse} isHovering={isHovering} onJutsuActivate={handleJutsuActivate} />
       </Canvas>
     </div>
   );
