@@ -1,65 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState } from "react";
 
 interface LoadingScreenProps {
   onComplete: () => void;
 }
 
-// Japanese-style Jutsu voice announcer - Obito/dramatic anime style
-const useJutsuVoice = () => {
-  const speak = useCallback((text: string, volume: number = 1) => {
-    if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech
-      speechSynthesis.cancel();
-      
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.65; // Slower, more dramatic
-      utterance.pitch = 0.4; // Deep, menacing tone like Obito
-      utterance.volume = Math.min(1, volume);
-      utterance.lang = 'ja-JP'; // Japanese language for authentic pronunciation
-      
-      // Try to get a Japanese voice, fallback to deep male voice
-      const voices = speechSynthesis.getVoices();
-      const japaneseVoice = voices.find(v => v.lang.includes('ja'));
-      const deepVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Takumi'));
-      
-      if (japaneseVoice) {
-        utterance.voice = japaneseVoice;
-      } else if (deepVoice) {
-        utterance.voice = deepVoice;
-      }
-      
-      speechSynthesis.speak(utterance);
-    }
-  }, []);
-
-  return { speak };
-};
-
 export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<'loading' | 'kamui'>('loading');
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const { speak } = useJutsuVoice();
-
-  // Enable audio on any interaction
-  useEffect(() => {
-    const enableAudio = () => {
-      setHasInteracted(true);
-      // Immediately speak Kamui in Japanese style - like Obito
-      speak("カムイ", 1); // "Kamui" in Japanese
-    };
-
-    window.addEventListener('click', enableAudio, { once: true });
-    window.addEventListener('touchstart', enableAudio, { once: true });
-    window.addEventListener('keydown', enableAudio, { once: true });
-
-    return () => {
-      window.removeEventListener('click', enableAudio);
-      window.removeEventListener('touchstart', enableAudio);
-      window.removeEventListener('keydown', enableAudio);
-    };
-  }, [speak]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -67,10 +15,6 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
         if (prev >= 100) {
           clearInterval(interval);
           setPhase('kamui');
-          // Speak when Kamui activates - dramatic Japanese style
-          if (hasInteracted) {
-            speak("神威！時空間移動！", 1); // "Kamui! Jikuukan Idou!" (Space-time migration)
-          }
           setTimeout(onComplete, 1500);
           return 100;
         }
@@ -79,26 +23,14 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
     }, 150);
 
     return () => clearInterval(interval);
-  }, [onComplete, speak, hasInteracted]);
+  }, [onComplete]);
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background overflow-hidden cursor-pointer"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background overflow-hidden"
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      onClick={() => setHasInteracted(true)}
     >
-      {/* Click prompt */}
-      {!hasInteracted && (
-        <motion.div
-          className="absolute top-20 text-center z-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <p className="font-mono text-sm text-primary animate-pulse">Click anywhere to enable jutsu voices</p>
-        </motion.div>
-      )}
 
       {/* Kamui Swirl Effect */}
       <div className="absolute inset-0 flex items-center justify-center">
