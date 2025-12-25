@@ -3,7 +3,7 @@ import { Globe3D } from "./Globe3D";
 import { ChevronDown, Mail, MessageCircle } from "lucide-react";
 
 const WHATSAPP_NUMBER = "+2349138508184";
-const EMAIL = "base44.dev@gmail.com";
+const EMAIL = "base44.dev1@gmail.com";
 
 export const HeroSection = () => {
   const openWhatsApp = () => {
