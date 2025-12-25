@@ -4,6 +4,7 @@ import { Sphere, Float } from "@react-three/drei";
 import * as THREE from "three";
 import mangekyoItachiImg from "@/assets/mangekyo-itachi.jpeg";
 import mangekyoSasukeImg from "@/assets/mangekyo-sasuke.jpeg";
+import { HandSeals } from "./HandSeals";
 
 // Mouse position tracker with click detection
 const useMousePosition = () => {
@@ -766,6 +767,8 @@ export const Globe3D = () => {
   const { mouse, isHovering } = useMousePosition();
   const [hasInteracted, setHasInteracted] = useState(false);
   const [voicesPlayed, setVoicesPlayed] = useState({ rasengan: false, chidori: false });
+  const [currentHandSeal, setCurrentHandSeal] = useState<"rasengan" | "chidori" | "amaterasu" | "susanoo" | "kamui" | "sixpaths" | null>(null);
+  const [pendingJutsu, setPendingJutsu] = useState<string | null>(null);
   
   // Speak jutsu name in authentic Japanese anime style
   const speakJutsu = useCallback((jutsuName: string) => {
@@ -811,41 +814,62 @@ export const Globe3D = () => {
     };
   }, []);
   
-  // Play jutsu voices after interaction - Japanese style
+  // Play jutsu voices after interaction with hand seals first
   useEffect(() => {
     if (hasInteracted && !voicesPlayed.rasengan) {
+      // Show Rasengan hand seals first
       const timer1 = setTimeout(() => {
-        speakJutsu("螺旋丸！"); // "Rasengan!" in Japanese kanji
+        setCurrentHandSeal("rasengan");
+        setPendingJutsu("螺旋丸！");
         setVoicesPlayed(prev => ({ ...prev, rasengan: true }));
       }, 500);
       
+      // Show Chidori hand seals
       const timer2 = setTimeout(() => {
-        speakJutsu("千鳥！"); // "Chidori!" in Japanese kanji
+        setCurrentHandSeal("chidori");
+        setPendingJutsu("千鳥！");
         setVoicesPlayed(prev => ({ ...prev, chidori: true }));
-      }, 2500);
+      }, 3000);
       
       return () => {
         clearTimeout(timer1);
         clearTimeout(timer2);
       };
     }
-  }, [hasInteracted, voicesPlayed.rasengan, speakJutsu]);
+  }, [hasInteracted, voicesPlayed.rasengan]);
   
-  // Handle jutsu activation from scene - authentic Japanese pronunciation
+  // Handle hand seal completion - speak the jutsu
+  const handleHandSealComplete = useCallback(() => {
+    if (pendingJutsu) {
+      speakJutsu(pendingJutsu);
+      setPendingJutsu(null);
+    }
+    setCurrentHandSeal(null);
+  }, [pendingJutsu, speakJutsu]);
+  
+  // Handle jutsu activation from scene - show hand seals then speak
   const handleJutsuActivate = useCallback((jutsu: string) => {
-    const jutsuNames: Record<string, string> = {
-      'amaterasu': '天照！', // Amaterasu - Itachi/Sasuke style
-      'susanoo': '須佐能乎！', // Susanoo - deep, powerful
-      'rasengan': '螺旋丸！', // Rasengan - Naruto style
-      'chidori': '千鳥！', // Chidori - Sasuke style
-      'sixpaths': '六道仙人モード！', // Rikudou Sennin Mode
-      'kamui': '神威！' // Kamui - Obito style
+    const jutsuMap: Record<string, { seal: "rasengan" | "chidori" | "amaterasu" | "susanoo" | "kamui" | "sixpaths"; voice: string }> = {
+      'amaterasu': { seal: 'amaterasu', voice: '天照！' },
+      'susanoo': { seal: 'susanoo', voice: '須佐能乎！' },
+      'rasengan': { seal: 'rasengan', voice: '螺旋丸！' },
+      'chidori': { seal: 'chidori', voice: '千鳥！' },
+      'sixpaths': { seal: 'sixpaths', voice: '六道仙人モード！' },
+      'kamui': { seal: 'kamui', voice: '神威！' }
     };
-    speakJutsu(jutsuNames[jutsu] || jutsu);
-  }, [speakJutsu]);
+    
+    const config = jutsuMap[jutsu];
+    if (config) {
+      setCurrentHandSeal(config.seal);
+      setPendingJutsu(config.voice);
+    }
+  }, []);
   
   return (
     <div className="absolute inset-0 opacity-80">
+      {/* Hand Seals Overlay */}
+      <HandSeals jutsu={currentHandSeal} onComplete={handleHandSealComplete} />
+      
       {/* Video Background */}
       <video
         autoPlay

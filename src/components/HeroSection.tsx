@@ -13,8 +13,8 @@ export const HeroSection = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Grid background */}
-      <div className="absolute inset-0 grid-bg opacity-30" />
+      {/* Naruto swirl background */}
+      <div className="absolute inset-0 grid-bg opacity-50" />
       
       {/* 3D Globe */}
       <Globe3D />
@@ -27,15 +27,17 @@ export const HeroSection = () => {
           transition={{ duration: 1, ease: "easeOut" }}
           className="flex flex-col items-center"
         >
-          {/* Decorative bracket */}
-          <motion.p
-            className="font-mono text-primary/80 mb-4 sm:mb-6 text-xs sm:text-sm tracking-widest"
+          {/* Naruto-style decorative element */}
+          <motion.div
+            className="mb-4 sm:mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            {"<developer>"}
-          </motion.p>
+            <span className="text-primary/80 text-xs sm:text-sm tracking-[0.3em] uppercase">
+              忍者の道 — Way of the Shinobi
+            </span>
+          </motion.div>
 
           {/* Name */}
           <motion.h1
@@ -58,7 +60,7 @@ export const HeroSection = () => {
           </motion.p>
 
           <motion.p
-            className="text-sm sm:text-base md:text-lg text-primary/90 font-mono tracking-wider px-4"
+            className="text-sm sm:text-base md:text-lg text-primary/90 tracking-wider px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.8 }}
@@ -66,15 +68,17 @@ export const HeroSection = () => {
             Custom Code • AI Innovation • Prompt Engineering
           </motion.p>
 
-          {/* Closing bracket */}
-          <motion.p
-            className="font-mono text-primary/80 mt-4 sm:mt-6 text-xs sm:text-sm tracking-widest"
+          {/* Naruto-style bottom element */}
+          <motion.div
+            className="mt-4 sm:mt-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8 }}
           >
-            {"</developer>"}
-          </motion.p>
+            <span className="text-secondary/60 text-xs tracking-[0.2em]">
+              ⚡ 術を極める — Mastering the Art ⚡
+            </span>
+          </motion.div>
 
           {/* Social Links */}
           <motion.div
