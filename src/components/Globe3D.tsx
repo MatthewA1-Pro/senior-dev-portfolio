@@ -70,13 +70,13 @@ const SixPathsAura = ({ mouse }: { mouse: { x: number; y: number } }) => {
 
   useFrame(({ clock }) => {
     if (auraRef.current) {
-      auraRef.current.rotation.y = clock.getElapsedTime() * 0.1 + mouse.x * 0.1;
-      // Pulsing scale
-      const pulse = 1 + Math.sin(clock.getElapsedTime() * 2) * 0.05;
+      auraRef.current.rotation.y = clock.getElapsedTime() * 0.05 + mouse.x * 0.05;
+      // Pulsing scale - slower
+      const pulse = 1 + Math.sin(clock.getElapsedTime() * 0.8) * 0.03;
       auraRef.current.scale.set(pulse, pulse, pulse);
     }
     if (ringsRef.current) {
-      ringsRef.current.rotation.y = clock.getElapsedTime() * 0.15;
+      ringsRef.current.rotation.y = clock.getElapsedTime() * 0.08;
     }
   });
 
@@ -148,7 +148,7 @@ const KuramaChakraCloak = ({ mouse, isActive }: { mouse: { x: number; y: number 
 
   useFrame(({ clock }) => {
     if (cloakRef.current) {
-      cloakRef.current.rotation.y = clock.getElapsedTime() * 0.1 + mouse.x * 0.08;
+      cloakRef.current.rotation.y = clock.getElapsedTime() * 0.04 + mouse.x * 0.04;
     }
   });
 
@@ -259,7 +259,7 @@ const SageModeParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
 
   useFrame(({ clock }) => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.012 + mouse.x * 0.06;
+      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.006 + mouse.x * 0.03;
     }
   });
 
@@ -303,7 +303,7 @@ const ChakraParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
 
   useFrame(({ clock }) => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.015 + mouse.x * 0.08;
+      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.008 + mouse.x * 0.04;
     }
   });
 
@@ -318,57 +318,114 @@ const ChakraParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
   );
 };
 
-// Rasengan - using torus rings instead of lines for spirals
+// Rasengan - Realistic with layered spheres and dynamic spirals
 const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
   const groupRef = useRef<THREE.Group>(null);
   const spiralsRef = useRef<THREE.Group>(null);
+  const outerRingsRef = useRef<THREE.Group>(null);
+  const particlesRef = useRef<THREE.Points>(null);
+
+  // Generate spiral particles
+  const spiralParticles = useMemo(() => {
+    const positions = [];
+    const count = 100;
+    for (let i = 0; i < count; i++) {
+      const t = (i / count) * Math.PI * 6;
+      const r = 0.15 + (i / count) * 0.25;
+      positions.push(
+        Math.cos(t) * r,
+        Math.sin(t) * r,
+        (i / count - 0.5) * 0.3
+      );
+    }
+    return new Float32Array(positions);
+  }, []);
 
   useFrame(({ clock }) => {
+    const time = clock.getElapsedTime();
     if (groupRef.current) {
-      groupRef.current.position.x = mouse.x * 0.2;
-      groupRef.current.position.y = mouse.y * 0.2;
+      groupRef.current.position.x = mouse.x * 0.15;
+      groupRef.current.position.y = mouse.y * 0.15;
     }
     if (spiralsRef.current) {
-      spiralsRef.current.rotation.z = clock.getElapsedTime() * 1.5;
-      spiralsRef.current.rotation.x = clock.getElapsedTime() * 0.8;
+      spiralsRef.current.rotation.z = time * 0.8;
+      spiralsRef.current.rotation.x = time * 0.4;
+    }
+    if (outerRingsRef.current) {
+      outerRingsRef.current.rotation.y = time * 0.6;
+      outerRingsRef.current.rotation.x = time * 0.3;
+    }
+    if (particlesRef.current) {
+      particlesRef.current.rotation.z = time * 1.2;
     }
   });
 
   return (
     <group ref={groupRef}>
-      {/* Bright white core */}
-      <Sphere args={[0.15, 32, 32]}>
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.95} />
-      </Sphere>
-      {/* Inner blue glow */}
-      <Sphere args={[0.25, 32, 32]}>
-        <meshBasicMaterial color="#4fc3f7" transparent opacity={0.5} blending={THREE.AdditiveBlending} />
-      </Sphere>
-      {/* Mid layer */}
-      <Sphere args={[0.4, 32, 32]}>
-        <meshBasicMaterial color="#29b6f6" transparent opacity={0.25} blending={THREE.AdditiveBlending} />
-      </Sphere>
-      {/* Outer glow */}
-      <Sphere args={[0.55, 32, 32]}>
-        <meshBasicMaterial color="#03a9f4" transparent opacity={0.12} blending={THREE.AdditiveBlending} />
+      {/* Innermost white-hot core */}
+      <Sphere args={[0.08, 32, 32]}>
+        <meshBasicMaterial color="#ffffff" />
       </Sphere>
       
-      {/* Spinning rings for spiral effect */}
+      {/* Bright core glow */}
+      <Sphere args={[0.12, 32, 32]}>
+        <meshBasicMaterial color="#e0f7ff" transparent opacity={0.9} blending={THREE.AdditiveBlending} />
+      </Sphere>
+      
+      {/* Primary blue layer */}
+      <Sphere args={[0.2, 32, 32]}>
+        <meshBasicMaterial color="#4fc3f7" transparent opacity={0.6} blending={THREE.AdditiveBlending} />
+      </Sphere>
+      
+      {/* Secondary rotating layer */}
+      <Sphere args={[0.3, 32, 32]}>
+        <meshBasicMaterial color="#29b6f6" transparent opacity={0.35} blending={THREE.AdditiveBlending} />
+      </Sphere>
+      
+      {/* Outer containment shell */}
+      <Sphere args={[0.42, 32, 32]}>
+        <meshBasicMaterial color="#03a9f4" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
+      </Sphere>
+      
+      {/* Outermost glow */}
+      <Sphere args={[0.55, 32, 32]}>
+        <meshBasicMaterial color="#0288d1" transparent opacity={0.08} blending={THREE.AdditiveBlending} side={THREE.BackSide} />
+      </Sphere>
+      
+      {/* Spinning chakra rings */}
       <group ref={spiralsRef}>
-        {[0, 1, 2, 3].map((i) => (
-          <mesh key={i} rotation={[i * 0.4, i * 0.6, i * 0.3]}>
-            <torusGeometry args={[0.3 + i * 0.05, 0.012, 8, 32]} />
-            <meshBasicMaterial color="#81d4fa" transparent opacity={0.5 - i * 0.1} blending={THREE.AdditiveBlending} />
+        {[0, 1, 2, 3, 4].map((i) => (
+          <mesh key={i} rotation={[i * 0.3, i * 0.5, i * 0.2]}>
+            <torusGeometry args={[0.22 + i * 0.04, 0.008, 16, 48]} />
+            <meshBasicMaterial color="#81d4fa" transparent opacity={0.6 - i * 0.1} blending={THREE.AdditiveBlending} />
           </mesh>
         ))}
       </group>
       
-      {/* Energy particles around */}
-      {[...Array(6)].map((_, i) => {
-        const angle = (i / 6) * Math.PI * 2;
+      {/* Outer containment rings */}
+      <group ref={outerRingsRef}>
+        {[0, 1, 2].map((i) => (
+          <mesh key={i} rotation={[Math.PI / 2 + i * 0.2, i * 0.4, 0]}>
+            <torusGeometry args={[0.38 + i * 0.03, 0.005, 8, 64]} />
+            <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4 - i * 0.1} blending={THREE.AdditiveBlending} />
+          </mesh>
+        ))}
+      </group>
+      
+      {/* Spiral particle trail */}
+      <points ref={particlesRef}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" count={spiralParticles.length / 3} array={spiralParticles} itemSize={3} />
+        </bufferGeometry>
+        <pointsMaterial size={0.02} color="#81d4fa" transparent opacity={0.7} blending={THREE.AdditiveBlending} />
+      </points>
+      
+      {/* Orbiting energy particles */}
+      {[...Array(8)].map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2;
         return (
-          <Sphere key={i} args={[0.03, 8, 8]} position={[Math.cos(angle) * 0.5, Math.sin(angle) * 0.5, 0]}>
-            <meshBasicMaterial color="#4fc3f7" transparent opacity={0.8} blending={THREE.AdditiveBlending} />
+          <Sphere key={i} args={[0.02, 8, 8]} position={[Math.cos(angle) * 0.45, Math.sin(angle) * 0.45, 0]}>
+            <meshBasicMaterial color="#e0f7ff" transparent opacity={0.9} blending={THREE.AdditiveBlending} />
           </Sphere>
         );
       })}
@@ -376,114 +433,171 @@ const Rasengan = ({ mouse }: { mouse: { x: number; y: number } }) => {
   );
 };
 
-// Mangekyo Sharingan - Itachi
+// Mangekyo Sharingan - Itachi (More realistic with detailed pattern)
 const MangekyoItachi = ({ position }: { position: [number, number, number] }) => {
   const groupRef = useRef<THREE.Group>(null);
   const patternRef = useRef<THREE.Group>(null);
   
   useFrame(({ clock }) => {
     if (patternRef.current) {
-      patternRef.current.rotation.z = -clock.getElapsedTime() * 0.15;
+      patternRef.current.rotation.z = -clock.getElapsedTime() * 0.08;
     }
     if (groupRef.current) {
-      groupRef.current.position.y = position[1] + Math.sin(clock.getElapsedTime() * 0.25) * 0.05;
+      groupRef.current.position.y = position[1] + Math.sin(clock.getElapsedTime() * 0.15) * 0.03;
     }
   });
 
   return (
-    <Float speed={1} rotationIntensity={0.02} floatIntensity={0.15}>
+    <Float speed={0.5} rotationIntensity={0.01} floatIntensity={0.08}>
       <group ref={groupRef} position={position}>
-        <mesh position={[0, 0, -0.02]}>
+        {/* Outer white sclera with subtle shadow */}
+        <mesh position={[0, 0, -0.03]}>
+          <circleGeometry args={[0.42, 64]} />
+          <meshBasicMaterial color="#e8e0d8" side={THREE.DoubleSide} />
+        </mesh>
+        
+        {/* Sclera highlight */}
+        <mesh position={[0, 0, -0.025]}>
           <circleGeometry args={[0.4, 64]} />
-          <meshBasicMaterial color="#f0f0f0" side={THREE.DoubleSide} />
+          <meshBasicMaterial color="#f5f0eb" side={THREE.DoubleSide} />
         </mesh>
         
+        {/* Deep red iris base */}
+        <mesh position={[0, 0, -0.01]}>
+          <circleGeometry args={[0.36, 64]} />
+          <meshBasicMaterial color="#8b0000" side={THREE.DoubleSide} />
+        </mesh>
+        
+        {/* Iris gradient layer */}
         <mesh>
-          <circleGeometry args={[0.35, 64]} />
-          <meshBasicMaterial color="#c62828" side={THREE.DoubleSide} />
+          <circleGeometry args={[0.33, 64]} />
+          <meshBasicMaterial color="#cc0000" side={THREE.DoubleSide} />
         </mesh>
         
-        <mesh position={[0, 0, 0.003]}>
-          <ringGeometry args={[0.1, 0.3, 64]} />
-          <meshBasicMaterial color="#8b0000" side={THREE.DoubleSide} transparent opacity={0.5} />
+        {/* Inner iris ring */}
+        <mesh position={[0, 0, 0.002]}>
+          <ringGeometry args={[0.12, 0.28, 64]} />
+          <meshBasicMaterial color="#990000" side={THREE.DoubleSide} transparent opacity={0.7} />
         </mesh>
         
+        {/* Itachi's curved blade pattern */}
         <group ref={patternRef} position={[0, 0, 0.006]}>
           {[0, 1, 2].map((i) => (
             <group key={i} rotation={[0, 0, (i * Math.PI * 2) / 3]}>
-              <mesh position={[0.16, 0.02, 0]} rotation={[0, 0, 0.35]}>
-                <planeGeometry args={[0.12, 0.04]} />
-                <meshBasicMaterial color="#000000" side={THREE.DoubleSide} />
+              {/* Main curved blade */}
+              <mesh position={[0.14, 0.03, 0]} rotation={[0, 0, 0.4]}>
+                <planeGeometry args={[0.14, 0.045]} />
+                <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
               </mesh>
-              <mesh position={[0.22, 0.05, 0]}>
-                <circleGeometry args={[0.022, 16]} />
-                <meshBasicMaterial color="#000000" side={THREE.DoubleSide} />
+              {/* Blade tip */}
+              <mesh position={[0.22, 0.055, 0]}>
+                <circleGeometry args={[0.028, 16]} />
+                <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
               </mesh>
-              <mesh position={[0.09, 0, 0]} rotation={[0, 0, 0.15]}>
-                <planeGeometry args={[0.06, 0.02]} />
-                <meshBasicMaterial color="#000000" side={THREE.DoubleSide} />
+              {/* Inner connecting arc */}
+              <mesh position={[0.08, 0, 0]} rotation={[0, 0, 0.2]}>
+                <planeGeometry args={[0.07, 0.025]} />
+                <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
               </mesh>
             </group>
           ))}
         </group>
         
-        <mesh position={[0, 0, 0.01]}>
-          <circleGeometry args={[0.045, 32]} />
-          <meshBasicMaterial color="#000000" side={THREE.DoubleSide} />
+        {/* Central pupil */}
+        <mesh position={[0, 0, 0.012]}>
+          <circleGeometry args={[0.055, 32]} />
+          <meshBasicMaterial color="#050505" side={THREE.DoubleSide} />
         </mesh>
         
-        <Sphere args={[0.45, 16, 16]} position={[0, 0, -0.1]}>
-          <meshBasicMaterial color="#ff0000" transparent opacity={0.05} blending={THREE.AdditiveBlending} />
+        {/* Pupil highlight */}
+        <mesh position={[-0.015, 0.015, 0.014]}>
+          <circleGeometry args={[0.012, 16]} />
+          <meshBasicMaterial color="#333333" side={THREE.DoubleSide} />
+        </mesh>
+        
+        {/* Subtle red glow */}
+        <Sphere args={[0.48, 16, 16]} position={[0, 0, -0.15]}>
+          <meshBasicMaterial color="#ff0000" transparent opacity={0.06} blending={THREE.AdditiveBlending} />
         </Sphere>
       </group>
     </Float>
   );
 };
 
-// Mangekyo Sharingan - Sasuke
+// Mangekyo Sharingan - Sasuke (Eternal Mangekyo with star pattern)
 const MangekyoSasuke = ({ position }: { position: [number, number, number] }) => {
   const groupRef = useRef<THREE.Group>(null);
   const patternRef = useRef<THREE.Group>(null);
   
   useFrame(({ clock }) => {
     if (patternRef.current) {
-      patternRef.current.rotation.z = clock.getElapsedTime() * 0.12;
+      patternRef.current.rotation.z = clock.getElapsedTime() * 0.06;
     }
   });
 
   return (
-    <Float speed={1} rotationIntensity={0.02} floatIntensity={0.15}>
+    <Float speed={0.5} rotationIntensity={0.01} floatIntensity={0.08}>
       <group ref={groupRef} position={position}>
-        <mesh position={[0, 0, -0.02]}>
-          <circleGeometry args={[0.4, 64]} />
-          <meshBasicMaterial color="#f0f0f0" side={THREE.DoubleSide} />
+        {/* Outer white sclera */}
+        <mesh position={[0, 0, -0.03]}>
+          <circleGeometry args={[0.42, 64]} />
+          <meshBasicMaterial color="#e8e0d8" side={THREE.DoubleSide} />
         </mesh>
         
+        {/* Sclera highlight */}
+        <mesh position={[0, 0, -0.025]}>
+          <circleGeometry args={[0.4, 64]} />
+          <meshBasicMaterial color="#f5f0eb" side={THREE.DoubleSide} />
+        </mesh>
+        
+        {/* Deep red iris */}
+        <mesh position={[0, 0, -0.01]}>
+          <circleGeometry args={[0.36, 64]} />
+          <meshBasicMaterial color="#7a0000" side={THREE.DoubleSide} />
+        </mesh>
+        
+        {/* Iris main layer */}
         <mesh>
-          <circleGeometry args={[0.35, 64]} />
+          <circleGeometry args={[0.33, 64]} />
           <meshBasicMaterial color="#b71c1c" side={THREE.DoubleSide} />
         </mesh>
         
+        {/* Sasuke's 6-pointed star pattern */}
         <group ref={patternRef} position={[0, 0, 0.006]}>
+          {/* Main 6 spokes */}
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <mesh key={i} rotation={[0, 0, (i * Math.PI) / 3]}>
-              <planeGeometry args={[0.24, 0.03]} />
-              <meshBasicMaterial color="#000000" side={THREE.DoubleSide} />
+              <planeGeometry args={[0.26, 0.035]} />
+              <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
             </mesh>
           ))}
+          {/* Inner hexagon ring */}
           <mesh position={[0, 0, 0.002]}>
-            <ringGeometry args={[0.07, 0.1, 6]} />
-            <meshBasicMaterial color="#000000" side={THREE.DoubleSide} />
+            <ringGeometry args={[0.08, 0.12, 6]} />
+            <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} />
+          </mesh>
+          {/* Outer ring accent */}
+          <mesh position={[0, 0, 0.001]}>
+            <ringGeometry args={[0.2, 0.22, 64]} />
+            <meshBasicMaterial color="#0a0a0a" side={THREE.DoubleSide} transparent opacity={0.5} />
           </mesh>
         </group>
         
-        <mesh position={[0, 0, 0.01]}>
-          <circleGeometry args={[0.035, 32]} />
-          <meshBasicMaterial color="#000000" side={THREE.DoubleSide} />
+        {/* Central pupil */}
+        <mesh position={[0, 0, 0.012]}>
+          <circleGeometry args={[0.045, 32]} />
+          <meshBasicMaterial color="#050505" side={THREE.DoubleSide} />
         </mesh>
         
-        <Sphere args={[0.45, 16, 16]} position={[0, 0, -0.1]}>
-          <meshBasicMaterial color="#7c4dff" transparent opacity={0.05} blending={THREE.AdditiveBlending} />
+        {/* Pupil highlight */}
+        <mesh position={[-0.012, 0.012, 0.014]}>
+          <circleGeometry args={[0.01, 16]} />
+          <meshBasicMaterial color="#333333" side={THREE.DoubleSide} />
+        </mesh>
+        
+        {/* Purple glow effect */}
+        <Sphere args={[0.48, 16, 16]} position={[0, 0, -0.15]}>
+          <meshBasicMaterial color="#7c4dff" transparent opacity={0.06} blending={THREE.AdditiveBlending} />
         </Sphere>
       </group>
     </Float>
@@ -552,11 +666,11 @@ const TruthSeekingOrb = ({ mouse, index }: { mouse: { x: number; y: number }; in
   
   useFrame(({ clock }) => {
     if (groupRef.current) {
-      const time = clock.getElapsedTime() * 0.12 + index * (Math.PI * 2 / 9);
+      const time = clock.getElapsedTime() * 0.06 + index * (Math.PI * 2 / 9);
       const orbitRadius = 1.5;
-      groupRef.current.position.x = Math.cos(time) * orbitRadius + mouse.x * 0.12;
+      groupRef.current.position.x = Math.cos(time) * orbitRadius + mouse.x * 0.08;
       groupRef.current.position.z = Math.sin(time) * orbitRadius * 0.35;
-      groupRef.current.position.y = 0.15 + Math.sin(time * 1) * 0.12 + mouse.y * 0.08;
+      groupRef.current.position.y = 0.15 + Math.sin(time * 0.5) * 0.08 + mouse.y * 0.05;
     }
   });
 
@@ -584,7 +698,7 @@ const ChidoriLightning = ({ mouse }: { mouse: { x: number; y: number } }) => {
   
   useFrame(({ clock }) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = clock.getElapsedTime() * 0.3 + mouse.x * 0.5;
+      groupRef.current.rotation.y = clock.getElapsedTime() * 0.15 + mouse.x * 0.3;
     }
   });
 

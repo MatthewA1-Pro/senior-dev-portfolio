@@ -91,46 +91,46 @@ const skillCategories: SkillCategory[] = [
 const SkillCard = ({ category, index }: { category: SkillCategory; index: number }) => {
   return (
     <motion.div
-      className="glass-card p-6 hover:neon-border transition-all duration-500 group"
+      className="glass-card p-4 sm:p-6 hover:neon-border transition-all duration-500 group"
       initial={{ opacity: 0, y: 30, rotateX: -10 }}
       whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
+      transition={{ delay: index * 0.15, duration: 0.6 }}
       whileHover={{ 
         y: -5,
-        transition: { duration: 0.2 }
+        transition: { duration: 0.3 }
       }}
       style={{ transformStyle: "preserve-3d", perspective: 1000 }}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className={`p-2 rounded-lg bg-gradient-to-br ${category.color} text-background`}>
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div className={`p-1.5 sm:p-2 rounded-lg bg-gradient-to-br ${category.color} text-background`}>
           {category.icon}
         </div>
-        <h3 className="font-bold text-lg">{category.title}</h3>
+        <h3 className="font-bold text-base sm:text-lg">{category.title}</h3>
       </div>
 
       {/* Skills */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {category.skills.map((skill, skillIndex) => (
           <motion.div
             key={skill.name}
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.1 + skillIndex * 0.05 }}
+            transition={{ delay: index * 0.15 + skillIndex * 0.08, duration: 0.5 }}
           >
             <div className="flex justify-between mb-1">
-              <span className="font-mono text-sm text-muted-foreground">{skill.name}</span>
-              <span className="font-mono text-sm text-primary">{skill.level}%</span>
+              <span className="font-mono text-xs sm:text-sm text-muted-foreground">{skill.name}</span>
+              <span className="font-mono text-xs sm:text-sm text-primary">{skill.level}%</span>
             </div>
-            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+            <div className="h-1 sm:h-1.5 bg-muted rounded-full overflow-hidden">
               <motion.div
                 className={`h-full bg-gradient-to-r ${category.color} rounded-full`}
                 initial={{ width: 0 }}
                 whileInView={{ width: `${skill.level}%` }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 + skillIndex * 0.05 + 0.3, duration: 0.8, ease: "easeOut" }}
+                transition={{ delay: index * 0.15 + skillIndex * 0.08 + 0.4, duration: 1, ease: "easeOut" }}
               />
             </div>
           </motion.div>
@@ -142,30 +142,31 @@ const SkillCard = ({ category, index }: { category: SkillCategory; index: number
 
 export const SkillsSection = () => {
   return (
-    <section id="skills" className="py-32 relative">
+    <section id="skills" className="py-16 sm:py-24 lg:py-32 relative">
       {/* Background effects */}
       <div className="absolute inset-0 grid-bg opacity-20" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-primary/10 rounded-full blur-3xl" />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          <p className="font-mono text-primary mb-2">{"// Skills & Expertise"}</p>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <p className="font-mono text-primary mb-2 text-xs sm:text-sm">{"// Skills & Expertise"}</p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
             <span className="gradient-text">Tech Stack</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
             Years of experience across multiple domains, from traditional development to cutting-edge AI tools.
           </p>
         </motion.div>
 
         {/* Skills Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {skillCategories.map((category, index) => (
             <SkillCard key={category.title} category={category} index={index} />
           ))}
