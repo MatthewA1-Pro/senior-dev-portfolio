@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Sparkles, Zap, MessageSquare, Wand2, ArrowRight, Heart } from "lucide-react";
+import { Sparkles, Zap, MessageSquare, Wand2, ArrowRight, Users } from "lucide-react";
 
+import projectHumindly from "@/assets/project-humindly.png";
 import projectIchranavigator from "@/assets/project-ichranavigator.png";
 import projectJointheworld from "@/assets/project-jointheworld.png";
 import projectSelfmapmaker from "@/assets/project-selfmapmaker.png";
@@ -20,12 +21,13 @@ interface AIProject {
 const aiProjects: AIProject[] = [
   {
     title: "Humindly",
-    description: "Mental wellness platform helping users track their emotional health with AI-powered insights and personalized recommendations.",
+    description: "AI-powered recruitment platform combining the speed of AI with human precision to accelerate hiring in Tech, Finance, Pharma & Engineering.",
     platform: "Custom Code",
     url: "https://humindly.fr",
-    result: "Full-stack mental health application with user authentication and data visualization",
-    icon: <Heart className="w-6 h-6" />,
+    result: "Full-stack recruitment SaaS with AI matching and candidate management",
+    icon: <Users className="w-6 h-6" />,
     gradient: "from-neon-cyan to-neon-purple",
+    image: projectHumindly,
   },
   {
     title: "Ichra Navigator",
