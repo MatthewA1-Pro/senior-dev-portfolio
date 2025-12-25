@@ -1,13 +1,35 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { Navigation } from "@/components/Navigation";
+import { HeroSection } from "@/components/HeroSection";
+import { SkillsSection } from "@/components/SkillsSection";
+import { ProjectsSection } from "@/components/ProjectsSection";
+import { AIGallerySection } from "@/components/AIGallerySection";
+import { ContactSection } from "@/components/ContactSection";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <AnimatePresence mode="wait">
+        {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+      </AnimatePresence>
+
+      {!isLoading && (
+        <main className="relative">
+          <Navigation />
+          <HeroSection />
+          <SkillsSection />
+          <ProjectsSection />
+          <AIGallerySection />
+          <ContactSection />
+          <Footer />
+        </main>
+      )}
+    </>
   );
 };
 
