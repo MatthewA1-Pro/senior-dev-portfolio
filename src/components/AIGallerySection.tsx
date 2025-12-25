@@ -1,5 +1,10 @@
 import { motion } from "framer-motion";
-import { Sparkles, Zap, MessageSquare, Wand2, ArrowRight } from "lucide-react";
+import { Sparkles, Zap, MessageSquare, Wand2, ArrowRight, Heart } from "lucide-react";
+
+import projectIchranavigator from "@/assets/project-ichranavigator.png";
+import projectJointheworld from "@/assets/project-jointheworld.png";
+import projectSelfmapmaker from "@/assets/project-selfmapmaker.png";
+import projectInsurehubai from "@/assets/project-insurehubai.png";
 
 interface AIProject {
   title: string;
@@ -9,6 +14,7 @@ interface AIProject {
   result: string;
   icon: React.ReactNode;
   gradient: string;
+  image?: string;
 }
 
 const aiProjects: AIProject[] = [
@@ -18,7 +24,7 @@ const aiProjects: AIProject[] = [
     platform: "Custom Code",
     url: "https://humindly.fr",
     result: "Full-stack mental health application with user authentication and data visualization",
-    icon: <Sparkles className="w-6 h-6" />,
+    icon: <Heart className="w-6 h-6" />,
     gradient: "from-neon-cyan to-neon-purple",
   },
   {
@@ -29,6 +35,7 @@ const aiProjects: AIProject[] = [
     result: "Enterprise-grade healthcare SaaS with complex business logic",
     icon: <Zap className="w-6 h-6" />,
     gradient: "from-neon-purple to-neon-pink",
+    image: projectIchranavigator,
   },
   {
     title: "Join The World",
@@ -38,6 +45,7 @@ const aiProjects: AIProject[] = [
     result: "Social platform with real-time features and location-based services",
     icon: <MessageSquare className="w-6 h-6" />,
     gradient: "from-neon-green to-neon-cyan",
+    image: projectJointheworld,
   },
   {
     title: "Self Map Maker",
@@ -47,6 +55,7 @@ const aiProjects: AIProject[] = [
     result: "Interactive visualization app built with AI-assisted development",
     icon: <Wand2 className="w-6 h-6" />,
     gradient: "from-neon-pink to-neon-purple",
+    image: projectSelfmapmaker,
   },
   {
     title: "InsureHub AI",
@@ -56,52 +65,73 @@ const aiProjects: AIProject[] = [
     result: "Complete insurance SaaS with AI-powered recommendations",
     icon: <Sparkles className="w-6 h-6" />,
     gradient: "from-neon-cyan to-neon-green",
+    image: projectInsurehubai,
   },
 ];
 
 const AIProjectCard = ({ project, index }: { project: AIProject; index: number }) => {
   return (
     <motion.div
-      className="glass-card p-6 group hover:neon-border transition-all duration-500"
+      className="glass-card overflow-hidden group hover:neon-border transition-all duration-500"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ delay: index * 0.15, duration: 0.5 }}
       whileHover={{ y: -5 }}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className={`p-3 rounded-xl bg-gradient-to-br ${project.gradient} text-background`}>
-          {project.icon}
+      {/* Project Image */}
+      {project.image ? (
+        <div className="relative h-48 overflow-hidden">
+          <img 
+            src={project.image} 
+            alt={`${project.title} preview`}
+            className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+          <div className={`absolute top-4 right-4 p-2 rounded-lg bg-gradient-to-br ${project.gradient} text-background`}>
+            {project.icon}
+          </div>
         </div>
-        <span className="px-3 py-1 text-xs font-mono rounded-full bg-muted text-primary">
-          {project.platform}
-        </span>
+      ) : (
+        <div className={`relative h-48 bg-gradient-to-br ${project.gradient} opacity-20 flex items-center justify-center`}>
+          <div className={`p-4 rounded-xl bg-gradient-to-br ${project.gradient} text-background`}>
+            {project.icon}
+          </div>
+        </div>
+      )}
+
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+            {project.title}
+          </h3>
+          <span className="px-3 py-1 text-xs font-mono rounded-full bg-muted text-primary">
+            {project.platform}
+          </span>
+        </div>
+
+        {/* Description */}
+        <p className="text-muted-foreground text-sm mb-4">
+          {project.description}
+        </p>
+
+        {/* Result */}
+        <div className="flex items-center gap-2 text-sm text-primary mb-4">
+          <ArrowRight className="w-4 h-4" />
+          <span className="font-medium">{project.result}</span>
+        </div>
+
+        {/* Visit Link */}
+        <a
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-primary transition-colors"
+        >
+          Visit Site <ArrowRight className="w-3 h-3" />
+        </a>
       </div>
-
-      {/* Title & Description */}
-      <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
-        {project.title}
-      </h3>
-      <p className="text-muted-foreground text-sm mb-4">
-        {project.description}
-      </p>
-
-      {/* Result */}
-      <div className="flex items-center gap-2 text-sm text-primary mb-4">
-        <ArrowRight className="w-4 h-4" />
-        <span className="font-medium">{project.result}</span>
-      </div>
-
-      {/* Visit Link */}
-      <a
-        href={project.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-primary transition-colors"
-      >
-        Visit Site <ArrowRight className="w-3 h-3" />
-      </a>
     </motion.div>
   );
 };
