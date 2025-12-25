@@ -1,5 +1,11 @@
 import { motion } from "framer-motion";
-import { ExternalLink, Github, ArrowUpRight } from "lucide-react";
+import { ExternalLink, ArrowUpRight } from "lucide-react";
+
+import projectHumindly from "@/assets/project-humindly.png";
+import projectIchranavigator from "@/assets/project-ichranavigator.png";
+import projectJointheworld from "@/assets/project-jointheworld.png";
+import projectSelfmapmaker from "@/assets/project-selfmapmaker.png";
+import projectInsurehubai from "@/assets/project-insurehubai.png";
 
 interface Project {
   title: string;
@@ -7,59 +13,46 @@ interface Project {
   image: string;
   tags: string[];
   liveUrl?: string;
-  githubUrl?: string;
   featured?: boolean;
 }
 
 const projects: Project[] = [
   {
-    title: "E-Commerce Platform",
-    description: "Full-stack e-commerce solution with real-time inventory, Stripe payments, and admin dashboard. Built for scale with Next.js and PostgreSQL.",
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop",
-    tags: ["Next.js", "TypeScript", "PostgreSQL", "Stripe", "Redis"],
-    liveUrl: "#",
-    githubUrl: "#",
+    title: "Humindly",
+    description: "AI-powered recruitment platform combining the speed of AI with human precision to accelerate hiring in Tech, Finance, Pharma & Engineering.",
+    image: projectHumindly,
+    tags: ["React", "Node.js", "AI/ML", "PostgreSQL", "TypeScript"],
+    liveUrl: "https://humindly.fr",
     featured: true,
   },
   {
-    title: "Real-Time Analytics Dashboard",
-    description: "Interactive analytics platform with WebSocket connections, dynamic charts, and custom reporting engine.",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
-    tags: ["React", "D3.js", "WebSockets", "Node.js", "MongoDB"],
-    liveUrl: "#",
-    githubUrl: "#",
+    title: "ICHRA Navigator",
+    description: "Healthcare benefits navigation platform simplifying ICHRA compliance and employee health plan selection for modern employers.",
+    image: projectIchranavigator,
+    tags: ["React", "TypeScript", "Supabase", "Tailwind CSS"],
+    liveUrl: "https://ichranavigator.com",
     featured: true,
   },
   {
-    title: "AI Content Generator",
-    description: "SaaS platform leveraging OpenAI APIs for automated content creation with custom fine-tuning capabilities.",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop",
-    tags: ["Python", "FastAPI", "OpenAI", "React", "PostgreSQL"],
-    liveUrl: "#",
-    githubUrl: "#",
+    title: "Join The World",
+    description: "Global community platform connecting travelers and digital nomads for authentic local experiences and entrepreneurship.",
+    image: projectJointheworld,
+    tags: ["React", "Node.js", "Real-time", "PostgreSQL"],
+    liveUrl: "https://jointheworld.co",
   },
   {
-    title: "Microservices Architecture",
-    description: "Enterprise-grade microservices system with Kubernetes orchestration, service mesh, and distributed tracing.",
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop",
-    tags: ["Go", "Kubernetes", "gRPC", "Prometheus", "Jaeger"],
-    liveUrl: "#",
-    githubUrl: "#",
+    title: "Self Map Maker",
+    description: "AI-powered self-discovery tool that generates personalized mind maps and insights based on user reflections.",
+    image: projectSelfmapmaker,
+    tags: ["Lovable", "React", "AI Integration", "Visualization"],
+    liveUrl: "https://self-map-maker.lovable.app",
   },
   {
-    title: "Mobile Banking App",
-    description: "Cross-platform fintech application with biometric auth, real-time transactions, and fraud detection.",
-    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop",
-    tags: ["React Native", "Node.js", "PostgreSQL", "Redis", "AWS"],
-    liveUrl: "#",
-  },
-  {
-    title: "3D Product Configurator",
-    description: "Interactive WebGL application for real-time product customization with AR preview capabilities.",
-    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=600&fit=crop",
-    tags: ["Three.js", "React", "WebGL", "GLTF", "AR.js"],
-    liveUrl: "#",
-    githubUrl: "#",
+    title: "InsureHub AI",
+    description: "AI-driven insurance contracting platform connecting agents with carriers for fast approvals and competitive commissions.",
+    image: projectInsurehubai,
+    tags: ["Lovable", "React", "TypeScript", "Supabase"],
+    liveUrl: "https://insure-hub-ai.lovable.app",
   },
 ];
 
@@ -86,17 +79,11 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
         
         {/* Links overlay */}
         <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              className="p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground transition-colors"
-            >
-              <Github className="w-5 h-5" />
-            </a>
-          )}
           {project.liveUrl && (
             <a
               href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <ExternalLink className="w-5 h-5" />
