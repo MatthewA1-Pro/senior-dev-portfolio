@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 const WHATSAPP_NUMBER = "+2349138508184";
-const EMAIL = "base44.dev@gmail.com";
+const EMAIL = "base44.dev1@gmail.com";
 
 export const ContactSection = () => {
   const [formData, setFormData] = useState({
