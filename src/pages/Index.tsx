@@ -8,6 +8,7 @@ import { ProjectsSection } from "@/components/ProjectsSection";
 import { AIGallerySection } from "@/components/AIGallerySection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
+import { SakuraPetals } from "@/components/SakuraPetals";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +21,9 @@ const Index = () => {
 
       {!isLoading && (
         <main className="relative">
+          {/* Sakura petals floating effect */}
+          <SakuraPetals />
+          
           <Navigation />
           <HeroSection />
           <SkillsSection />
