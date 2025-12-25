@@ -18,12 +18,20 @@ export const Footer = () => {
             <span className="text-foreground">.</span>
           </motion.a>
 
-          {/* Copyright */}
-          <p className="text-sm text-muted-foreground font-mono flex items-center gap-1">
-            © {currentYear} Matthew. Built with{" "}
-            <Heart className="w-4 h-4 text-destructive inline" /> and{" "}
-            <span className="text-primary">AI</span>
-          </p>
+          {/* Copyright & Email */}
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground font-mono flex items-center gap-1 justify-center">
+              © {currentYear} Matthew. Built with{" "}
+              <Heart className="w-4 h-4 text-destructive inline" /> and{" "}
+              <span className="text-primary">AI</span>
+            </p>
+            <a 
+              href="mailto:base44.dev1@gmail.com" 
+              className="text-sm text-muted-foreground hover:text-primary transition-colors font-mono"
+            >
+              base44.dev1@gmail.com
+            </a>
+          </div>
 
           {/* Quick Links */}
           <div className="flex items-center gap-6">
