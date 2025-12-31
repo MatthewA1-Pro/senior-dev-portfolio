@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Wand2, ArrowRight, Eye, X } from "lucide-react";
 import { useState } from "react";
 import { useJutsuSounds } from "@/hooks/useJutsuSounds";
+import { useTilt3D } from "@/hooks/useTilt3D";
 
 import projectSelfmapmaker from "@/assets/project-selfmapmaker.png";
 import projectInsurehubai from "@/assets/project-insurehubai.png";
@@ -160,15 +161,28 @@ const ByakuganPreview = ({
 };
 
 const AIProjectCard = ({ project, index, onPreview }: { project: AIProject; index: number; onPreview: (project: AIProject) => void }) => {
+  const { ref, tiltStyle, handleMouseMove, handleMouseLeave } = useTilt3D(12);
+
   return (
     <motion.div
-      className="glass-card overflow-hidden group hover:neon-border transition-all duration-500"
+      ref={ref}
+      className="glass-card overflow-hidden group hover:neon-border transition-all duration-500 relative"
+      style={tiltStyle}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ delay: index * 0.2, duration: 0.6, ease: "easeOut" }}
-      whileHover={{ y: -8, transition: { duration: 0.3 } }}
     >
+      {/* Glare effect */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
+        style={{
+          background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 45%, transparent 50%)",
+        }}
+      />
+
       {/* Project Image */}
       {project.image ? (
         <div className="relative h-48 overflow-hidden">
