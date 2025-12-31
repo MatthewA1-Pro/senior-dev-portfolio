@@ -24,6 +24,7 @@ const Index = () => {
     toggleSound,
     playWhoosh,
     playTextReveal,
+    playRevealMusic,
   } = useCinematicAudio();
 
   // Sync sound state from loading screen
@@ -37,9 +38,10 @@ const Index = () => {
   // After loading completes, run the cinematic intro sequence with sounds
   useEffect(() => {
     if (!isLoading) {
-      // Play whoosh on main reveal
+      // Play epic reveal music
       if (isSoundEnabled) {
-        setTimeout(() => playWhoosh(), 500);
+        setTimeout(() => playRevealMusic(), 200);
+        setTimeout(() => playWhoosh(), 800);
         setTimeout(() => playTextReveal(), 1800);
         setTimeout(() => playTextReveal(), 2200);
       }
@@ -54,7 +56,7 @@ const Index = () => {
         clearTimeout(scrollTimer);
       };
     }
-  }, [isLoading, isSoundEnabled, playWhoosh, playTextReveal]);
+  }, [isLoading, isSoundEnabled, playWhoosh, playTextReveal, playRevealMusic]);
 
   return (
     <>
