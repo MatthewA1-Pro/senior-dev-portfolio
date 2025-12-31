@@ -70,6 +70,17 @@
   html {
     scroll-behavior: smooth;
   }
+
+  /* Hide default cursor on desktop when custom cursor is active */
+  @media (pointer: fine) {
+    body {
+      cursor: none;
+    }
+    
+    a, button, [role="button"], .magnetic-hover {
+      cursor: none;
+    }
+  }
 }
 
 @layer components {
