@@ -3,9 +3,12 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Sphere, Float } from "@react-three/drei";
 import * as THREE from "three";
+import { SoundToggle } from "./SoundToggle";
+import { useCinematicAudio } from "@/hooks/useCinematicAudio";
 
 interface LoadingScreenProps {
   onComplete: () => void;
+  onSoundStateChange?: (enabled: boolean) => void;
 }
 
 // 3D Floating wireframe nodes - igloo.inc inspired
@@ -317,10 +320,58 @@ const NetworkNodes2D = () => {
   );
 };
 
-export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
+export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenProps) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<'loading' | 'kamui'>('loading');
   const kamuiProgressRef = useRef(0);
+  
+  const {
+    isSoundEnabled,
+    toggleSound,
+    playAmbientDrone,
+    playRisingTension,
+    playKamuiVortex,
+    playHeartbeat,
+  } = useCinematicAudio();
+
+  // Notify parent of sound state changes
+  useEffect(() => {
+    onSoundStateChange?.(isSoundEnabled);
+  }, [isSoundEnabled, onSoundStateChange]);
+
+  // Play ambient drone when sound is first enabled
+  useEffect(() => {
+    if (isSoundEnabled && phase === 'loading') {
+      playAmbientDrone();
+    }
+  }, [isSoundEnabled, phase, playAmbientDrone]);
+
+  // Play heartbeat periodically during loading
+  useEffect(() => {
+    if (!isSoundEnabled || phase !== 'loading') return;
+    
+    const interval = setInterval(() => {
+      if (progress > 30 && progress < 90) {
+        playHeartbeat();
+      }
+    }, 1200);
+    
+    return () => clearInterval(interval);
+  }, [isSoundEnabled, phase, progress, playHeartbeat]);
+
+  // Play rising tension near completion
+  useEffect(() => {
+    if (isSoundEnabled && progress > 80 && progress < 85) {
+      playRisingTension();
+    }
+  }, [isSoundEnabled, progress, playRisingTension]);
+
+  // Play kamui vortex sound
+  useEffect(() => {
+    if (isSoundEnabled && phase === 'kamui') {
+      playKamuiVortex();
+    }
+  }, [isSoundEnabled, phase, playKamuiVortex]);
 
   useEffect(() => {
     // Slower, more cinematic loading - like a movie scene
@@ -355,6 +406,13 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
     >
+      {/* Sound Toggle */}
+      <SoundToggle
+        isSoundEnabled={isSoundEnabled}
+        onToggle={toggleSound}
+        className="top-6 right-6"
+      />
+
       {/* 3D Canvas */}
       <div className="absolute inset-0">
         <Canvas camera={{ position: [0, 0, 5], fov: 50 }} gl={{ antialias: true, alpha: true }}>
