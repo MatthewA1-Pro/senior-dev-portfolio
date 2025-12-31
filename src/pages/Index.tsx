@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Navigation } from "@/components/Navigation";
@@ -10,15 +10,40 @@ import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 import { SakuraPetals } from "@/components/SakuraPetals";
 import { ScrollProgress, CursorFollower } from "@/components/ScrollReveal";
+import { SoundToggle } from "@/components/SoundToggle";
+import { useCinematicAudio } from "@/hooks/useCinematicAudio";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isIntroComplete, setIsIntroComplete] = useState(false);
   const [showNav, setShowNav] = useState(false);
+  const [soundEnabledFromLoading, setSoundEnabledFromLoading] = useState(false);
 
-  // After loading completes, run the cinematic intro sequence
+  const {
+    isSoundEnabled,
+    toggleSound,
+    playWhoosh,
+    playTextReveal,
+  } = useCinematicAudio();
+
+  // Sync sound state from loading screen
+  const handleSoundStateChange = useCallback((enabled: boolean) => {
+    setSoundEnabledFromLoading(enabled);
+    if (enabled && !isSoundEnabled) {
+      toggleSound();
+    }
+  }, [isSoundEnabled, toggleSound]);
+
+  // After loading completes, run the cinematic intro sequence with sounds
   useEffect(() => {
     if (!isLoading) {
+      // Play whoosh on main reveal
+      if (isSoundEnabled) {
+        setTimeout(() => playWhoosh(), 500);
+        setTimeout(() => playTextReveal(), 1800);
+        setTimeout(() => playTextReveal(), 2200);
+      }
+      
       // Delay before showing navigation
       const navTimer = setTimeout(() => setShowNav(true), 1500);
       // Enable scrolling after full intro
@@ -29,12 +54,17 @@ const Index = () => {
         clearTimeout(scrollTimer);
       };
     }
-  }, [isLoading]);
+  }, [isLoading, isSoundEnabled, playWhoosh, playTextReveal]);
 
   return (
     <>
       <AnimatePresence mode="wait">
-        {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+        {isLoading && (
+          <LoadingScreen 
+            onComplete={() => setIsLoading(false)} 
+            onSoundStateChange={handleSoundStateChange}
+          />
+        )}
       </AnimatePresence>
 
       {!isLoading && (
@@ -45,6 +75,13 @@ const Index = () => {
           transition={{ duration: 1.2, ease: "easeOut" }}
           style={{ overflow: isIntroComplete ? 'auto' : 'hidden' }}
         >
+          {/* Sound Toggle - persists after loading */}
+          <SoundToggle
+            isSoundEnabled={isSoundEnabled}
+            onToggle={toggleSound}
+            className="top-6 right-6"
+          />
+
           {/* Custom cursor follower */}
           <CursorFollower />
           
