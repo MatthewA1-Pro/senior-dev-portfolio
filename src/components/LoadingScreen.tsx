@@ -323,26 +323,28 @@ export const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   const kamuiProgressRef = useRef(0);
 
   useEffect(() => {
+    // Slower, more cinematic loading - like a movie scene
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setPhase('kamui');
           
-          // Kamui transition duration
+          // Slower Kamui transition for dramatic effect
           const kamuiInterval = setInterval(() => {
             kamuiProgressRef.current += 1;
-            if (kamuiProgressRef.current >= 60) {
+            if (kamuiProgressRef.current >= 80) {
               clearInterval(kamuiInterval);
               onComplete();
             }
-          }, 25);
+          }, 40); // Slower kamui transition
           
           return 100;
         }
-        return prev + Math.random() * 6 + 2;
+        // Slower, smoother progress increments
+        return prev + Math.random() * 2 + 0.8;
       });
-    }, 100);
+    }, 180); // Slower interval for cinematic feel
 
     return () => clearInterval(interval);
   }, [onComplete]);

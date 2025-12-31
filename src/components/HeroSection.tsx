@@ -4,6 +4,7 @@ import { ChevronDown, Mail, MessageCircle, Send, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { MagneticButton } from "./ScrollReveal";
 
 const WHATSAPP_NUMBER = "+2349138508184";
 const EMAIL = "base44.dev1@gmail.com";
@@ -125,18 +126,22 @@ export const HeroSection = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.8 }}
           >
-            <button
+            <MagneticButton
+              as="button"
               onClick={openWhatsApp}
               className="p-2.5 sm:p-3 rounded-full glass-card hover:anime-border transition-all duration-300 group"
+              strength={0.5}
             >
               <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-            </button>
-            <button
+            </MagneticButton>
+            <MagneticButton
+              as="button"
               onClick={() => setShowContactModal(true)}
               className="p-2.5 sm:p-3 rounded-full glass-card hover:anime-border transition-all duration-300 group"
+              strength={0.5}
             >
               <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-            </button>
+            </MagneticButton>
           </motion.div>
         </motion.div>
       </div>

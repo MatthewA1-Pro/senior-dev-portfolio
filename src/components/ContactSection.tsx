@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Send, Mail, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { MagneticButton } from "./ScrollReveal";
 
 const WHATSAPP_NUMBER = "+2349138508184";
 const EMAIL = "base44.dev1@gmail.com";
@@ -135,22 +136,28 @@ export const ContactSection = () => {
                 />
               </div>
 
-              <motion.button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full px-6 py-4 rounded-lg bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <MagneticButton
+                as="button"
+                className="w-full"
+                strength={0.2}
               >
-                {isSubmitting ? (
-                  "Sending..."
-                ) : (
-                  <>
-                    Send Message
-                    <Send className="w-4 h-4" />
-                  </>
-                )}
-              </motion.button>
+                <motion.button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full px-6 py-4 rounded-lg bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {isSubmitting ? (
+                    "Sending..."
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="w-4 h-4" />
+                    </>
+                  )}
+                </motion.button>
+              </MagneticButton>
             </form>
           </motion.div>
 
@@ -181,27 +188,31 @@ export const ContactSection = () => {
                 <div className="flex gap-4">
                   {socialLinks.map((link) => (
                     link.onClick ? (
-                      <button
+                      <MagneticButton
                         key={link.label}
+                        as="button"
                         onClick={link.onClick}
                         className="p-3 rounded-lg glass-card hover:neon-border transition-all duration-300 group"
+                        strength={0.5}
                       >
                         <span className="text-muted-foreground group-hover:text-primary transition-colors">
                           {link.icon}
                         </span>
-                      </button>
+                      </MagneticButton>
                     ) : (
-                      <a
+                      <MagneticButton
                         key={link.label}
+                        as="a"
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-3 rounded-lg glass-card hover:neon-border transition-all duration-300 group"
+                        strength={0.5}
                       >
                         <span className="text-muted-foreground group-hover:text-primary transition-colors">
                           {link.icon}
                         </span>
-                      </a>
+                      </MagneticButton>
                     )
                   ))}
                 </div>
