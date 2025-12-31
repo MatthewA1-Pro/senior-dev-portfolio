@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Code2, Database, Palette, Brain, Terminal, Cloud } from "lucide-react";
+import { ScrollReveal, Parallax } from "./ScrollReveal";
 
 interface Skill {
   name: string;
@@ -142,20 +143,16 @@ const SkillCard = ({ category, index }: { category: SkillCategory; index: number
 
 export const SkillsSection = () => {
   return (
-    <section id="skills" className="py-16 sm:py-24 lg:py-32 relative">
-      {/* Background effects */}
-      <div className="absolute inset-0 grid-bg opacity-20" />
+    <section id="skills" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
+      {/* Background effects with parallax */}
+      <Parallax speed={-0.3} className="absolute inset-0">
+        <div className="grid-bg opacity-20 w-full h-full" />
+      </Parallax>
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-primary/10 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
-        <motion.div
-          className="text-center mb-10 sm:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+        <ScrollReveal className="text-center mb-10 sm:mb-16">
           <p className="font-mono text-primary mb-2 text-xs sm:text-sm">{"// Skills & Expertise"}</p>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4">
             <span className="gradient-text">Tech Stack</span>
@@ -163,7 +160,7 @@ export const SkillsSection = () => {
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
             Years of experience across multiple domains, from traditional development to cutting-edge AI tools.
           </p>
-        </motion.div>
+        </ScrollReveal>
 
         {/* Skills Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
