@@ -291,55 +291,228 @@ export const SectionDivider = ({ className = "" }: { className?: string }) => {
   );
 };
 
-// Cursor follower effect
+// Enhanced Cursor follower effect with shape morphing
 export const CursorFollower = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
+  const [cursorVariant, setCursorVariant] = useState<'default' | 'hover' | 'click' | 'text'>('default');
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
+      if (!isVisible) setIsVisible(true);
     };
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.closest('a, button, [role="button"]')) {
-        setIsHovering(true);
+      if (target.closest('a, button, [role="button"], .magnetic-hover')) {
+        setCursorVariant('hover');
+      } else if (target.closest('p, h1, h2, h3, h4, h5, h6, span, li')) {
+        setCursorVariant('text');
       } else {
-        setIsHovering(false);
+        setCursorVariant('default');
       }
     };
 
+    const handleMouseDown = () => setCursorVariant('click');
+    const handleMouseUp = () => setCursorVariant('default');
+    const handleMouseLeave = () => setIsVisible(false);
+    const handleMouseEnter = () => setIsVisible(true);
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    document.body.addEventListener('mouseleave', handleMouseLeave);
+    document.body.addEventListener('mouseenter', handleMouseEnter);
     
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.removeEventListener('mouseleave', handleMouseLeave);
+      document.body.removeEventListener('mouseenter', handleMouseEnter);
     };
-  }, []);
+  }, [isVisible]);
+
+  const cursorConfig = {
+    default: { size: 12, outerSize: 40, borderWidth: 1, opacity: 1 },
+    hover: { size: 8, outerSize: 64, borderWidth: 2, opacity: 0.8 },
+    click: { size: 6, outerSize: 32, borderWidth: 2, opacity: 1 },
+    text: { size: 4, outerSize: 80, borderWidth: 1, opacity: 0.5 },
+  };
+
+  const config = cursorConfig[cursorVariant];
 
   const springConfig = { stiffness: 500, damping: 28 };
-  const x = useSpring(mousePosition.x - 16, springConfig);
-  const y = useSpring(mousePosition.y - 16, springConfig);
+  const smoothX = useSpring(mousePosition.x, springConfig);
+  const smoothY = useSpring(mousePosition.y, springConfig);
+
+  const outerSpringConfig = { stiffness: 120, damping: 20 };
+  const outerX = useSpring(mousePosition.x, outerSpringConfig);
+  const outerY = useSpring(mousePosition.y, outerSpringConfig);
+
+  if (typeof window !== 'undefined' && 'ontouchstart' in window) {
+    return null; // Hide on touch devices
+  }
 
   return (
     <>
       {/* Main cursor dot */}
       <motion.div
-        className="fixed top-0 left-0 w-3 h-3 rounded-full bg-primary pointer-events-none z-[9999] mix-blend-difference hidden md:block"
-        style={{ x, y }}
-      />
-      {/* Outer ring */}
-      <motion.div
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-primary/50 pointer-events-none z-[9999] hidden md:block"
+        className="fixed top-0 left-0 rounded-full bg-primary pointer-events-none z-[9999] mix-blend-difference hidden md:block"
         style={{ 
-          x: useSpring(mousePosition.x - 16, { stiffness: 150, damping: 15 }),
-          y: useSpring(mousePosition.y - 16, { stiffness: 150, damping: 15 }),
-          scale: isHovering ? 1.5 : 1,
+          x: smoothX,
+          y: smoothY,
+          translateX: '-50%',
+          translateY: '-50%',
         }}
-        transition={{ duration: 0.2 }}
+        animate={{
+          width: config.size,
+          height: config.size,
+          opacity: isVisible ? 1 : 0,
+        }}
+        transition={{ duration: 0.15 }}
       />
+      
+      {/* Outer morphing ring */}
+      <motion.div
+        className="fixed top-0 left-0 rounded-full pointer-events-none z-[9998] hidden md:flex items-center justify-center"
+        style={{ 
+          x: outerX,
+          y: outerY,
+          translateX: '-50%',
+          translateY: '-50%',
+        }}
+        animate={{
+          width: config.outerSize,
+          height: config.outerSize,
+          borderWidth: config.borderWidth,
+          opacity: isVisible ? config.opacity : 0,
+          borderRadius: cursorVariant === 'text' ? '4px' : '50%',
+        }}
+        transition={{ 
+          duration: 0.3,
+          ease: [0.25, 0.4, 0.25, 1]
+        }}
+      >
+        <motion.div
+          className="absolute inset-0 rounded-full border-primary/50"
+          style={{ borderWidth: 'inherit', borderStyle: 'solid', borderColor: 'hsl(var(--primary) / 0.5)', borderRadius: 'inherit' }}
+        />
+        
+        {/* Glow effect on hover */}
+        {cursorVariant === 'hover' && (
+          <motion.div
+            className="absolute inset-0 rounded-full bg-primary/10"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            style={{ borderRadius: 'inherit' }}
+          />
+        )}
+      </motion.div>
+
+      {/* Trail particles */}
+      {cursorVariant === 'hover' && (
+        <>
+          {[...Array(3)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="fixed top-0 left-0 w-1 h-1 rounded-full bg-primary/30 pointer-events-none z-[9997] hidden md:block"
+              style={{ 
+                x: useSpring(mousePosition.x, { stiffness: 100 - i * 20, damping: 15 + i * 5 }),
+                y: useSpring(mousePosition.y, { stiffness: 100 - i * 20, damping: 15 + i * 5 }),
+                translateX: '-50%',
+                translateY: '-50%',
+              }}
+              animate={{ opacity: 0.6 - i * 0.15 }}
+            />
+          ))}
+        </>
+      )}
     </>
   );
+};
+
+// Magnetic Button/Link wrapper with enhanced pull effect
+interface MagneticButtonProps {
+  children: ReactNode;
+  className?: string;
+  strength?: number;
+  as?: 'button' | 'a' | 'div';
+  href?: string;
+  onClick?: () => void;
+  target?: string;
+  rel?: string;
+}
+
+export const MagneticButton = ({ 
+  children, 
+  className = "", 
+  strength = 0.4,
+  as = 'button',
+  href,
+  onClick,
+  target,
+  rel
+}: MagneticButtonProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const scale = useMotionValue(1);
+
+  const springConfig = { stiffness: 200, damping: 20 };
+  const springX = useSpring(x, springConfig);
+  const springY = useSpring(y, springConfig);
+  const springScale = useSpring(scale, { stiffness: 300, damping: 25 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const distanceX = e.clientX - centerX;
+    const distanceY = e.clientY - centerY;
+    
+    x.set(distanceX * strength);
+    y.set(distanceY * strength);
+  };
+
+  const handleMouseEnter = () => {
+    scale.set(1.05);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+    scale.set(1);
+  };
+
+  const Component = motion.div;
+
+  const content = (
+    <Component
+      ref={ref}
+      className={`magnetic-hover inline-block ${className}`}
+      style={{ x: springX, y: springY, scale: springScale }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {as === 'a' && href ? (
+        <a href={href} target={target} rel={rel} onClick={onClick} className="block">
+          {children}
+        </a>
+      ) : as === 'button' ? (
+        <button onClick={onClick} className="block w-full">
+          {children}
+        </button>
+      ) : (
+        children
+      )}
+    </Component>
+  );
+
+  return content;
 };
