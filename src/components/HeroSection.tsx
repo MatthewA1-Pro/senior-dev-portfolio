@@ -9,7 +9,11 @@ import { MagneticButton } from "./ScrollReveal";
 const WHATSAPP_NUMBER = "+2349138508184";
 const EMAIL = "base44.dev1@gmail.com";
 
-export const HeroSection = () => {
+interface HeroSectionProps {
+  isIntroComplete?: boolean;
+}
+
+export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
   const [showContactModal, setShowContactModal] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,9 +55,28 @@ export const HeroSection = () => {
       <div className="absolute inset-0 grid-bg opacity-50" />
       
       {/* 3D Globe - pushed back with lower z-index and reduced opacity */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <motion.div 
+        className="absolute inset-0 z-0 pointer-events-none"
+        initial={{ opacity: 0, scale: 1.1 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+      >
         <Globe3D />
-      </div>
+      </motion.div>
+      
+      {/* Cinematic letterbox bars - fade out after intro */}
+      <motion.div
+        className="absolute top-0 left-0 right-0 h-16 bg-black z-20"
+        initial={{ height: "15vh" }}
+        animate={{ height: isIntroComplete ? 0 : "8vh" }}
+        transition={{ duration: 1.5, ease: [0.25, 0.4, 0.25, 1], delay: isIntroComplete ? 0 : 0 }}
+      />
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-16 bg-black z-20"
+        initial={{ height: "15vh" }}
+        animate={{ height: isIntroComplete ? 0 : "8vh" }}
+        transition={{ duration: 1.5, ease: [0.25, 0.4, 0.25, 1], delay: isIntroComplete ? 0 : 0 }}
+      />
       
       {/* Dark gradient overlay for text contrast */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/60 via-transparent to-background/80 pointer-events-none" />
@@ -63,27 +86,27 @@ export const HeroSection = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
           className="flex flex-col items-center"
         >
           {/* Anime-style decorative element */}
           <motion.div
             className="mb-6 sm:mb-8"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
+            transition={{ delay: 1.5, duration: 1 }}
           >
             <span className="text-accent text-sm sm:text-base md:text-lg tracking-[0.2em] font-japanese">
               運命を切り開く — Forging My Destiny
             </span>
           </motion.div>
 
-          {/* Name - elegant anime typography */}
+          {/* Name - elegant anime typography with cinematic reveal */}
           <motion.h1
             className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display tracking-wider mb-8 sm:mb-10 leading-none"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
+            initial={{ opacity: 0, y: 50, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ delay: 1.8, duration: 1.2, ease: [0.25, 0.4, 0.25, 1] }}
           >
             <span className="gradient-text animate-gradient">MATTHEW</span>
           </motion.h1>
@@ -91,9 +114,9 @@ export const HeroSection = () => {
           {/* Title - with anime-styled border */}
           <motion.p
             className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground font-semibold mb-3 sm:mb-4 tracking-wide px-6 py-3 glass-card"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 2.2, duration: 0.8 }}
           >
             Senior Full-Stack Developer
           </motion.p>
@@ -102,7 +125,7 @@ export const HeroSection = () => {
             className="text-base sm:text-lg md:text-xl lg:text-2xl text-secondary tracking-wider px-4 font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
+            transition={{ delay: 2.5, duration: 0.8 }}
           >
             Custom Code • AI Innovation • Prompt Engineering
           </motion.p>
@@ -112,7 +135,7 @@ export const HeroSection = () => {
             className="mt-6 sm:mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8 }}
+            transition={{ delay: 2.8, duration: 0.8 }}
           >
             <span className="text-accent/80 text-sm sm:text-base tracking-[0.15em] font-japanese">
               ✦ 伝説になる ✦ Becoming Legend
@@ -122,9 +145,9 @@ export const HeroSection = () => {
           {/* Social Links */}
           <motion.div
             className="flex items-center justify-center gap-4 sm:gap-6 mt-8 sm:mt-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 3.2, duration: 0.8 }}
           >
             <MagneticButton
               as="button"
@@ -146,18 +169,20 @@ export const HeroSection = () => {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 10, 0] }}
-        transition={{ delay: 1.2, duration: 2.5, repeat: Infinity }}
-      >
-        <a href="#skills" className="flex flex-col items-center text-muted-foreground hover:text-primary transition-colors">
-          <span className="font-mono text-xs sm:text-sm mb-2">Scroll</span>
-          <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
-        </a>
-      </motion.div>
+      {/* Scroll indicator - only show after intro */}
+      {isIntroComplete && (
+        <motion.div
+          className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, y: [0, 10, 0] }}
+          transition={{ delay: 0.5, duration: 2.5, repeat: Infinity }}
+        >
+          <a href="#skills" className="flex flex-col items-center text-muted-foreground hover:text-primary transition-colors">
+            <span className="font-mono text-xs sm:text-sm mb-2">Scroll</span>
+            <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
+          </a>
+        </motion.div>
+      )}
 
       {/* Contact Modal */}
       <AnimatePresence>

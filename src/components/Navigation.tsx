@@ -36,15 +36,12 @@ export const Navigation = () => {
 
   return (
     <>
-      <motion.nav
+      <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled 
             ? "bg-background/20 backdrop-blur-2xl border-b border-primary/10 shadow-lg shadow-primary/5" 
             : "bg-transparent"
         }`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
       >
         {/* Glassmorphism gradient overlay */}
         <div className={`absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-0'}`} />
@@ -80,7 +77,7 @@ export const Navigation = () => {
             {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
           </button>
         </div>
-      </motion.nav>
+      </nav>
 
       {/* Mobile Menu */}
       <AnimatePresence>
