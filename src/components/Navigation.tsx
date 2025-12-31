@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { MagneticButton } from "./ScrollReveal";
 
 const navLinks = [
   { href: "#home", label: "Home" },
@@ -57,14 +58,16 @@ export const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4 lg:gap-8">
             {navLinks.map((link) => (
-              <a
+              <MagneticButton
                 key={link.href}
+                as="a"
                 href={link.href}
                 className="font-mono text-xs lg:text-sm text-muted-foreground hover:text-primary transition-all duration-300 relative group py-2"
+                strength={0.3}
               >
                 {link.label}
                 <span className="absolute -bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary transition-all duration-300 group-hover:w-full rounded-full" />
-              </a>
+              </MagneticButton>
             ))}
           </div>
 

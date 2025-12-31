@@ -856,18 +856,31 @@ export const Globe3D = () => {
   const { mouse, isHovering } = useMousePosition();
   
   return (
-    <div className="absolute inset-0 opacity-80">
-      {/* Video Background */}
+    <div className="absolute inset-0 opacity-90">
+      {/* Video Background - Cinematic Sharingan */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"
-        style={{ zIndex: -1 }}
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
+        style={{ 
+          zIndex: -1,
+          filter: 'contrast(1.2) saturate(1.3) brightness(0.9)',
+        }}
       >
         <source src="/videos/sharingan-video.mp4" type="video/mp4" />
       </video>
+      
+      {/* Cinematic vignette overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          zIndex: 0,
+          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%)',
+        }}
+      />
       
       <Canvas camera={{ position: [0, 0, 4], fov: 55 }} gl={{ antialias: true, alpha: true }}>
         <Scene mouse={mouse} isHovering={isHovering} />
