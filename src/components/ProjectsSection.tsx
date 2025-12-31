@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, ArrowUpRight, Eye, X } from "lucide-react";
 import { useState } from "react";
 import { useJutsuSounds } from "@/hooks/useJutsuSounds";
+import { useTilt3D } from "@/hooks/useTilt3D";
 import { ScrollReveal, Parallax } from "./ScrollReveal";
 
 import projectHumindly from "@/assets/project-humindly.png";
@@ -179,17 +180,30 @@ const ByakuganPreview = ({
 };
 
 const ProjectCard = ({ project, index, onPreview }: { project: Project; index: number; onPreview: (project: Project) => void }) => {
+  const { ref, tiltStyle, handleMouseMove, handleMouseLeave } = useTilt3D(12);
+
   return (
     <motion.div
+      ref={ref}
       className={`glass-card overflow-hidden group ${
         project.featured ? "sm:col-span-2 lg:row-span-2" : ""
       }`}
+      style={tiltStyle}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ delay: index * 0.2, duration: 0.7, ease: "easeOut" }}
-      whileHover={{ y: -8, transition: { duration: 0.4 } }}
     >
+      {/* Glare effect */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 45%, transparent 50%)",
+        }}
+      />
+      
       {/* Image */}
       <div className="relative overflow-hidden aspect-video">
         <img
