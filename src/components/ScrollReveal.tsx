@@ -442,7 +442,7 @@ interface MagneticButtonProps {
   strength?: number;
   as?: 'button' | 'a' | 'div';
   href?: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
   target?: string;
   rel?: string;
 }

@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { MagneticButton } from "./ScrollReveal";
+import { useSmoothScroll } from "@/hooks/useSmoothScroll";
+import { useCinematicAudio } from "@/hooks/useCinematicAudio";
 
 const navLinks = [
   { href: "#home", label: "Home" },
@@ -14,6 +16,8 @@ const navLinks = [
 export const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { handleSmoothScroll } = useSmoothScroll();
+  const { playScrollTransition, isSoundEnabled } = useCinematicAudio();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +38,13 @@ export const Navigation = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    handleSmoothScroll(e, href);
+    if (isSoundEnabled) {
+      playScrollTransition();
+    }
+  };
+
   return (
     <>
       <nav
@@ -47,7 +58,11 @@ export const Navigation = () => {
         <div className={`absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-0'}`} />
         
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between relative z-10">
-          <a href="#home" className="font-display text-xl sm:text-2xl tracking-wider group">
+          <a 
+            href="#home" 
+            onClick={(e) => handleNavClick(e, '#home')}
+            className="font-display text-xl sm:text-2xl tracking-wider group"
+          >
             <span className="text-primary group-hover:drop-shadow-[0_0_8px_hsl(var(--primary))] transition-all duration-300">M</span>
             <span className="text-foreground">.</span>
           </a>
@@ -59,6 +74,7 @@ export const Navigation = () => {
                 key={link.href}
                 as="a"
                 href={link.href}
+                onClick={(e: React.MouseEvent<HTMLAnchorElement>) => handleNavClick(e, link.href)}
                 className="font-mono text-xs lg:text-sm text-muted-foreground hover:text-primary transition-all duration-300 relative group py-2"
                 strength={0.3}
               >
@@ -106,7 +122,10 @@ export const Navigation = () => {
                   key={link.href}
                   href={link.href}
                   className="font-mono text-xl sm:text-2xl text-foreground hover:text-primary transition-all duration-300 relative group"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    handleNavClick(e, link.href);
+                    setIsMobileMenuOpen(false);
+                  }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}

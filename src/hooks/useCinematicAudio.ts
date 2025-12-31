@@ -201,30 +201,199 @@ export const useCinematicAudio = () => {
     activeNodes.current.push(osc1, osc2, gain, filter, panLFO, panGain);
   }, [isSoundEnabled]);
 
-  // Text reveal chime
+  // Text reveal chime - more musical
   const playTextReveal = useCallback(() => {
     if (!isSoundEnabled || !audioState.current.context || !audioState.current.masterGain) return;
     
     const { context, masterGain } = audioState.current;
     const now = context.currentTime;
     
+    // Musical chord reveal
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, i) => {
+      const osc = context.createOscillator();
+      const gain = context.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      
+      gain.gain.setValueAtTime(0, now + i * 0.05);
+      gain.gain.linearRampToValueAtTime(0.06, now + i * 0.05 + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      
+      osc.connect(gain);
+      gain.connect(masterGain);
+      
+      osc.start(now + i * 0.05);
+      osc.stop(now + 0.6);
+      
+      activeNodes.current.push(osc, gain);
+    });
+  }, [isSoundEnabled]);
+
+  // Epic reveal/cinematic music
+  const playRevealMusic = useCallback(() => {
+    if (!isSoundEnabled || !audioState.current.context || !audioState.current.masterGain) return;
+    
+    const { context, masterGain } = audioState.current;
+    const now = context.currentTime;
+    
+    // Bass foundation
+    const bassOsc = context.createOscillator();
+    const bassGain = context.createGain();
+    const bassFilter = context.createBiquadFilter();
+    
+    bassOsc.type = 'sawtooth';
+    bassOsc.frequency.setValueAtTime(55, now);
+    
+    bassFilter.type = 'lowpass';
+    bassFilter.frequency.value = 150;
+    
+    bassGain.gain.setValueAtTime(0, now);
+    bassGain.gain.linearRampToValueAtTime(0.15, now + 1);
+    bassGain.gain.setValueAtTime(0.15, now + 8);
+    bassGain.gain.linearRampToValueAtTime(0, now + 12);
+    
+    bassOsc.connect(bassFilter);
+    bassFilter.connect(bassGain);
+    bassGain.connect(masterGain);
+    bassOsc.start(now);
+    bassOsc.stop(now + 12);
+    
+    // Rising synth pad
+    const padNotes = [110, 138.59, 164.81, 220]; // A2, C#3, E3, A3
+    padNotes.forEach((freq, i) => {
+      const osc = context.createOscillator();
+      const gain = context.createGain();
+      const filter = context.createBiquadFilter();
+      
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(200, now);
+      filter.frequency.linearRampToValueAtTime(2000, now + 6);
+      
+      gain.gain.setValueAtTime(0, now + i * 0.5);
+      gain.gain.linearRampToValueAtTime(0.08, now + 2 + i * 0.5);
+      gain.gain.setValueAtTime(0.08, now + 8);
+      gain.gain.linearRampToValueAtTime(0, now + 12);
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(masterGain);
+      
+      osc.start(now + i * 0.5);
+      osc.stop(now + 12);
+      
+      activeNodes.current.push(osc, gain, filter);
+    });
+    
+    // Rhythmic pulse
+    for (let beat = 0; beat < 12; beat++) {
+      const pulseOsc = context.createOscillator();
+      const pulseGain = context.createGain();
+      
+      pulseOsc.type = 'sine';
+      pulseOsc.frequency.value = 82.41; // E2
+      
+      const beatTime = now + beat * 0.75;
+      pulseGain.gain.setValueAtTime(0.12, beatTime);
+      pulseGain.gain.exponentialRampToValueAtTime(0.001, beatTime + 0.3);
+      
+      pulseOsc.connect(pulseGain);
+      pulseGain.connect(masterGain);
+      
+      pulseOsc.start(beatTime);
+      pulseOsc.stop(beatTime + 0.4);
+      
+      activeNodes.current.push(pulseOsc, pulseGain);
+    }
+    
+    // Bright ascending arpeggios
+    const arpNotes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+    arpNotes.forEach((freq, i) => {
+      const osc = context.createOscillator();
+      const gain = context.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      
+      const startTime = now + 3 + i * 0.2;
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(0.06, startTime + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 1);
+      
+      osc.connect(gain);
+      gain.connect(masterGain);
+      
+      osc.start(startTime);
+      osc.stop(startTime + 1);
+      
+      activeNodes.current.push(osc, gain);
+    });
+    
+    // Cymbal shimmer
+    const shimmerBuffer = context.createBuffer(1, context.sampleRate * 3, context.sampleRate);
+    const shimmerData = shimmerBuffer.getChannelData(0);
+    for (let i = 0; i < shimmerData.length; i++) {
+      shimmerData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / shimmerData.length, 0.5);
+    }
+    
+    const shimmerSource = context.createBufferSource();
+    shimmerSource.buffer = shimmerBuffer;
+    
+    const shimmerFilter = context.createBiquadFilter();
+    shimmerFilter.type = 'highpass';
+    shimmerFilter.frequency.value = 8000;
+    
+    const shimmerGain = context.createGain();
+    shimmerGain.gain.setValueAtTime(0, now + 2);
+    shimmerGain.gain.linearRampToValueAtTime(0.04, now + 2.5);
+    shimmerGain.gain.linearRampToValueAtTime(0, now + 5);
+    
+    shimmerSource.connect(shimmerFilter);
+    shimmerFilter.connect(shimmerGain);
+    shimmerGain.connect(masterGain);
+    
+    shimmerSource.start(now + 2);
+    
+    activeNodes.current.push(bassOsc, bassGain, bassFilter, shimmerSource, shimmerFilter, shimmerGain);
+  }, [isSoundEnabled]);
+
+  // Scroll transition swoosh
+  const playScrollTransition = useCallback(() => {
+    if (!isSoundEnabled || !audioState.current.context || !audioState.current.masterGain) return;
+    
+    const { context, masterGain } = audioState.current;
+    const now = context.currentTime;
+    
+    // Quick melodic swoosh
     const osc = context.createOscillator();
     const gain = context.createGain();
+    const filter = context.createBiquadFilter();
     
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, now);
-    osc.frequency.exponentialRampToValueAtTime(1760, now + 0.1);
+    osc.frequency.setValueAtTime(300, now);
+    osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+    osc.frequency.exponentialRampToValueAtTime(600, now + 0.3);
     
-    gain.gain.setValueAtTime(0.08, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    filter.type = 'bandpass';
+    filter.frequency.value = 1000;
+    filter.Q.value = 1;
     
-    osc.connect(gain);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(masterGain);
     
     osc.start(now);
     osc.stop(now + 0.4);
     
-    activeNodes.current.push(osc, gain);
+    activeNodes.current.push(osc, gain, filter);
   }, [isSoundEnabled]);
 
   // Heartbeat/pulse
@@ -287,5 +456,7 @@ export const useCinematicAudio = () => {
     playKamuiVortex,
     playTextReveal,
     playHeartbeat,
+    playRevealMusic,
+    playScrollTransition,
   };
 };
