@@ -9,7 +9,7 @@ import { AIGallerySection } from "@/components/AIGallerySection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 import { SakuraPetals } from "@/components/SakuraPetals";
-import { ScrollProgress } from "@/components/ScrollReveal";
+import { ScrollProgress, CursorFollower } from "@/components/ScrollReveal";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -22,11 +22,14 @@ const Index = () => {
 
       {!isLoading && (
         <motion.main
-          className="relative"
+          className="relative cursor-none md:cursor-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
+          {/* Custom cursor follower */}
+          <CursorFollower />
+          
           {/* Scroll progress indicator */}
           <ScrollProgress />
           
