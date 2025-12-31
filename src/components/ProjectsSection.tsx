@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, ArrowUpRight, Eye, X } from "lucide-react";
 import { useState } from "react";
 import { useJutsuSounds } from "@/hooks/useJutsuSounds";
+import { ScrollReveal, Parallax } from "./ScrollReveal";
 
 import projectHumindly from "@/assets/project-humindly.png";
 import projectIchranavigator from "@/assets/project-ichranavigator.png";
@@ -260,49 +261,27 @@ export const ProjectsSection = () => {
   };
 
   return (
-    <section id="projects" className="py-16 sm:py-24 lg:py-32 relative">
-      {/* Background effects */}
-      <div className="absolute inset-0 grid-bg opacity-20" />
+    <section id="projects" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
+      {/* Background effects with parallax */}
+      <Parallax speed={-0.2} className="absolute inset-0">
+        <div className="grid-bg opacity-20 w-full h-full" />
+      </Parallax>
       <div className="absolute bottom-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/10 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
-        <motion.div
-          className="text-center mb-10 sm:mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
-          <motion.p 
-            className="font-mono text-primary mb-2 text-xs sm:text-sm"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-          >
+        <ScrollReveal className="text-center mb-10 sm:mb-16">
+          <p className="font-mono text-primary mb-2 text-xs sm:text-sm">
             {"// Featured Work"}
-          </motion.p>
-          <motion.h2 
-            className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-          >
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4">
             <span className="gradient-text">Project Showcase</span>
-          </motion.h2>
-          <motion.p 
-            className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-          >
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
             A selection of projects showcasing full-stack development. Click the{" "}
             <Eye className="w-3 h-3 sm:w-4 sm:h-4 inline text-purple-400" /> icon for a Byakugan preview.
-          </motion.p>
-        </motion.div>
+          </p>
+        </ScrollReveal>
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

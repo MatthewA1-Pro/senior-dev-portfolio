@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
@@ -9,6 +9,7 @@ import { AIGallerySection } from "@/components/AIGallerySection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 import { SakuraPetals } from "@/components/SakuraPetals";
+import { ScrollProgress } from "@/components/ScrollReveal";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,7 +21,15 @@ const Index = () => {
       </AnimatePresence>
 
       {!isLoading && (
-        <main className="relative">
+        <motion.main
+          className="relative"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          {/* Scroll progress indicator */}
+          <ScrollProgress />
+          
           {/* Sakura petals floating effect */}
           <SakuraPetals />
           
@@ -31,7 +40,7 @@ const Index = () => {
           <AIGallerySection />
           <ContactSection />
           <Footer />
-        </main>
+        </motion.main>
       )}
     </>
   );
