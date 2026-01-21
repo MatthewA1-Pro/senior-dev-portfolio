@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { MagneticButton } from "./ScrollReveal";
 
-const WHATSAPP_NUMBER = "+2349138508184";
+const WHATSAPP_NUMBER = "+44 7352 966432";
 const EMAIL = "base44.dev1@gmail.com";
 
 interface HeroSectionProps {
