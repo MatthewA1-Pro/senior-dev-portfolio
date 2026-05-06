@@ -429,13 +429,13 @@ export const CursorFollower = () => {
       {/* Trail particles */}
       {cursorVariant === 'hover' && (
         <>
-          {[...Array(3)].map((_, i) => (
+          {trails.map((t, i) => (
             <motion.div
               key={i}
               className="fixed top-0 left-0 w-1 h-1 rounded-full bg-primary/30 pointer-events-none z-[9997] hidden md:block"
               style={{ 
-                x: useSpring(mousePosition.x, { stiffness: 100 - i * 20, damping: 15 + i * 5 }),
-                y: useSpring(mousePosition.y, { stiffness: 100 - i * 20, damping: 15 + i * 5 }),
+                x: t.x,
+                y: t.y,
                 translateX: '-50%',
                 translateY: '-50%',
               }}
