@@ -353,6 +353,19 @@ export const CursorFollower = () => {
   const outerX = useSpring(mousePosition.x, outerSpringConfig);
   const outerY = useSpring(mousePosition.y, outerSpringConfig);
 
+  // Trail particle springs (must be called unconditionally at top level)
+  const trail0X = useSpring(mousePosition.x, { stiffness: 100, damping: 15 });
+  const trail0Y = useSpring(mousePosition.y, { stiffness: 100, damping: 15 });
+  const trail1X = useSpring(mousePosition.x, { stiffness: 80, damping: 20 });
+  const trail1Y = useSpring(mousePosition.y, { stiffness: 80, damping: 20 });
+  const trail2X = useSpring(mousePosition.x, { stiffness: 60, damping: 25 });
+  const trail2Y = useSpring(mousePosition.y, { stiffness: 60, damping: 25 });
+  const trails = [
+    { x: trail0X, y: trail0Y },
+    { x: trail1X, y: trail1Y },
+    { x: trail2X, y: trail2Y },
+  ];
+
   if (typeof window !== 'undefined' && 'ontouchstart' in window) {
     return null; // Hide on touch devices
   }
@@ -416,13 +429,13 @@ export const CursorFollower = () => {
       {/* Trail particles */}
       {cursorVariant === 'hover' && (
         <>
-          {[...Array(3)].map((_, i) => (
+          {trails.map((t, i) => (
             <motion.div
               key={i}
               className="fixed top-0 left-0 w-1 h-1 rounded-full bg-primary/30 pointer-events-none z-[9997] hidden md:block"
               style={{ 
-                x: useSpring(mousePosition.x, { stiffness: 100 - i * 20, damping: 15 + i * 5 }),
-                y: useSpring(mousePosition.y, { stiffness: 100 - i * 20, damping: 15 + i * 5 }),
+                x: t.x,
+                y: t.y,
                 translateX: '-50%',
                 translateY: '-50%',
               }}
