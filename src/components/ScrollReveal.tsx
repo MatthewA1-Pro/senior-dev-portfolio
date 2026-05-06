@@ -353,6 +353,19 @@ export const CursorFollower = () => {
   const outerX = useSpring(mousePosition.x, outerSpringConfig);
   const outerY = useSpring(mousePosition.y, outerSpringConfig);
 
+  // Trail particle springs (must be called unconditionally at top level)
+  const trail0X = useSpring(mousePosition.x, { stiffness: 100, damping: 15 });
+  const trail0Y = useSpring(mousePosition.y, { stiffness: 100, damping: 15 });
+  const trail1X = useSpring(mousePosition.x, { stiffness: 80, damping: 20 });
+  const trail1Y = useSpring(mousePosition.y, { stiffness: 80, damping: 20 });
+  const trail2X = useSpring(mousePosition.x, { stiffness: 60, damping: 25 });
+  const trail2Y = useSpring(mousePosition.y, { stiffness: 60, damping: 25 });
+  const trails = [
+    { x: trail0X, y: trail0Y },
+    { x: trail1X, y: trail1Y },
+    { x: trail2X, y: trail2Y },
+  ];
+
   if (typeof window !== 'undefined' && 'ontouchstart' in window) {
     return null; // Hide on touch devices
   }
