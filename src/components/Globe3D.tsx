@@ -11,19 +11,24 @@ const useMousePosition = () => {
   const [isHovering, setIsHovering] = useState(false);
   
   useEffect(() => {
+    let frameId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      setMouse({
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: -(e.clientY / window.innerHeight) * 2 + 1
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        setMouse({
+          x: (e.clientX / window.innerWidth) * 2 - 1,
+          y: -(e.clientY / window.innerHeight) * 2 + 1
+        });
       });
     };
     const handleMouseDown = () => setIsHovering(true);
     const handleMouseUp = () => setIsHovering(false);
     
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('mousedown', handleMouseDown, { passive: true });
+    window.addEventListener('mouseup', handleMouseUp, { passive: true });
     return () => {
+      cancelAnimationFrame(frameId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
@@ -36,11 +41,11 @@ const useMousePosition = () => {
 // Create circular particle texture (not squares)
 const createCircleTexture = () => {
   const canvas = document.createElement('canvas');
-  canvas.width = 64;
-  canvas.height = 64;
+  canvas.width = 32; // Reduced from 64
+  canvas.height = 32;
   const ctx = canvas.getContext('2d')!;
   
-  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
   gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
   gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.8)');
   gradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.3)');
@@ -48,7 +53,7 @@ const createCircleTexture = () => {
   
   ctx.fillStyle = gradient;
   ctx.beginPath();
-  ctx.arc(32, 32, 32, 0, Math.PI * 2);
+  ctx.arc(16, 16, 16, 0, Math.PI * 2);
   ctx.fill();
   
   const texture = new THREE.CanvasTexture(canvas);
@@ -65,7 +70,7 @@ const GlitterParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
     const positions = [];
     const sizes = [];
     const colors = [];
-    const count = 400;
+    const count = 150; // Reduced from 400
     
     for (let i = 0; i < count; i++) {
       // Spread across the whole scene
@@ -97,13 +102,14 @@ const GlitterParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
 
   useFrame(({ clock }) => {
     if (particlesRef.current) {
-      particlesRef.current.rotation.y = clock.getElapsedTime() * 0.02 + mouse.x * 0.02;
+      const time = clock.getElapsedTime();
+      particlesRef.current.rotation.y = time * 0.02 + mouse.x * 0.02;
       particlesRef.current.rotation.x = mouse.y * 0.01;
       
       // Twinkle effect
       const positions = particlesRef.current.geometry.attributes.position.array as Float32Array;
       for (let i = 1; i < positions.length; i += 3) {
-        positions[i] += Math.sin(clock.getElapsedTime() * 2 + i) * 0.001;
+        positions[i] += Math.sin(time * 2 + i) * 0.0008;
       }
       particlesRef.current.geometry.attributes.position.needsUpdate = true;
     }
@@ -116,9 +122,9 @@ const GlitterParticles = ({ mouse }: { mouse: { x: number; y: number } }) => {
         <bufferAttribute attach="attributes-color" count={particles.colors.length / 3} array={particles.colors} itemSize={3} />
       </bufferGeometry>
       <pointsMaterial 
-        size={0.06} 
+        size={0.07} 
         transparent 
-        opacity={0.9} 
+        opacity={0.8} 
         vertexColors 
         sizeAttenuation 
         blending={THREE.AdditiveBlending}
@@ -856,7 +862,7 @@ export const Globe3D = () => {
   const { mouse, isHovering } = useMousePosition();
   
   return (
-    <div className="absolute inset-0 opacity-90">
+    <div className="absolute inset-0 opacity-90 pointer-events-none">
       {/* Video Background - Cinematic Sharingan */}
       <video
         autoPlay
@@ -864,10 +870,10 @@ export const Globe3D = () => {
         muted
         playsInline
         preload="auto"
-        className="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
         style={{ 
           zIndex: -1,
-          filter: 'contrast(1.2) saturate(1.3) brightness(0.9)',
+          filter: 'contrast(1.1) saturate(1.2) brightness(0.8)',
         }}
       >
         <source src="/videos/sharingan-video.mp4" type="video/mp4" />
@@ -878,11 +884,20 @@ export const Globe3D = () => {
         className="absolute inset-0 pointer-events-none"
         style={{
           zIndex: 0,
-          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%)',
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)',
         }}
       />
       
-      <Canvas camera={{ position: [0, 0, 4], fov: 55 }} gl={{ antialias: true, alpha: true }}>
+      <Canvas 
+        camera={{ position: [0, 0, 4], fov: 55 }} 
+        gl={{ 
+          antialias: false,
+          alpha: true,
+          powerPreference: "high-performance",
+          precision: "lowp"
+        }}
+        dpr={[1, 1.5]}
+      >
         <Scene mouse={mouse} isHovering={isHovering} />
       </Canvas>
     </div>

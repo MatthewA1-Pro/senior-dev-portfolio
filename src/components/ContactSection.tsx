@@ -4,8 +4,9 @@ import { Send, Mail, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { MagneticButton } from "./ScrollReveal";
+import { RamenShop } from "./three/NarutoModels";
 
-const WHATSAPP_NUMBER = "+44 7352 966432";
+const WHATSAPP_NUMBER = "+2349139508184";
 const EMAIL = "base44.dev1@gmail.com";
 
 export const ContactSection = () => {
@@ -42,8 +43,8 @@ export const ContactSection = () => {
   };
 
   const openWhatsApp = () => {
-    const message = encodeURIComponent("Hi Matthew! I'd like to discuss a project with you.");
-    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${message}`, '_blank');
+    const message = encodeURIComponent("Hi! I saw your portfolio and would like to discuss a project.");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[\+\s]/g, '')}?text=${message}`, '_blank');
   };
 
   const socialLinks = [
@@ -58,7 +59,12 @@ export const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-16 sm:py-24 lg:py-32 relative">
+    <section id="contact" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
+      {/* 3D Ramen Shop Environment */}
+      <div className="absolute inset-0 z-0 opacity-50 pointer-events-none">
+        <RamenShop />
+      </div>
+
       {/* Background effects */}
       <div className="absolute inset-0 grid-bg opacity-20" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-primary/5 rounded-full blur-3xl" />

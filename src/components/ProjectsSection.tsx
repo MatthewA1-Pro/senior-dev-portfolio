@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useJutsuSounds } from "@/hooks/useJutsuSounds";
 import { useTilt3D } from "@/hooks/useTilt3D";
 import { ScrollReveal, Parallax } from "./ScrollReveal";
+import { BaryonNaruto } from "./three/NarutoModels";
 
 import projectHumindly from "@/assets/project-humindly.png";
 import projectIchranavigator from "@/assets/project-ichranavigator.png";
@@ -98,57 +99,59 @@ const ByakuganPreview = ({
 
           {/* Modal Content */}
           <motion.div
-            className="relative z-10 w-full max-w-5xl bg-card rounded-2xl overflow-hidden shadow-2xl border border-purple-500/30"
+            className="relative z-10 w-full max-w-4xl max-h-[90vh] bg-card rounded-2xl overflow-hidden shadow-2xl border border-purple-500/30 flex flex-col"
             initial={{ scale: 0.8, opacity: 0, rotateX: -15 }}
             animate={{ scale: 1, opacity: 1, rotateX: 0 }}
             exit={{ scale: 0.8, opacity: 0, rotateX: 15 }}
             transition={{ type: "spring", damping: 25 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border bg-muted/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                  <Eye className="w-4 h-4 text-white" />
+            <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border bg-muted/50 flex-shrink-0">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                  <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">{project.title}</h3>
-                  <p className="text-xs text-muted-foreground font-mono">Byakugan Preview Mode</p>
+                  <h3 className="font-bold text-base sm:text-lg truncate max-w-[150px] sm:max-w-xs">{project.title}</h3>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">Byakugan Preview Mode</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 {project.liveUrl && (
                   <a
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+                    className="px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-primary text-primary-foreground text-xs sm:text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-2"
                   >
-                    Visit Site <ExternalLink className="w-3 h-3" />
+                    Visit <ExternalLink className="w-3 h-3" />
                   </a>
                 )}
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
 
             {/* Preview iframe */}
-            <div className="relative aspect-video bg-background">
-              {project.liveUrl ? (
-                <iframe
-                  src={project.liveUrl}
-                  className="w-full h-full border-0"
-                  title={`${project.title} Preview`}
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                  Preview not available
-                </div>
-              )}
+            <div className="relative flex-grow bg-background overflow-hidden">
+              <div className="w-full h-full aspect-video min-h-[300px] sm:min-h-[450px]">
+                {project.liveUrl ? (
+                  <iframe
+                    src={project.liveUrl}
+                    className="w-full h-full border-0"
+                    title={`${project.title} Preview`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    Preview not available
+                  </div>
+                )}
+              </div>
               
               {/* Scanning overlay effect */}
               <motion.div
@@ -159,13 +162,13 @@ const ByakuganPreview = ({
             </div>
 
             {/* Footer info */}
-            <div className="p-4 bg-muted/30 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-3">{project.description}</p>
-              <div className="flex flex-wrap gap-2">
+            <div className="p-3 sm:p-4 bg-muted/30 border-t border-border flex-shrink-0">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2">{project.description}</p>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 text-xs font-mono rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                    className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] font-mono rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20"
                   >
                     {tag}
                   </span>
@@ -276,6 +279,11 @@ export const ProjectsSection = () => {
 
   return (
     <section id="projects" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
+      {/* Background Atmosphere */}
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+        <BaryonNaruto />
+      </div>
+
       {/* Background effects with parallax */}
       <Parallax speed={-0.2} className="absolute inset-0">
         <div className="grid-bg opacity-20 w-full h-full" />

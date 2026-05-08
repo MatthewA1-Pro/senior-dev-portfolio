@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe3D } from "./Globe3D";
+import { HeroNaruto } from "./three/NarutoModels";
 import { ChevronDown, Mail, MessageCircle, Send, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -52,16 +52,16 @@ export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Naruto swirl background */}
-      <div className="absolute inset-0 grid-bg opacity-50" />
+      <div className="absolute inset-0 grid-bg opacity-30" />
       
-      {/* 3D Globe - pushed back with lower z-index and reduced opacity */}
+      {/* New Hero Naruto Centerpiece */}
       <motion.div 
-        className="absolute inset-0 z-0 pointer-events-none"
-        initial={{ opacity: 0, scale: 1.1 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+        className="absolute inset-0 z-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2.5, ease: "easeOut", delay: 1 }}
       >
-        <Globe3D />
+        <HeroNaruto />
       </motion.div>
       
       {/* Cinematic letterbox bars - fade out after intro */}

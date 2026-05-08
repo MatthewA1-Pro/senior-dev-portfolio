@@ -26,7 +26,7 @@ const aiProjects: AIProject[] = [
     url: "https://self-map-maker.lovable.app",
     result: "Interactive visualization app built with AI-assisted development",
     icon: <Wand2 className="w-6 h-6" />,
-    gradient: "from-red-600 to-purple-600",
+    gradient: "from-blue-600 to-primary",
     image: projectSelfmapmaker,
   },
   {
@@ -36,7 +36,7 @@ const aiProjects: AIProject[] = [
     url: "https://insure-hub-ai.lovable.app",
     result: "Complete insurance SaaS with AI-powered recommendations",
     icon: <Sparkles className="w-6 h-6" />,
-    gradient: "from-orange-500 to-amber-500",
+    gradient: "from-orange-500 to-secondary",
     image: projectInsurehubai,
   },
 ];
@@ -93,49 +93,51 @@ const ByakuganPreview = ({
 
           {/* Modal Content */}
           <motion.div
-            className="relative z-10 w-full max-w-5xl bg-card rounded-2xl overflow-hidden shadow-2xl border border-purple-500/30"
+            className="relative z-10 w-full max-w-4xl max-h-[90vh] bg-card rounded-2xl overflow-hidden shadow-2xl border border-purple-500/30 flex flex-col"
             initial={{ scale: 0.8, opacity: 0, rotateX: -15 }}
             animate={{ scale: 1, opacity: 1, rotateX: 0 }}
             exit={{ scale: 0.8, opacity: 0, rotateX: 15 }}
             transition={{ type: "spring", damping: 25 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border bg-muted/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                  <Eye className="w-4 h-4 text-white" />
+            <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border bg-muted/50 flex-shrink-0">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                  <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">{project.title}</h3>
-                  <p className="text-xs text-muted-foreground font-mono">Byakugan Preview Mode</p>
+                  <h3 className="font-bold text-base sm:text-lg truncate max-w-[150px] sm:max-w-xs">{project.title}</h3>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">Byakugan Preview Mode</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <a
                   href={project.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+                  className="px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-primary text-primary-foreground text-xs sm:text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-2"
                 >
-                  Visit Site <ArrowRight className="w-3 h-3" />
+                  Visit <ArrowRight className="w-3 h-3" />
                 </a>
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
 
             {/* Preview iframe */}
-            <div className="relative aspect-video bg-background">
-              <iframe
-                src={project.url}
-                className="w-full h-full border-0"
-                title={`${project.title} Preview`}
-                loading="lazy"
-              />
+            <div className="relative flex-grow bg-background overflow-hidden">
+              <div className="w-full h-full aspect-video min-h-[300px] sm:min-h-[450px]">
+                <iframe
+                  src={project.url}
+                  className="w-full h-full border-0"
+                  title={`${project.title} Preview`}
+                  loading="lazy"
+                />
+              </div>
               
               {/* Scanning overlay effect */}
               <motion.div
@@ -146,11 +148,11 @@ const ByakuganPreview = ({
             </div>
 
             {/* Footer info */}
-            <div className="p-4 bg-muted/30 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-3">{project.description}</p>
-              <div className="flex items-center gap-2 text-sm text-primary">
-                <ArrowRight className="w-4 h-4" />
-                <span className="font-medium">{project.result}</span>
+            <div className="p-3 sm:p-4 bg-muted/30 border-t border-border flex-shrink-0">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2">{project.description}</p>
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-primary">
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="font-medium truncate">{project.result}</span>
               </div>
             </div>
           </motion.div>
@@ -328,7 +330,7 @@ export const AIGallerySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-glow-pulse" />
+              <span className="w-2 h-2 rounded-full bg-secondary animate-glow-pulse" />
               <span>Prompt Engineering Expert</span>
             </motion.div>
             <motion.div 
@@ -338,7 +340,7 @@ export const AIGallerySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.4 }}
             >
-              <span className="w-2 h-2 rounded-full bg-purple-600 animate-glow-pulse" />
+              <span className="w-2 h-2 rounded-full bg-primary animate-glow-pulse" />
               <span>AI Agent Development</span>
             </motion.div>
             <motion.div 
@@ -348,7 +350,7 @@ export const AIGallerySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.5 }}
             >
-              <span className="w-2 h-2 rounded-full bg-red-600 animate-glow-pulse" />
+              <span className="w-2 h-2 rounded-full bg-secondary animate-glow-pulse" />
               <span>No-Code Platform Mastery</span>
             </motion.div>
             <motion.div 
@@ -358,7 +360,7 @@ export const AIGallerySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.6 }}
             >
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-glow-pulse" />
+              <span className="w-2 h-2 rounded-full bg-primary animate-glow-pulse" />
               <span>LLM Integration Specialist</span>
             </motion.div>
           </div>

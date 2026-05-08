@@ -4,54 +4,47 @@
 
 @layer base {
   :root {
-    /* Anime-themed deep background - like midnight sky */
-    --background: 230 25% 8%;
-    --foreground: 40 30% 95%;
+    /* Premium Cinematic Anime Palette */
+    --background: 225 30% 6%;
+    --foreground: 210 20% 95%;
 
-    --card: 230 20% 12%;
-    --card-foreground: 40 30% 95%;
+    --card: 225 25% 10%;
+    --card-foreground: 210 20% 95%;
 
-    --popover: 230 20% 12%;
-    --popover-foreground: 40 30% 95%;
+    --popover: 225 25% 10%;
+    --popover-foreground: 210 20% 95%;
 
-    /* Crimson Red as primary - blood moon / intense scenes */
-    --primary: 350 85% 55%;
-    --primary-foreground: 40 30% 95%;
+    /* Deep Chakra Blue as primary */
+    --primary: 215 90% 55%;
+    --primary-foreground: 210 20% 95%;
 
-    /* Deep Gold as secondary - honorable/legendary */
-    --secondary: 42 90% 55%;
-    --secondary-foreground: 230 25% 8%;
+    /* Chakra Orange as secondary/accent */
+    --secondary: 25 95% 55%;
+    --secondary-foreground: 225 30% 6%;
 
-    --muted: 230 15% 18%;
-    --muted-foreground: 40 20% 65%;
+    --muted: 225 20% 15%;
+    --muted-foreground: 215 15% 65%;
 
-    /* Sakura Pink as accent */
-    --accent: 340 70% 70%;
-    --accent-foreground: 230 25% 8%;
+    --accent: 25 95% 55%;
+    --accent-foreground: 225 30% 6%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 40 30% 95%;
+    --destructive-foreground: 210 20% 95%;
 
-    --border: 350 30% 25%;
-    --input: 350 30% 25%;
-    --ring: 350 85% 55%;
+    --border: 215 30% 15%;
+    --input: 215 30% 15%;
+    --ring: 215 90% 55%;
 
     --radius: 0.5rem;
 
-    /* Anime theme colors */
-    --anime-crimson: 350 85% 55%;
-    --anime-gold: 42 90% 55%;
-    --anime-sakura: 340 70% 70%;
-    --anime-indigo: 240 60% 50%;
-    --anime-ember: 20 90% 50%;
-    --anime-shadow: 260 50% 25%;
-
-    /* Soft glow effects - more organic */
-    --glow-crimson: 0 0 30px hsl(350 85% 55% / 0.4), 0 0 60px hsl(350 85% 55% / 0.2);
-    --glow-gold: 0 0 30px hsl(42 90% 55% / 0.4), 0 0 60px hsl(42 90% 55% / 0.2);
-    --glow-sakura: 0 0 30px hsl(340 70% 70% / 0.4), 0 0 60px hsl(340 70% 70% / 0.2);
-    --glow-indigo: 0 0 30px hsl(240 60% 50% / 0.4), 0 0 60px hsl(240 60% 50% / 0.2);
-    --glow-ember: 0 0 30px hsl(20 90% 50% / 0.4), 0 0 60px hsl(20 90% 50% / 0.2);
+    /* Cinematic Accents */
+    --anime-blue: 215 90% 55%;
+    --anime-orange: 25 95% 55%;
+    --anime-dark: 225 30% 5%;
+    
+    /* Subtle cinematic glows */
+    --glow-primary: 0 0 20px hsl(var(--primary) / 0.25), 0 0 40px hsl(var(--primary) / 0.1);
+    --glow-secondary: 0 0 20px hsl(var(--secondary) / 0.25), 0 0 40px hsl(var(--secondary) / 0.1);
   }
 }
 
@@ -63,8 +56,8 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background-image: 
-      radial-gradient(ellipse at 20% 0%, hsl(var(--anime-indigo) / 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 100%, hsl(var(--anime-crimson) / 0.06) 0%, transparent 50%);
+      radial-gradient(ellipse at 20% 0%, hsl(var(--anime-blue) / 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, hsl(var(--anime-orange) / 0.03) 0%, transparent 50%);
   }
 
   html {
@@ -86,28 +79,22 @@
 @layer components {
   /* Anime-style glass card with soft edges */
   .glass-card {
-    @apply bg-card/50 backdrop-blur-lg border border-primary/15 rounded-lg;
+    @apply bg-card/40 backdrop-blur-md border border-white/5 rounded-lg;
     box-shadow: 
-      0 8px 32px hsl(var(--anime-shadow) / 0.3),
-      inset 0 1px 0 hsl(var(--foreground) / 0.05);
-  }
-
-  /* Brush stroke text effect */
-  .brush-text {
-    @apply text-primary font-brush tracking-wide;
-    text-shadow: 2px 2px 4px hsl(var(--anime-shadow) / 0.5);
+      0 8px 32px hsl(0 0% 0% / 0.3),
+      inset 0 1px 0 hsl(var(--foreground) / 0.02);
   }
 
   /* Crimson accent text */
   .crimson-text {
     @apply text-primary font-display;
-    text-shadow: var(--glow-crimson);
+    text-shadow: var(--glow-primary);
   }
 
   /* Soft border glow */
   .anime-border {
-    @apply border-primary/40;
-    box-shadow: var(--glow-crimson);
+    @apply border-primary/20;
+    box-shadow: var(--glow-primary);
   }
 
   /* Gradient text - anime style warm colors */
@@ -118,24 +105,24 @@
 
   /* Golden legendary text */
   .legendary-text {
-    @apply bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-300 via-primary to-blue-300 bg-clip-text text-transparent;
     background-size: 200% auto;
-    filter: drop-shadow(0 0 8px hsl(var(--anime-gold) / 0.5));
+    filter: drop-shadow(0 0 8px hsl(var(--anime-blue) / 0.3));
   }
 
   /* Anime-style background with flowing gradients */
   .grid-bg {
     background: 
-      radial-gradient(ellipse at 30% 20%, hsl(var(--anime-crimson) / 0.06) 0%, transparent 40%),
-      radial-gradient(ellipse at 70% 80%, hsl(var(--anime-indigo) / 0.05) 0%, transparent 40%),
-      radial-gradient(ellipse at 50% 50%, hsl(var(--anime-sakura) / 0.03) 0%, transparent 60%);
+      radial-gradient(ellipse at 30% 20%, hsl(var(--anime-blue) / 0.04) 0%, transparent 40%),
+      radial-gradient(ellipse at 70% 80%, hsl(var(--anime-orange) / 0.03) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 50%, hsl(var(--anime-blue) / 0.02) 0%, transparent 60%);
   }
 
   /* Anime card with depth */
   .jutsu-card {
     @apply bg-card/60 backdrop-blur-lg border border-primary/20 rounded-lg;
     box-shadow: 
-      0 4px 24px hsl(var(--anime-shadow) / 0.4),
+      0 4px 24px hsl(0 0% 0% / 0.4),
       0 0 0 1px hsl(var(--primary) / 0.1),
       inset 0 1px 0 hsl(var(--foreground) / 0.05);
   }
@@ -144,7 +131,7 @@
   .chakra-flow {
     background: linear-gradient(90deg, 
       transparent 0%, 
-      hsl(var(--anime-sakura) / 0.3) 50%, 
+      hsl(var(--primary) / 0.3) 50%, 
       transparent 100%
     );
     background-size: 200% 100%;
@@ -170,12 +157,6 @@
     );
     border-radius: 2px;
     opacity: 0.7;
-  }
-
-  /* Sakura petal style decorative element */
-  .sakura-accent {
-    @apply text-accent;
-    filter: drop-shadow(0 0 6px hsl(var(--anime-sakura) / 0.4));
   }
 }
 

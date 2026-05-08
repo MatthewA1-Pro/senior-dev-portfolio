@@ -5,236 +5,12 @@ import { Sphere, Float } from "@react-three/drei";
 import * as THREE from "three";
 import { SoundToggle } from "./SoundToggle";
 import { useCinematicAudio } from "@/hooks/useCinematicAudio";
+import { RunningNaruto } from "./three/NarutoModels";
 
 interface LoadingScreenProps {
   onComplete: () => void;
   onSoundStateChange?: (enabled: boolean) => void;
 }
-
-// 3D Floating wireframe nodes - igloo.inc inspired
-const WireframeNodes = () => {
-  const groupRef = useRef<THREE.Group>(null);
-  
-  const nodes = useMemo(() => {
-    const data = [];
-    for (let i = 0; i < 60; i++) {
-      data.push({
-        position: [
-          (Math.random() - 0.5) * 8,
-          (Math.random() - 0.5) * 6,
-          (Math.random() - 0.5) * 4
-        ] as [number, number, number],
-        scale: Math.random() * 0.08 + 0.02,
-        speed: Math.random() * 0.5 + 0.2,
-      });
-    }
-    return data;
-  }, []);
-
-  useFrame(({ clock }) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = clock.getElapsedTime() * 0.05;
-      groupRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.3) * 0.1;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {nodes.map((node, i) => (
-        <Float key={i} speed={node.speed} rotationIntensity={0.2} floatIntensity={0.5}>
-          <mesh position={node.position}>
-            <icosahedronGeometry args={[node.scale, 0]} />
-            <meshBasicMaterial color="#e85a5a" wireframe transparent opacity={0.6} />
-          </mesh>
-          {/* Glow around each node */}
-          <Sphere args={[node.scale * 2, 8, 8]} position={node.position}>
-            <meshBasicMaterial color="#e85a5a" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
-          </Sphere>
-        </Float>
-      ))}
-    </group>
-  );
-};
-
-// Connecting energy lines between nodes
-const EnergyLines = () => {
-  const linesRef = useRef<THREE.Group>(null);
-  
-  const lines = useMemo(() => {
-    const data = [];
-    for (let i = 0; i < 30; i++) {
-      const curve = new THREE.QuadraticBezierCurve3(
-        new THREE.Vector3((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 4, (Math.random() - 0.5) * 3),
-        new THREE.Vector3((Math.random() - 0.5) * 4, (Math.random() - 0.5) * 4, (Math.random() - 0.5) * 2),
-        new THREE.Vector3((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 4, (Math.random() - 0.5) * 3)
-      );
-      data.push(curve);
-    }
-    return data;
-  }, []);
-
-  useFrame(({ clock }) => {
-    if (linesRef.current) {
-      linesRef.current.rotation.y = clock.getElapsedTime() * 0.03;
-    }
-  });
-
-  return (
-    <group ref={linesRef}>
-      {lines.map((curve, i) => (
-        <mesh key={i}>
-          <tubeGeometry args={[curve, 20, 0.003, 4, false]} />
-          <meshBasicMaterial 
-            color="#ffd700" 
-            transparent 
-            opacity={0.3 + Math.sin(i) * 0.2} 
-            blending={THREE.AdditiveBlending} 
-          />
-        </mesh>
-      ))}
-    </group>
-  );
-};
-
-// Central rotating orb with Kamui-ready design
-const CentralOrb = ({ phase, progress }: { phase: 'loading' | 'kamui'; progress: number }) => {
-  const orbRef = useRef<THREE.Group>(null);
-  const spiralRef = useRef<THREE.Group>(null);
-  
-  useFrame(({ clock }) => {
-    if (orbRef.current) {
-      const baseSpeed = phase === 'kamui' ? 5 : 0.3;
-      orbRef.current.rotation.y += baseSpeed * 0.016;
-      orbRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.5) * 0.2;
-    }
-    
-    if (spiralRef.current && phase === 'kamui') {
-      spiralRef.current.rotation.z += 0.15;
-      spiralRef.current.scale.setScalar(Math.max(0.01, 1 - progress * 0.02));
-    }
-  });
-
-  const kamuiScale = phase === 'kamui' ? Math.max(0.1, 1 - progress * 0.015) : 1;
-
-  return (
-    <group ref={orbRef} scale={kamuiScale}>
-      {/* Outer wireframe sphere */}
-      <mesh>
-        <icosahedronGeometry args={[1.2, 2]} />
-        <meshBasicMaterial color="#e85a5a" wireframe transparent opacity={0.3} />
-      </mesh>
-      
-      {/* Middle ring structures */}
-      {[0, 1, 2].map((i) => (
-        <mesh key={i} rotation={[i * 0.5, i * 0.3, i * 0.2]}>
-          <torusGeometry args={[0.9 + i * 0.1, 0.01, 8, 64]} />
-          <meshBasicMaterial 
-            color={i === 1 ? "#ffd700" : "#e85a5a"} 
-            transparent 
-            opacity={0.5 - i * 0.1} 
-            blending={THREE.AdditiveBlending} 
-          />
-        </mesh>
-      ))}
-      
-      {/* Inner glowing core */}
-      <Sphere args={[0.4, 32, 32]}>
-        <meshBasicMaterial color="#ff4444" transparent opacity={0.8} blending={THREE.AdditiveBlending} />
-      </Sphere>
-      
-      {/* Hot center */}
-      <Sphere args={[0.2, 16, 16]}>
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.9} />
-      </Sphere>
-      
-      {/* Outer glow */}
-      <Sphere args={[1.5, 16, 16]}>
-        <meshBasicMaterial color="#ff2222" transparent opacity={0.08} blending={THREE.AdditiveBlending} side={THREE.BackSide} />
-      </Sphere>
-
-      {/* Kamui spiral rings - appear during transition */}
-      {phase === 'kamui' && (
-        <group ref={spiralRef}>
-          {[...Array(8)].map((_, i) => (
-            <mesh key={i} rotation={[0, 0, progress * i * 0.5]}>
-              <ringGeometry args={[0.15 + i * 0.15, 0.18 + i * 0.15, 32]} />
-              <meshBasicMaterial 
-                color={i % 2 === 0 ? "#ff0000" : "#000000"} 
-                transparent 
-                opacity={0.6 - i * 0.05} 
-                blending={THREE.AdditiveBlending}
-                side={THREE.DoubleSide}
-              />
-            </mesh>
-          ))}
-        </group>
-      )}
-    </group>
-  );
-};
-
-// Orbiting particles around center
-const OrbitingParticles = ({ phase }: { phase: 'loading' | 'kamui' }) => {
-  const groupRef = useRef<THREE.Group>(null);
-  
-  useFrame(({ clock }) => {
-    if (groupRef.current) {
-      const speed = phase === 'kamui' ? 3 : 0.5;
-      groupRef.current.rotation.y = clock.getElapsedTime() * speed;
-      groupRef.current.rotation.z = Math.sin(clock.getElapsedTime()) * 0.3;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {[...Array(12)].map((_, i) => {
-        const angle = (i / 12) * Math.PI * 2;
-        const radius = 2;
-        return (
-          <Float key={i} speed={2} floatIntensity={0.3}>
-            <Sphere 
-              args={[0.05, 8, 8]} 
-              position={[Math.cos(angle) * radius, Math.sin(angle) * 0.3, Math.sin(angle) * radius]}
-            >
-              <meshBasicMaterial color="#ffd700" transparent opacity={0.9} blending={THREE.AdditiveBlending} />
-            </Sphere>
-          </Float>
-        );
-      })}
-    </group>
-  );
-};
-
-// 3D Scene
-const LoadingScene = ({ phase, progress }: { phase: 'loading' | 'kamui'; progress: number }) => {
-  const { camera } = useThree();
-  
-  useFrame(({ clock }) => {
-    camera.position.x = Math.sin(clock.getElapsedTime() * 0.2) * 0.5;
-    camera.position.y = Math.cos(clock.getElapsedTime() * 0.15) * 0.3;
-    
-    // Pull camera back during Kamui
-    if (phase === 'kamui') {
-      camera.position.z = 5 + progress * 0.1;
-    }
-    
-    camera.lookAt(0, 0, 0);
-  });
-
-  return (
-    <>
-      <fog attach="fog" args={['#0a0a12', 3, 10]} />
-      <ambientLight intensity={0.2} />
-      <pointLight position={[3, 3, 3]} intensity={0.5} color="#ff4444" />
-      <pointLight position={[-3, -3, 3]} intensity={0.3} color="#ffd700" />
-      
-      <WireframeNodes />
-      <EnergyLines />
-      <CentralOrb phase={phase} progress={progress} />
-      <OrbitingParticles phase={phase} />
-    </>
-  );
-};
 
 // 2D Network nodes overlay
 const NetworkNodes2D = () => {
@@ -413,15 +189,15 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
         className="top-6 right-6"
       />
 
-      {/* 3D Canvas */}
-      <div className="absolute inset-0">
-        <Canvas camera={{ position: [0, 0, 5], fov: 50 }} gl={{ antialias: true, alpha: true }}>
-          <LoadingScene phase={phase} progress={kamuiProgressRef.current} />
-        </Canvas>
+      {/* 3D Running Naruto Animation */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <RunningNaruto scale={1.8} />
       </div>
 
       {/* 2D Network overlay */}
-      <NetworkNodes2D />
+      <div className="absolute inset-0 z-1 pointer-events-none">
+        <NetworkNodes2D />
+      </div>
 
       {/* Radial gradient overlay */}
       <div 
@@ -510,39 +286,6 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Decorative code snippets */}
-      <motion.div
-        className="absolute bottom-6 left-6 font-mono text-[10px] text-muted-foreground/30"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'loading' ? 1 : 0 }}
-        transition={{ delay: 1 }}
-      >
-        <span className="text-primary/50">init</span>.portfolio();
-      </motion.div>
-
-      <motion.div
-        className="absolute top-6 right-6 font-mono text-[10px] text-muted-foreground/30"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'loading' ? 1 : 0 }}
-        transition={{ delay: 1.2 }}
-      >
-        <span className="text-secondary/50">await</span> ready();
-      </motion.div>
-      
-      {/* Corner accents */}
-      <motion.div
-        className="absolute top-6 left-6 w-12 h-12 border-l-2 border-t-2 border-primary/20"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: phase === 'loading' ? 1 : 0, scale: 1 }}
-        transition={{ delay: 0.5 }}
-      />
-      <motion.div
-        className="absolute bottom-6 right-6 w-12 h-12 border-r-2 border-b-2 border-primary/20"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: phase === 'loading' ? 1 : 0, scale: 1 }}
-        transition={{ delay: 0.5 }}
-      />
     </motion.div>
   );
 };

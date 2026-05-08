@@ -66,18 +66,19 @@ export const SakuraPetals = () => {
   const hasPlayedSound = useRef(false);
 
   useEffect(() => {
-    // Generate fewer petals for better performance
+    // Generate fewer petals for significantly better performance
     const generatePetals = () => {
       const newPetals: Petal[] = [];
-      for (let i = 0; i < 18; i++) {
+      const count = window.innerWidth < 768 ? 6 : 10; // Even fewer for better FPS
+      for (let i = 0; i < count; i++) {
         newPetals.push({
           id: i,
           x: Math.random() * 100,
           delay: Math.random() * 12,
-          duration: 14 + Math.random() * 6,
-          size: 10 + Math.random() * 10,
+          duration: 18 + Math.random() * 12, // Slower is cheaper
+          size: 6 + Math.random() * 6, // Smaller is better
           rotation: Math.random() * 360,
-          swayAmount: 25 + Math.random() * 40,
+          swayAmount: 15 + Math.random() * 25,
         });
       }
       setPetals(newPetals);
@@ -173,45 +174,19 @@ export const SakuraPetals = () => {
         </motion.div>
       ))}
       
-      {/* Smaller background petals - fewer for performance */}
-      {petals.slice(0, 10).map((petal) => (
-        <motion.div
-          key={`sm-${petal.id}`}
-          className="absolute will-change-transform opacity-50"
-          style={{ left: `${(petal.x + 40) % 100}%`, top: -20 }}
-          animate={{
-            y: ["0vh", "110vh"],
-            x: windActive 
-              ? [0, petal.swayAmount * 1.5 * windDirection, 0]
-              : [0, -petal.swayAmount * 0.6, petal.swayAmount * 0.6, 0],
-            rotate: [petal.rotation, petal.rotation + 360],
-            opacity: [0, 0.5, 0.5, 0],
-          }}
-          transition={{
-            duration: petal.duration * 1.3,
-            delay: petal.delay + 6,
-            repeat: Infinity,
-            ease: "linear",
-            times: [0, 0.05, 0.95, 1],
-          }}
-        >
-          <svg width={petal.size * 0.6} height={petal.size * 0.6} viewBox="0 0 24 24">
-            <ellipse cx="12" cy="12" rx="6" ry="10" fill="hsl(340, 75%, 80%)" opacity={0.6} />
-          </svg>
-        </motion.div>
-      ))}
+      {/* Main petals only - background petals removed for maximum performance */}
 
-      {/* Wind burst petals - only appear during wind */}
+      {/* Wind burst petals - reduced count */}
       <AnimatePresence>
         {windActive && (
           <>
-            {[0, 1, 2, 3, 4, 5].map((i) => (
+            {[0, 1, 2].map((i) => (
               <motion.div
                 key={`wind-${windKey}-${i}`}
                 className="absolute will-change-transform"
                 style={{
                   left: windDirection > 0 ? '-5%' : '105%',
-                  top: `${15 + i * 12}%`,
+                  top: `${20 + i * 20}%`,
                 }}
                 initial={{ opacity: 0, x: 0 }}
                 animate={{
@@ -223,11 +198,11 @@ export const SakuraPetals = () => {
                 exit={{ opacity: 0 }}
                 transition={{
                   duration: 2.5 + Math.random(),
-                  delay: i * 0.15,
+                  delay: i * 0.2,
                   ease: "easeOut",
                 }}
               >
-                <svg width={12} height={12} viewBox="0 0 24 24">
+                <svg width={10} height={10} viewBox="0 0 24 24">
                   <ellipse cx="12" cy="12" rx="5" ry="8" fill="hsl(345, 70%, 82%)" opacity={0.6} />
                 </svg>
               </motion.div>
