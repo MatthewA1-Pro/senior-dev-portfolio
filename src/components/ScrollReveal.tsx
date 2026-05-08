@@ -16,14 +16,7 @@ export const ScrollReveal = ({ children, className = "", delay = 0 }: ScrollReve
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 60, rotateX: -10 }}
-      animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
-      transition={{ 
-        duration: 0.8, 
-        delay,
-        ease: [0.25, 0.4, 0.25, 1]
-      }}
-      style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+      style={{ opacity: isInView ? 1 : 0 }}
     >
       {children}
     </motion.div>

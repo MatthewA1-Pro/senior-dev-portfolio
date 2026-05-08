@@ -181,8 +181,8 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
         className="top-6 right-6"
       />
 
-      {/* 3D Rotating Chakra Globe - THE GLOBE STUFF */}
-      <div className="absolute inset-0 z-0 opacity-40">
+      {/* 3D Rotating Chakra Globe - DISABLED FOR STABILITY */}
+      {/* <div className="absolute inset-0 z-0 opacity-40">
         <Canvas dpr={[1, 1]}>
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} intensity={1} color="hsl(var(--primary))" />
@@ -197,13 +197,12 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
                 />
               </Sphere>
             </Float>
-            {/* Inner glowing core */}
             <Sphere args={[0.5, 16, 16]}>
               <meshBasicMaterial color="hsl(var(--primary))" />
             </Sphere>
           </Suspense>
         </Canvas>
-      </div>
+      </div> */}
 
       {/* 2D Network overlay - Subtle connectivity */}
       <div className="absolute inset-0 z-1 pointer-events-none opacity-40">
