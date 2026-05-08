@@ -1,3 +1,4 @@
+// Deployment Trigger: 2026-05-08
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LoadingScreen } from "@/components/LoadingScreen";
