@@ -93,15 +93,14 @@ const SkillCard = ({ category, index }: { category: SkillCategory; index: number
   return (
     <motion.div
       className="glass-card p-4 sm:p-6 hover:neon-border transition-all duration-500 group"
-      initial={{ opacity: 0, y: 30, rotateX: -10 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ delay: index * 0.15, duration: 0.6 }}
       whileHover={{ 
         y: -5,
         transition: { duration: 0.3 }
       }}
-      style={{ transformStyle: "preserve-3d", perspective: 1000 }}
     >
       {/* Header */}
       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">

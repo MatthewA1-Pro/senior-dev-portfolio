@@ -49,13 +49,11 @@ const projects: Project[] = [
 const ByakuganPreview = ({ 
   project, 
   isOpen, 
-  onClose,
-  playSound
+  onClose 
 }: { 
   project: Project | null; 
   isOpen: boolean; 
   onClose: () => void;
-  playSound: () => void;
 }) => {
   if (!project || !isOpen) return null;
 
@@ -63,117 +61,47 @@ const ByakuganPreview = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* Backdrop with Byakugan effect */}
           <motion.div
-            className="absolute inset-0 bg-background/95 backdrop-blur-md"
+            className="absolute inset-0 bg-black/95 backdrop-blur-md"
             onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
           />
           
-          {/* Byakugan veins effect */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(12)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute bg-gradient-to-r from-purple-500/20 to-transparent h-0.5"
-                style={{
-                  left: '50%',
-                  top: '50%',
-                  width: '50vw',
-                  transformOrigin: 'left center',
-                  transform: `rotate(${i * 30}deg)`,
-                }}
-                initial={{ scaleX: 0, opacity: 0 }}
-                animate={{ scaleX: 1, opacity: [0, 0.6, 0.3] }}
-                transition={{ delay: i * 0.03, duration: 0.5 }}
-              />
-            ))}
-          </div>
-
-          {/* Modal Content */}
           <motion.div
-            className="relative z-10 w-full max-w-4xl max-h-[90vh] bg-card rounded-2xl overflow-hidden shadow-2xl border border-purple-500/30 flex flex-col"
-            initial={{ scale: 0.8, opacity: 0, rotateX: -15 }}
-            animate={{ scale: 1, opacity: 1, rotateX: 0 }}
-            exit={{ scale: 0.8, opacity: 0, rotateX: 15 }}
-            transition={{ type: "spring", damping: 25 }}
+            className="relative z-10 w-full max-w-4xl max-h-[90vh] bg-card rounded-2xl overflow-hidden shadow-2xl border border-primary/30 flex flex-col"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border bg-muted/50 flex-shrink-0">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                  <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+            <div className="flex items-center justify-between p-4 border-b border-border bg-muted/50">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                  <Eye className="w-4 h-4 text-primary-foreground" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-base sm:text-lg truncate max-w-[150px] sm:max-w-xs">{project.title}</h3>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">Byakugan Preview Mode</p>
-                </div>
+                <h3 className="font-bold text-lg">{project.title}</h3>
               </div>
-              <div className="flex items-center gap-1 sm:gap-2">
-                {project.liveUrl && (
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-primary text-primary-foreground text-xs sm:text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-2"
-                  >
-                    Visit <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-                <button
-                  onClick={onClose}
-                  className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-              </div>
+              <button onClick={onClose} className="p-2 hover:bg-muted rounded-full">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            {/* Preview iframe */}
             <div className="relative flex-grow bg-background overflow-hidden">
-              <div className="w-full h-full aspect-video min-h-[300px] sm:min-h-[450px]">
-                {project.liveUrl ? (
-                  <iframe
-                    src={project.liveUrl}
-                    className="w-full h-full border-0"
-                    title={`${project.title} Preview`}
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                    Preview not available
-                  </div>
-                )}
-              </div>
-              
-              {/* Scanning overlay effect */}
+              <iframe
+                src={project.liveUrl}
+                className="w-full h-full min-h-[400px] border-0"
+                title={project.title}
+              />
+              {/* Scanning Effect */}
               <motion.div
-                className="absolute inset-0 pointer-events-none bg-gradient-to-b from-purple-500/5 to-transparent"
+                className="absolute inset-0 pointer-events-none bg-gradient-to-b from-primary/5 to-transparent"
                 animate={{ y: ['-100%', '100%'] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               />
-            </div>
-
-            {/* Footer info */}
-            <div className="p-3 sm:p-4 bg-muted/30 border-t border-border flex-shrink-0">
-              <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2">{project.description}</p>
-              <div className="flex flex-wrap gap-1 sm:gap-2">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] font-mono rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -183,90 +111,69 @@ const ByakuganPreview = ({
 };
 
 const ProjectCard = ({ project, index, onPreview }: { project: Project; index: number; onPreview: (project: Project) => void }) => {
-  const { ref, tiltStyle, handleMouseMove, handleMouseLeave } = useTilt3D(12);
-
   return (
     <motion.div
-      ref={ref}
-      className={`glass-card overflow-hidden group ${
-        project.featured ? "sm:col-span-2 lg:row-span-2" : ""
+      className={`glass-card overflow-hidden group relative ${
+        project.featured ? "md:col-span-2" : ""
       }`}
-      style={tiltStyle}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ delay: index * 0.2, duration: 0.7, ease: "easeOut" }}
-      whileHover={{ scale: 1.02 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.6 }}
+      whileHover={{ y: -5 }}
     >
       {/* Chakra Pulse Effect on Hover */}
       <motion.div 
-        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-1"
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"
         style={{
-          boxShadow: 'inset 0 0 40px hsl(var(--primary) / 0.2)',
-        }}
-      />
-      {/* Glare effect */}
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{
-          background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 45%, transparent 50%)",
+          boxShadow: 'inset 0 0 50px hsl(var(--primary) / 0.15)',
         }}
       />
       
       {/* Image */}
-      <div className="relative overflow-hidden aspect-video">
+      <div className="relative aspect-video overflow-hidden">
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
         
-        {/* Links overlay */}
-        <div className="absolute top-3 sm:top-4 right-3 sm:right-4 flex gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-400">
-          {/* Byakugan Preview Button */}
+        {/* Quick Actions */}
+        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
           <button
             onClick={() => onPreview(project)}
-            className="p-1.5 sm:p-2 rounded-full bg-purple-500/80 backdrop-blur-sm hover:bg-purple-400 text-white transition-colors"
-            title="Byakugan Preview"
+            className="p-2 rounded-full bg-primary/80 backdrop-blur-sm text-white hover:bg-primary transition-colors"
           >
-            <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+            <Eye className="w-4 h-4" />
           </button>
           {project.liveUrl && (
             <a
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 sm:p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-white transition-colors"
             >
-              <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
+              <ExternalLink className="w-4 h-4" />
             </a>
           )}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-4 sm:p-6">
-        <div className="flex items-start justify-between mb-2 sm:mb-3">
-          <h3 className="text-lg sm:text-xl font-bold group-hover:text-primary transition-colors">
+      <div className="p-6 relative z-20">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
             {project.title}
           </h3>
-          <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
         </div>
-        
-        <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
           {project.description}
         </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 sm:gap-2">
+        <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-mono rounded-md bg-muted text-muted-foreground"
-            >
+            <span key={tag} className="px-2 py-0.5 text-[10px] font-mono rounded bg-muted text-muted-foreground border border-border">
               {tag}
             </span>
           ))}
@@ -278,59 +185,57 @@ const ProjectCard = ({ project, index, onPreview }: { project: Project; index: n
 
 export const ProjectsSection = () => {
   const [previewProject, setPreviewProject] = useState<Project | null>(null);
-  const { playByakuganSound } = useJutsuSounds();
-
-  const handlePreview = (project: Project) => {
-    playByakuganSound();
-    setPreviewProject(project);
-  };
 
   return (
-    <section id="projects" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
-      {/* Background Atmosphere - Baryon Mode Naruto */}
-      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-        <BaryonNaruto />
+    <section id="projects" className="py-32 relative overflow-hidden bg-[#050505]">
+      {/* Atmospheric Baryon Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background z-10" />
+        <motion.div 
+          className="w-full h-full opacity-20 grayscale scale-110"
+          animate={{ scale: [1.1, 1.15, 1.1] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <BaryonNaruto />
+        </motion.div>
       </div>
 
-      {/* Background effects with parallax */}
-      <Parallax speed={-0.1} className="absolute inset-0">
-        <div className="grid-bg opacity-10 w-full h-full" />
-      </Parallax>
-
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-20">
         {/* Section Header */}
-        <ScrollReveal className="text-center mb-10 sm:mb-16">
-          <p className="font-mono text-primary mb-2 text-xs sm:text-sm uppercase tracking-widest">
-            {"// High-Level Operations"}
-          </p>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-display tracking-wide mb-3 sm:mb-4">
-            <span className="gradient-text text-white">S-Rank</span> Missions
+        <ScrollReveal className="text-center mb-20">
+          <div className="inline-flex items-center gap-3 mb-4">
+            <div className="h-[1px] w-8 bg-primary/40" />
+            <p className="font-mono text-primary text-xs tracking-[0.3em] uppercase">
+              Operational Intel
+            </p>
+            <div className="h-[1px] w-8 bg-primary/40" />
+          </div>
+          <h2 className="text-5xl md:text-7xl font-display tracking-wider mb-6">
+            <span className="text-white/20">S-RANK</span> MISSIONS
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
-            A selection of high-impact technical missions showcasing full-stack mastery and AI innovation. 
-            Use the <Eye className="w-4 h-4 inline text-primary mx-1" /> Byakugan for detailed intel.
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            A archive of high-level missions requiring advanced system architecture and 
+            tactical AI integration. Execution is always absolute.
           </p>
         </ScrollReveal>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
             <ProjectCard 
               key={project.title} 
               project={project} 
               index={index} 
-              onPreview={handlePreview}
+              onPreview={setPreviewProject}
             />
           ))}
         </div>
       </div>
 
-      {/* Byakugan Preview Modal */}
       <ByakuganPreview
         project={previewProject}
         isOpen={!!previewProject}
         onClose={() => setPreviewProject(null)}
-        playSound={playByakuganSound}
       />
     </section>
   );

@@ -1,5 +1,4 @@
-// Deployment Trigger: 2026-05-08
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Navigation } from "@/components/Navigation";
@@ -12,76 +11,102 @@ import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 import { SakuraPetals } from "@/components/SakuraPetals";
 import { ScrollProgress, CursorFollower } from "@/components/ScrollReveal";
-import { SoundToggle } from "@/components/SoundToggle";
+import { RunningNaruto } from "@/components/three/NarutoModels";
 
 const Index = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isIntroComplete, setIsIntroComplete] = useState(false);
+  const [appState, setAppState] = useState<'loading' | 'running' | 'revealed'>('loading');
   const [showNav, setShowNav] = useState(false);
 
-  // After loading completes, run the cinematic intro sequence
+  // Handle Scroll Locking
   useEffect(() => {
-    if (!isLoading) {
-      // Delay before showing navigation
-      const navTimer = setTimeout(() => setShowNav(true), 1000);
-      // Enable scrolling after full intro
-      const scrollTimer = setTimeout(() => setIsIntroComplete(true), 2500);
-      
-      return () => {
-        clearTimeout(navTimer);
-        clearTimeout(scrollTimer);
-      };
+    if (appState === 'loading' || appState === 'running') {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+      // Fade in nav after scroll unlocks
+      const navTimer = setTimeout(() => setShowNav(true), 800);
+      return () => clearTimeout(navTimer);
     }
-  }, [isLoading]);
+  }, [appState]);
+
+  // Transition from Running to Revealed
+  useEffect(() => {
+    if (appState === 'running') {
+      const timer = setTimeout(() => setAppState('revealed'), 2800);
+      return () => clearTimeout(timer);
+    }
+  }, [appState]);
 
   return (
-    <div className="min-h-screen bg-background selection:bg-primary/30">
+    <div className="min-h-screen bg-background selection:bg-primary/30 relative">
+      {/* Global Cinematic Cursor */}
+      <CursorFollower />
+
       <AnimatePresence mode="wait">
-        {isLoading ? (
+        {/* PHASE 1: Loading Screen (Minimalist) */}
+        {appState === 'loading' && (
           <LoadingScreen 
             key="loader"
-            onComplete={() => setIsLoading(false)} 
+            onComplete={() => setAppState('running')} 
           />
-        ) : (
-          <motion.main
-            key="main"
-            className={`relative ${!isIntroComplete ? 'overflow-hidden h-screen' : ''}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
+        )}
+
+        {/* PHASE 2: Entry Animation (The Run) */}
+        {appState === 'running' && (
+          <motion.div 
+            key="running-intro"
+            className="fixed inset-0 z-[100] bg-background flex items-center justify-center pointer-events-none"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            {/* Custom Premium Cursor */}
-            <CursorFollower />
-            
-            {/* Scroll progress indicator */}
-            {isIntroComplete && <ScrollProgress />}
-            
-            {/* Sakura petals */}
-            <SakuraPetals />
-            
-            {/* Navigation */}
-            <AnimatePresence>
-              {showNav && (
-                <motion.div
-                  initial={{ y: -100, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                >
-                  <Navigation />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            
-            <HeroSection isIntroComplete={isIntroComplete} />
-            <AboutSection />
-            <SkillsSection />
-            <ProjectsSection />
-            <AIGallerySection />
-            <ContactSection />
-            <Footer />
-          </motion.main>
+            <motion.div
+              className="w-full h-full"
+              initial={{ x: "-100%" }}
+              animate={{ x: "100%" }}
+              transition={{ duration: 2.5, ease: "linear" }}
+            >
+              <RunningNaruto scale={1.5} />
+              {/* Chakra Trail */}
+              <div className="absolute top-1/2 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent blur-sm" />
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
+
+      {/* PHASE 3: Main Content */}
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={appState === 'revealed' ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 1 }}
+      >
+        {/* Scroll Progress Bar */}
+        {appState === 'revealed' && <ScrollProgress />}
+        
+        {/* Navigation */}
+        <AnimatePresence>
+          {showNav && (
+            <motion.div
+              initial={{ y: -100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+            >
+              <Navigation />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Sections */}
+        <HeroSection isIntroComplete={appState === 'revealed'} />
+        <AboutSection />
+        <SkillsSection />
+        <ProjectsSection />
+        <AIGallerySection />
+        <ContactSection />
+        <Footer />
+        
+        {/* Ambient Effects */}
+        <SakuraPetals />
+      </motion.main>
     </div>
   );
 };

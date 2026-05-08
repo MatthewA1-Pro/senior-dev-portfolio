@@ -9,50 +9,49 @@ interface HeroSectionProps {
 
 export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
   return (
-    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-background">
       {/* Background Atmosphere */}
-      <div className="absolute inset-0 z-0 bg-background" />
-      <div className="absolute inset-0 grid-bg opacity-10" />
-      
-      {/* Background Glows - Substantially Reduced Clutter */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 grid-bg opacity-5" />
+        <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-primary/5 to-transparent" />
+      </div>
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
           {/* Left Side: Content */}
           <motion.div
+            className="z-20"
             initial={{ opacity: 0, x: -50 }}
             animate={isIntroComplete ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
+            transition={{ duration: 1, delay: 0.5 }}
           >
-            <div className="inline-block px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-8">
               <span className="text-[10px] font-mono tracking-widest text-primary uppercase">
-                The Sage of Modern Code
+                Sage Level Developer
               </span>
             </div>
             
-            <h1 className="text-6xl md:text-8xl font-display tracking-wider mb-6 leading-none">
-              <span className="text-white">MATTHEW</span>
+            <h1 className="text-7xl md:text-9xl font-display tracking-tight mb-8 leading-[0.9]">
+              <span className="text-white opacity-90">MATTHEW</span>
               <br />
               <span className="gradient-text">ADEDIGBA</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-lg mb-10 leading-relaxed">
-              Senior Full-Stack Developer specializing in high-performance digital experiences, AI innovation, and complex system architecture.
+            <p className="text-xl text-muted-foreground max-w-lg mb-12 leading-relaxed">
+              Forging high-performance digital architectures with the precision of a master shinobi. Expert in Full-Stack Mastery and AI Innovation.
             </p>
             
-            <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex flex-wrap gap-6 items-center">
               <MagneticButton
                 as="a"
                 href="#projects"
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
+                className="px-10 py-5 bg-primary text-primary-foreground rounded-full font-bold text-sm tracking-widest uppercase hover:scale-105 transition-transform flex items-center gap-3"
               >
-                View S-Rank Missions <ArrowRight className="w-4 h-4" />
+                S-Rank Missions <ArrowRight className="w-4 h-4" />
               </MagneticButton>
               
-              <div className="flex items-center gap-4 ml-2">
+              <div className="flex items-center gap-6 ml-4">
                 {[
                   { icon: Github, href: "https://github.com/MatthewA1-Pro" },
                   { icon: Linkedin, href: "https://linkedin.com" },
@@ -62,10 +61,10 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
                     key={i}
                     href={social.href}
                     target="_blank"
-                    className="p-3 rounded-full border border-border hover:border-primary/50 hover:text-primary transition-all"
-                    whileHover={{ y: -3 }}
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    whileHover={{ y: -5, scale: 1.1 }}
                   >
-                    <social.icon className="w-5 h-5" />
+                    <social.icon className="w-6 h-6" />
                   </motion.a>
                 ))}
               </div>
@@ -74,26 +73,28 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
           
           {/* Right Side: 3D Sage Centerpiece */}
           <motion.div 
-            className="relative h-[60vh] lg:h-[80vh] z-0"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isIntroComplete ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 1.5, ease: "easeOut", delay: 1 }}
+            className="relative h-[70vh] lg:h-[90vh] z-10 cursor-grab active:cursor-grabbing"
+            initial={{ opacity: 0, scale: 0.9, x: 100 }}
+            animate={isIntroComplete ? { opacity: 1, scale: 1, x: 0 } : {}}
+            transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
           >
             <HeroNaruto />
+            {/* Subtle Aura Glow behind model */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/10 rounded-full blur-[100px] -z-1 pointer-events-none" />
           </motion.div>
           
         </div>
       </div>
       
-      {/* Scroll Indicator */}
+      {/* Scroll indicator - Cinematic Style */}
       <motion.div 
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
         initial={{ opacity: 0 }}
         animate={isIntroComplete ? { opacity: 1 } : {}}
-        transition={{ delay: 2.5 }}
+        transition={{ delay: 2 }}
       >
-        <span className="text-[10px] font-mono text-muted-foreground tracking-[0.3em] uppercase">Scroll to explore</span>
-        <div className="w-[1px] h-12 bg-gradient-to-b from-primary to-transparent" />
+        <span className="text-[10px] font-mono text-muted-foreground tracking-[0.6em] uppercase">Scroll to descend</span>
+        <div className="w-[1px] h-16 bg-gradient-to-b from-primary/50 to-transparent" />
       </motion.div>
     </section>
   );
