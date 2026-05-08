@@ -10,7 +10,7 @@ export const HeroNaruto = () => {
   
   return (
     <div className="w-full h-full">
-      <Canvas shadows dpr={[1, isMobile ? 1 : 1.5]} gl={{ antialias: !isMobile }}>
+      <Canvas shadows dpr={[1, 1]} gl={{ antialias: false, powerPreference: "default", stencil: false }}>
         <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={isMobile ? 60 : 45} />
         <ambientLight intensity={0.4} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />

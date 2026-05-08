@@ -54,15 +54,15 @@ export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
       {/* Naruto swirl background */}
       <div className="absolute inset-0 grid-bg opacity-30" />
       
-      {/* New Hero Naruto Centerpiece - DISABLED FOR STABILITY */}
-      {/* <motion.div 
+      {/* Optimized Hero Naruto Centerpiece */}
+      <motion.div 
         className="absolute inset-0 z-0"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 2.5, ease: "easeOut", delay: 1 }}
       >
         <HeroNaruto />
-      </motion.div> */}
+      </motion.div>
       
       {/* Cinematic letterbox bars REMOVED FOR DEBUGGING */}
       

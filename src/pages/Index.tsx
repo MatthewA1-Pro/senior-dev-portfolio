@@ -14,9 +14,9 @@ import { SoundToggle } from "@/components/SoundToggle";
 import { useCinematicAudio } from "@/hooks/useCinematicAudio";
 
 const Index = () => {
-  const [isLoading, setIsLoading] = useState(false); // FORCED FALSE FOR DEBUGGING
-  const [isIntroComplete, setIsIntroComplete] = useState(true); // FORCED TRUE FOR DEBUGGING
-  const [showNav, setShowNav] = useState(true); // FORCED TRUE FOR DEBUGGING
+  const [isLoading, setIsLoading] = useState(true);
+  const [isIntroComplete, setIsIntroComplete] = useState(false);
+  const [showNav, setShowNav] = useState(false);
   const [soundEnabledFromLoading, setSoundEnabledFromLoading] = useState(false);
 
   const {
@@ -72,11 +72,11 @@ const Index = () => {
       {!isLoading && (
         <motion.main
           className={`relative cursor-none md:cursor-none ${!isIntroComplete ? 'overflow-hidden h-screen' : ''}`}
-          initial={{ opacity: 1 }}
+          initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          style={{ overflow: 'auto', background: 'hsl(var(--background))' }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          style={{ overflow: isIntroComplete ? 'auto' : 'hidden' }}
         >
-          <div className="fixed top-0 left-0 z-[9999] bg-red-600 text-white text-[10px] p-1">DEBUG: MAIN RENDER ACTIVE</div>
           {/* Sound Toggle - persists after loading */}
           <SoundToggle
             isSoundEnabled={isSoundEnabled}
@@ -99,7 +99,14 @@ const Index = () => {
             )}
           </AnimatePresence>
           
-          {/* Sakura petals - REMOVED FOR DEBUGGING */}
+          {/* Sakura petals - fade in cinematically */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2, duration: 2 }}
+          >
+            <SakuraPetals />
+          </motion.div>
           
           {/* Navigation - slides in after hero reveal */}
           <AnimatePresence>
