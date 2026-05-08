@@ -51,7 +51,7 @@ export const ContactSection = () => {
             >
               Meet Me At <br />
               <span className="gradient-text">Ichiraku</span>
-            </h2 >
+            </motion.h2>
             <motion.p 
               className="text-muted-foreground text-lg mb-10 leading-relaxed max-w-md"
               initial={{ opacity: 0 }}
