@@ -115,27 +115,9 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
     onSoundStateChange?.(isSoundEnabled);
   }, [isSoundEnabled, onSoundStateChange]);
 
-  // Play ambient drone when sound is first enabled
-  useEffect(() => {
-    if (isSoundEnabled && phase === 'loading') {
-      playAmbientDrone();
-    }
-  }, [isSoundEnabled, phase, playAmbientDrone]);
+  // Audio auto-play removed to prevent crashes
 
-  // Play heartbeat periodically during loading
-  useEffect(() => {
-    if (!isSoundEnabled || phase !== 'loading') return;
-    
-    const interval = setInterval(() => {
-      if (progress > 30 && progress < 90) {
-        playHeartbeat();
-      }
-    }, 1200);
-    
-    return () => clearInterval(interval);
-  }, [isSoundEnabled, phase, progress, playHeartbeat]);
-
-  // Play rising tension near completion
+  // Play rising tension near completion - Only if sound manually enabled
   useEffect(() => {
     if (isSoundEnabled && progress > 80 && progress < 85) {
       playRisingTension();
@@ -199,13 +181,8 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
         className="top-6 right-6"
       />
 
-      {/* 3D Running Naruto Animation */}
-      <div className="absolute inset-0 z-0 opacity-40">
-        <RunningNaruto scale={1.8} />
-      </div>
-
-      {/* 2D Network overlay */}
-      <div className="absolute inset-0 z-1 pointer-events-none">
+      {/* 2D Network overlay - Z-index fixed */}
+      <div className="absolute inset-0 z-1 pointer-events-none opacity-60">
         <NetworkNodes2D />
       </div>
 
