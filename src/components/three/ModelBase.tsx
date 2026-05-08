@@ -19,21 +19,26 @@ export function OptimizedModel({
   float?: boolean;
   autoAnimate?: boolean;
 }) {
-  const { scene, animations } = useGLTF(url, '/draco/'); // Assuming Draco binaries are served from /draco/
-  const mixer = useMemo(() => new THREE.AnimationMixer(scene), [scene]);
+  // Use a fallback for the URL if it's missing
+  const modelUrl = url || "/models/naruto_shippuden.glb";
+  
+  // Robust Draco pathing with CDN fallback
+  const DRACO_URL = 'https://www.gstatic.com/draco/versioned/decoders/1.5.6/';
+  const { scene, animations } = useGLTF(modelUrl, DRACO_URL);
+  const mixer = useMemo(() => scene ? new THREE.AnimationMixer(scene) : null, [scene]);
 
   useEffect(() => {
-    if (autoAnimate && animations.length > 0) {
+    if (autoAnimate && animations && animations.length > 0 && mixer) {
       const action = mixer.clipAction(animations[0]);
       action.play();
     }
     return () => {
-      mixer.stopAllAction();
+      if (mixer) mixer.stopAllAction();
     };
   }, [mixer, autoAnimate, animations]);
 
   useFrame((state, delta) => {
-    mixer.update(delta);
+    if (mixer) mixer.update(delta);
   });
 
   const model = (

@@ -150,6 +150,12 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
   }, [isSoundEnabled, phase, playKamuiVortex]);
 
   useEffect(() => {
+    // Force reveal timeout - safety measure against black screen
+    const forceRevealTimer = setTimeout(() => {
+      console.warn("Loading timeout - force revealing UI");
+      onComplete();
+    }, 12000); // 12 seconds max loading time
+
     // Slower, more cinematic loading - like a movie scene
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -162,6 +168,7 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
             kamuiProgressRef.current += 1;
             if (kamuiProgressRef.current >= 80) {
               clearInterval(kamuiInterval);
+              clearTimeout(forceRevealTimer);
               onComplete();
             }
           }, 40); // Slower kamui transition
@@ -173,7 +180,10 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
       });
     }, 180); // Slower interval for cinematic feel
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(forceRevealTimer);
+    };
   }, [onComplete]);
 
   return (

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { MagneticButton } from "./ScrollReveal";
 
-const WHATSAPP_NUMBER = "+44 7352 966432";
+const WHATSAPP_NUMBER = "+2349139508184";
 const EMAIL = "base44.dev1@gmail.com";
 
 interface HeroSectionProps {
@@ -19,8 +19,8 @@ export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const openWhatsApp = () => {
-    const message = encodeURIComponent("Hi Matthew! I'd like to discuss a project with you.");
-    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${message}`, '_blank');
+    const message = encodeURIComponent("Hi! I saw your portfolio and would like to discuss a project.");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[\+\s]/g, '')}?text=${message}`, '_blank');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
