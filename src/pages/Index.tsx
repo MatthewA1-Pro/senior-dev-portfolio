@@ -72,11 +72,11 @@ const Index = () => {
       {!isLoading && (
         <motion.main
           className={`relative cursor-none md:cursor-none ${!isIntroComplete ? 'overflow-hidden h-screen' : ''}`}
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          style={{ overflow: isIntroComplete ? 'auto' : 'hidden' }}
+          style={{ overflow: 'auto', background: 'hsl(var(--background))' }}
         >
+          <div className="fixed top-0 left-0 z-[9999] bg-red-600 text-white text-[10px] p-1">DEBUG: MAIN RENDER ACTIVE</div>
           {/* Sound Toggle - persists after loading */}
           <SoundToggle
             isSoundEnabled={isSoundEnabled}
@@ -84,8 +84,7 @@ const Index = () => {
             className="top-6 right-6"
           />
 
-          {/* Custom cursor follower */}
-          <CursorFollower />
+          {/* Custom cursor REMOVED FOR DEBUGGING */}
           
           {/* Scroll progress indicator - only show after intro */}
           <AnimatePresence>
@@ -100,14 +99,7 @@ const Index = () => {
             )}
           </AnimatePresence>
           
-          {/* Sakura petals - fade in cinematically */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2, duration: 2 }}
-          >
-            <SakuraPetals />
-          </motion.div>
+          {/* Sakura petals - REMOVED FOR DEBUGGING */}
           
           {/* Navigation - slides in after hero reveal */}
           <AnimatePresence>

@@ -64,19 +64,7 @@ export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
         <HeroNaruto />
       </motion.div>
       
-      {/* Cinematic letterbox bars - fade out after intro */}
-      <motion.div
-        className="absolute top-0 left-0 right-0 h-16 bg-black z-20"
-        initial={{ height: "15vh" }}
-        animate={{ height: isIntroComplete ? 0 : "8vh" }}
-        transition={{ duration: 1.5, ease: [0.25, 0.4, 0.25, 1], delay: isIntroComplete ? 0 : 0 }}
-      />
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-16 bg-black z-20"
-        initial={{ height: "15vh" }}
-        animate={{ height: isIntroComplete ? 0 : "8vh" }}
-        transition={{ duration: 1.5, ease: [0.25, 0.4, 0.25, 1], delay: isIntroComplete ? 0 : 0 }}
-      />
+      {/* Cinematic letterbox bars REMOVED FOR DEBUGGING */}
       
       {/* Dark gradient overlay for text contrast */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/60 via-transparent to-background/80 pointer-events-none" />
