@@ -1,290 +1,100 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
 import { HeroNaruto } from "./three/NarutoModels";
-import { ChevronDown, Mail, MessageCircle, Send, X } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { MagneticButton } from "./ScrollReveal";
 
-const WHATSAPP_NUMBER = "+2349139508184";
-const EMAIL = "base44.dev1@gmail.com";
-
 interface HeroSectionProps {
-  isIntroComplete?: boolean;
+  isIntroComplete: boolean;
 }
 
-export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const openWhatsApp = () => {
-    const message = encodeURIComponent("Hi! I saw your portfolio and would like to discuss a project.");
-    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[\+\s]/g, '')}?text=${message}`, '_blank');
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: {
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-        },
-      });
-
-      if (error) throw error;
-
-      toast.success("Message sent! I'll get back to you soon.");
-      setFormData({ name: "", email: "", message: "" });
-      setShowContactModal(false);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error("Failed to send message. Please try WhatsApp or email directly.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Naruto swirl background */}
-      <div className="absolute inset-0 grid-bg opacity-30" />
+    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+      {/* Background Atmosphere */}
+      <div className="absolute inset-0 z-0 bg-background" />
+      <div className="absolute inset-0 grid-bg opacity-10" />
       
-      {/* Cinematic 2D Hero Naruto - Guaranteed Stability */}
-      <motion.div 
-        className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
-        initial={{ opacity: 0, scale: 0.9, filter: "blur(20px)" }}
-        animate={{ opacity: 0.6, scale: 1, filter: "blur(0px)" }}
-        transition={{ duration: 2.5, ease: "easeOut", delay: 1 }}
-      >
-        <div className="relative w-full h-full flex items-center justify-center">
-          {/* Glowing Aura */}
-          <div className="absolute w-[60vh] h-[60vh] rounded-full bg-primary/20 blur-[120px] animate-pulse" />
-          <div className="absolute w-[40vh] h-[40vh] rounded-full bg-secondary/10 blur-[80px] animate-float" />
+      {/* Background Glows - Substantially Reduced Clutter */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
-          {/* Subtle Silhouette / Energy shape */}
-          <div className="relative z-10 w-[50vh] h-[70vh] flex items-center justify-center">
-             <div className="w-1 h-full bg-gradient-to-b from-transparent via-primary/40 to-transparent blur-sm" />
-             <div className="absolute top-1/4 w-32 h-32 rounded-full border border-primary/30 animate-spin-slow" />
-             <div className="absolute top-1/4 w-48 h-48 rounded-full border border-secondary/20 animate-spin-slow" style={{ animationDirection: 'reverse' }} />
-          </div>
-        </div>
-      </motion.div>
-      
-      {/* Cinematic letterbox bars REMOVED FOR DEBUGGING */}
-      
-      {/* Dark gradient overlay for text contrast */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/60 via-transparent to-background/80 pointer-events-none" />
-      
-      {/* Content - higher z-index for visibility */}
-      <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto pt-16 sm:pt-0">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
-          className="flex flex-col items-center"
-        >
-          {/* Anime-style decorative element */}
+          {/* Left Side: Content */}
           <motion.div
-            className="mb-6 sm:mb-8"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 1 }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={isIntroComplete ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
           >
-            <span className="text-accent text-sm sm:text-base md:text-lg tracking-[0.2em] font-japanese">
-              運命を切り開く — Forging My Destiny
-            </span>
-          </motion.div>
-
-          {/* Name - elegant anime typography with cinematic reveal */}
-          <motion.h1
-            className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display tracking-wider mb-8 sm:mb-10 leading-none"
-            initial={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0 }}
-          >
-            <span className="gradient-text animate-gradient">MATTHEW</span>
-          </motion.h1>
-
-          {/* Title - with anime-styled border */}
-          <motion.p
-            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground font-semibold mb-3 sm:mb-4 tracking-wide px-6 py-3 glass-card"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 2.2, duration: 0.8 }}
-          >
-            Senior Full-Stack Developer
-          </motion.p>
-
-          <motion.p
-            className="text-base sm:text-lg md:text-xl lg:text-2xl text-secondary tracking-wider px-4 font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.5, duration: 0.8 }}
-          >
-            Custom Code • AI Innovation • Prompt Engineering
-          </motion.p>
-
-          {/* Anime-style bottom element */}
-          <motion.div
-            className="mt-6 sm:mt-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2.8, duration: 0.8 }}
-          >
-            <span className="text-accent/80 text-sm sm:text-base tracking-[0.15em] font-japanese">
-              ✦ 伝説になる ✦ Becoming Legend
-            </span>
-          </motion.div>
-
-          {/* Social Links */}
-          <motion.div
-            className="flex items-center justify-center gap-4 sm:gap-6 mt-8 sm:mt-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 3.2, duration: 0.8 }}
-          >
-            <MagneticButton
-              as="button"
-              onClick={openWhatsApp}
-              className="p-2.5 sm:p-3 rounded-full glass-card hover:anime-border transition-all duration-300 group"
-              strength={0.5}
-            >
-              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-            </MagneticButton>
-            <MagneticButton
-              as="button"
-              onClick={() => setShowContactModal(true)}
-              className="p-2.5 sm:p-3 rounded-full glass-card hover:anime-border transition-all duration-300 group"
-              strength={0.5}
-            >
-              <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-            </MagneticButton>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      {/* Scroll indicator - only show after intro */}
-      {isIntroComplete && (
-        <motion.div
-          className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, y: [0, 10, 0] }}
-          transition={{ delay: 0.5, duration: 2.5, repeat: Infinity }}
-        >
-          <a href="#skills" className="flex flex-col items-center text-muted-foreground hover:text-primary transition-colors">
-            <span className="font-mono text-xs sm:text-sm mb-2">Scroll</span>
-            <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
-          </a>
-        </motion.div>
-      )}
-
-      {/* Contact Modal */}
-      <AnimatePresence>
-        {showContactModal && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            {/* Backdrop */}
-            <motion.div
-              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-              onClick={() => setShowContactModal(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
+            <div className="inline-block px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6">
+              <span className="text-[10px] font-mono tracking-widest text-primary uppercase">
+                The Sage of Modern Code
+              </span>
+            </div>
             
-            {/* Modal */}
-            <motion.div
-              className="relative w-full max-w-md glass-card p-6 sm:p-8"
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            >
-              {/* Close button */}
-              <button
-                onClick={() => setShowContactModal(false)}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted transition-colors"
+            <h1 className="text-6xl md:text-8xl font-display tracking-wider mb-6 leading-none">
+              <span className="text-white">MATTHEW</span>
+              <br />
+              <span className="gradient-text">ADEDIGBA</span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-muted-foreground max-w-lg mb-10 leading-relaxed">
+              Senior Full-Stack Developer specializing in high-performance digital experiences, AI innovation, and complex system architecture.
+            </p>
+            
+            <div className="flex flex-wrap gap-4 items-center">
+              <MagneticButton
+                as="a"
+                href="#projects"
+                className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium flex items-center gap-2 hover:opacity-90 transition-opacity"
               >
-                <X className="w-5 h-5 text-muted-foreground" />
-              </button>
+                View S-Rank Missions <ArrowRight className="w-4 h-4" />
+              </MagneticButton>
               
-              <h3 className="text-xl sm:text-2xl font-display mb-6 gradient-text">Get In Touch</h3>
-              
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="hero-name" className="block font-mono text-sm text-muted-foreground mb-2">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="hero-name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono text-sm"
-                    placeholder="Your name"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="hero-email" className="block font-mono text-sm text-muted-foreground mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="hero-email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono text-sm"
-                    placeholder="your@email.com"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="hero-message" className="block font-mono text-sm text-muted-foreground mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    id="hero-message"
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    required
-                    rows={4}
-                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono text-sm resize-none"
-                    placeholder="Tell me about your project..."
-                  />
-                </div>
-
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {isSubmitting ? (
-                    "Sending..."
-                  ) : (
-                    <>
-                      Send Message
-                      <Send className="w-4 h-4" />
-                    </>
-                  )}
-                </motion.button>
-              </form>
-            </motion.div>
+              <div className="flex items-center gap-4 ml-2">
+                {[
+                  { icon: Github, href: "https://github.com/MatthewA1-Pro" },
+                  { icon: Linkedin, href: "https://linkedin.com" },
+                  { icon: Mail, href: "mailto:oderinwalematthew3@gmail.com" }
+                ].map((social, i) => (
+                  <motion.a
+                    key={i}
+                    href={social.href}
+                    target="_blank"
+                    className="p-3 rounded-full border border-border hover:border-primary/50 hover:text-primary transition-all"
+                    whileHover={{ y: -3 }}
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </motion.a>
+                ))}
+              </div>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+          
+          {/* Right Side: 3D Sage Centerpiece */}
+          <motion.div 
+            className="relative h-[60vh] lg:h-[80vh] z-0"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isIntroComplete ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 1.5, ease: "easeOut", delay: 1 }}
+          >
+            <HeroNaruto />
+          </motion.div>
+          
+        </div>
+      </div>
+      
+      {/* Scroll Indicator */}
+      <motion.div 
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={isIntroComplete ? { opacity: 1 } : {}}
+        transition={{ delay: 2.5 }}
+      >
+        <span className="text-[10px] font-mono text-muted-foreground tracking-[0.3em] uppercase">Scroll to explore</span>
+        <div className="w-[1px] h-12 bg-gradient-to-b from-primary to-transparent" />
+      </motion.div>
     </section>
   );
 };

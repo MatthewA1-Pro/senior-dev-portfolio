@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
+import { AboutSection } from "@/components/AboutSection";
 import { SkillsSection } from "@/components/SkillsSection";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { AIGallerySection } from "@/components/AIGallerySection";
@@ -72,6 +73,7 @@ const Index = () => {
             </AnimatePresence>
             
             <HeroSection isIntroComplete={isIntroComplete} />
+            <AboutSection />
             <SkillsSection />
             <ProjectsSection />
             <AIGallerySection />

@@ -241,11 +241,42 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
         )}
       </AnimatePresence>
 
+      {/* Hidden Leaf Symbol Background - Cinematic Fade */}
+      <motion.div
+        className="absolute z-0 opacity-5 pointer-events-none"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.08 }}
+        transition={{ duration: 4, ease: "easeOut" }}
+      >
+        <svg width="400" height="400" viewBox="0 0 100 100" fill="currentColor" className="text-primary">
+          <path d="M50 10 C 20 10, 10 40, 10 50 C 10 70, 40 90, 50 90 C 70 90, 90 70, 90 50 C 90 30, 70 10, 50 10 Z M50 25 C 65 25, 75 35, 75 50 C 75 65, 65 75, 50 75 C 35 75, 25 65, 25 50 C 25 35, 35 25, 50 25 Z" />
+        </svg>
+      </motion.div>
+
+      {/* 3D Running Naruto Centerpiece */}
+      <motion.div
+        className="absolute inset-0 z-10 pointer-events-none"
+        initial={{ x: "-100%", opacity: 0 }}
+        animate={{ x: phase === 'loading' ? "0%" : "100%", opacity: 1 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
+      >
+        <RunningNaruto scale={1.2} />
+      </motion.div>
+
+      {/* Chakra Trail Effect (CSS based for performance) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-5">
+        <motion.div 
+          className="absolute h-[2px] bg-primary/30 blur-sm w-full top-1/2"
+          animate={{ x: ['-100%', '100%'], opacity: [0, 0.5, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        />
+      </div>
+
       {/* Name reveal */}
       <AnimatePresence>
         {phase === 'loading' && (
           <motion.div
-            className="relative z-10 mt-8"
+            className="relative z-20 mt-32"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30, scale: 0.8 }}
@@ -260,12 +291,9 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
               MATTHEW
             </motion.h1>
             <motion.p
-              className="text-center font-mono text-xs text-muted-foreground mt-2 tracking-widest"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
+              className="text-center font-mono text-[10px] text-muted-foreground mt-2 tracking-[0.5em] uppercase"
             >
-              FULL-STACK DEVELOPER
+              Initializing Shinobi Interface
             </motion.p>
           </motion.div>
         )}

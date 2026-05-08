@@ -26,10 +26,10 @@ export const Footer = () => {
               <span className="text-primary">AI</span>
             </p>
             <a 
-              href="mailto:base44.dev1@gmail.com" 
+              href="mailto:oderinwalematthew3@gmail.com" 
               className="text-sm text-muted-foreground hover:text-primary transition-colors font-mono"
             >
-              base44.dev1@gmail.com
+              oderinwalematthew3@gmail.com
             </a>
           </div>
 

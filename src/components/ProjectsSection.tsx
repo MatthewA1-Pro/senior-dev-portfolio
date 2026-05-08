@@ -198,7 +198,15 @@ const ProjectCard = ({ project, index, onPreview }: { project: Project; index: n
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ delay: index * 0.2, duration: 0.7, ease: "easeOut" }}
+      whileHover={{ scale: 1.02 }}
     >
+      {/* Chakra Pulse Effect on Hover */}
+      <motion.div 
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-1"
+        style={{
+          boxShadow: 'inset 0 0 40px hsl(var(--primary) / 0.2)',
+        }}
+      />
       {/* Glare effect */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -279,29 +287,28 @@ export const ProjectsSection = () => {
 
   return (
     <section id="projects" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
-      {/* Background Atmosphere */}
-      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+      {/* Background Atmosphere - Baryon Mode Naruto */}
+      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
         <BaryonNaruto />
       </div>
 
       {/* Background effects with parallax */}
-      <Parallax speed={-0.2} className="absolute inset-0">
-        <div className="grid-bg opacity-20 w-full h-full" />
+      <Parallax speed={-0.1} className="absolute inset-0">
+        <div className="grid-bg opacity-10 w-full h-full" />
       </Parallax>
-      <div className="absolute bottom-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/10 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
         <ScrollReveal className="text-center mb-10 sm:mb-16">
-          <p className="font-mono text-primary mb-2 text-xs sm:text-sm">
-            {"// Featured Work"}
+          <p className="font-mono text-primary mb-2 text-xs sm:text-sm uppercase tracking-widest">
+            {"// High-Level Operations"}
           </p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4">
-            <span className="gradient-text">Project Showcase</span>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-display tracking-wide mb-3 sm:mb-4">
+            <span className="gradient-text text-white">S-Rank</span> Missions
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
-            A selection of projects showcasing full-stack development. Click the{" "}
-            <Eye className="w-3 h-3 sm:w-4 sm:h-4 inline text-purple-400" /> icon for a Byakugan preview.
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
+            A selection of high-impact technical missions showcasing full-stack mastery and AI innovation. 
+            Use the <Eye className="w-4 h-4 inline text-primary mx-1" /> Byakugan for detailed intel.
           </p>
         </ScrollReveal>
 

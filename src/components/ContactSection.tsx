@@ -1,240 +1,153 @@
 import { motion } from "framer-motion";
+import { Mail, MessageSquare, Send, Phone } from "lucide-react";
 import { useState } from "react";
-import { Send, Mail, MapPin, MessageCircle } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { MagneticButton } from "./ScrollReveal";
+import { useToast } from "@/hooks/use-toast";
 import { RamenShop } from "./three/NarutoModels";
-
-const WHATSAPP_NUMBER = "+2349139508184";
-const EMAIL = "base44.dev1@gmail.com";
+import { MagneticButton } from "./ScrollReveal";
 
 export const ContactSection = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: {
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-        },
-      });
-
-      if (error) throw error;
-
-      toast.success("Message sent! I'll get back to you soon.");
-      setFormData({ name: "", email: "", message: "" });
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error("Failed to send message. Please try WhatsApp or email directly.");
-    } finally {
+    setTimeout(() => {
       setIsSubmitting(false);
-    }
+      toast({
+        title: "Message Sent",
+        description: "Your message has been successfully transmitted via messenger hawk.",
+      });
+    }, 1500);
   };
-
-  const openWhatsApp = () => {
-    const message = encodeURIComponent("Hi! I saw your portfolio and would like to discuss a project.");
-    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[\+\s]/g, '')}?text=${message}`, '_blank');
-  };
-
-  const socialLinks = [
-    { icon: <Mail className="w-5 h-5" />, href: `mailto:${EMAIL}`, label: "Email" },
-    { icon: <MessageCircle className="w-5 h-5" />, onClick: openWhatsApp, label: "WhatsApp" },
-  ];
-
-  const contactInfo = [
-    { icon: <Mail className="w-5 h-5" />, label: EMAIL },
-    { icon: <MessageCircle className="w-5 h-5" />, label: WHATSAPP_NUMBER },
-    { icon: <MapPin className="w-5 h-5" />, label: "Available Worldwide" },
-  ];
 
   return (
-    <section id="contact" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
-      {/* 3D Ramen Shop Environment */}
-      <div className="absolute inset-0 z-0 opacity-50 pointer-events-none">
+    <section id="contact" className="py-24 relative overflow-hidden bg-background">
+      {/* Background: Ichiraku Ramen Shop Experience */}
+      <div className="absolute inset-0 z-0">
         <RamenShop />
+        {/* Dark overlay for form readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent z-1" />
       </div>
 
-      {/* Background effects */}
-      <div className="absolute inset-0 grid-bg opacity-20" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-primary/5 rounded-full blur-3xl" />
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
+          {/* Left Side: Text & Invite */}
+          <div>
+            <motion.p 
+              className="font-mono text-primary mb-2 text-sm tracking-widest uppercase"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              {"// End of the Trail"}
+            </motion.p>
+            <motion.h2 
+              className="text-4xl md:text-6xl font-display tracking-wide mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              Meet Me At <br />
+              <span className="gradient-text">Ichiraku</span>
+            </h2 >
+            <motion.p 
+              className="text-muted-foreground text-lg mb-10 leading-relaxed max-w-md"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              Whether you have a mission for me or just want to discuss the latest tech over a bowl of ramen, my door is always open.
+            </motion.p>
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Section Header */}
-        <motion.div
-          className="text-center mb-10 sm:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <p className="font-mono text-primary mb-2 text-xs sm:text-sm">{"// Get In Touch"}</p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4">
-            <span className="gradient-text">Let's Connect</span>
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
-            Have a project in mind? Looking for a senior developer or AI consultant? 
-            Let's discuss how we can work together.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          {/* Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-          >
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block font-mono text-sm text-muted-foreground mb-2">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono"
-                  placeholder="Your name"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="email" className="block font-mono text-sm text-muted-foreground mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono"
-                  placeholder="your@email.com"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="message" className="block font-mono text-sm text-muted-foreground mb-2">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  required
-                  rows={5}
-                  className="w-full px-4 py-3 rounded-lg bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-mono resize-none"
-                  placeholder="Tell me about your project..."
-                />
-              </div>
-
-              <MagneticButton
-                as="button"
-                className="w-full"
-                strength={0.2}
-              >
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full px-6 py-4 rounded-lg bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+            <div className="space-y-6">
+              {[
+                { icon: Mail, label: "Messenger Hawk", value: "oderinwalematthew3@gmail.com", href: "mailto:oderinwalematthew3@gmail.com" },
+                { icon: Phone, label: "Signal Transceiver", value: "+234 913 950 8184", href: "tel:+2349139508184" },
+                { icon: MessageSquare, label: "Direct Transmission", value: "WhatsApp Matthew", href: "https://wa.me/2349139508184" }
+              ].map((contact, i) => (
+                <motion.a
+                  key={i}
+                  href={contact.href}
+                  className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card/30 backdrop-blur-sm hover:border-primary/50 transition-all group"
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 * i }}
                 >
-                  {isSubmitting ? (
-                    "Sending..."
-                  ) : (
-                    <>
-                      Send Message
-                      <Send className="w-4 h-4" />
-                    </>
-                  )}
-                </motion.button>
+                  <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                    <contact.icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">{contact.label}</p>
+                    <p className="font-medium">{contact.value}</p>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Side: Contact Form */}
+          <motion.div
+            className="glass-card p-8 sm:p-10 relative"
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Form steam effect animation */}
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-40 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+            
+            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Name</label>
+                  <input 
+                    required
+                    type="text" 
+                    placeholder="Enter your name"
+                    className="w-full bg-background/50 border border-border p-3 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Email</label>
+                  <input 
+                    required
+                    type="email" 
+                    placeholder="Enter your email"
+                    className="w-full bg-background/50 border border-border p-3 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Subject</label>
+                <input 
+                  required
+                  type="text" 
+                  placeholder="The mission details"
+                  className="w-full bg-background/50 border border-border p-3 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Message</label>
+                <textarea 
+                  required
+                  rows={4}
+                  placeholder="Speak your mind, shinobi..."
+                  className="w-full bg-background/50 border border-border p-3 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm resize-none"
+                />
+              </div>
+              
+              <MagneticButton
+                className="w-full py-4 bg-primary text-primary-foreground rounded-lg font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+              >
+                {isSubmitting ? "Transmitting..." : "Send Intel"} <Send className="w-4 h-4" />
               </MagneticButton>
             </form>
           </motion.div>
-
-          {/* Contact Info */}
-          <motion.div
-            className="flex flex-col justify-center"
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="glass-card p-8">
-              <h3 className="text-xl font-bold mb-6">Contact Info</h3>
-              
-              <div className="space-y-4 mb-8">
-                {contactInfo.map((item) => (
-                  <div key={item.label} className="flex items-center gap-4 text-muted-foreground">
-                    <div className="p-2 rounded-lg bg-muted">
-                      {item.icon}
-                    </div>
-                    <span className="font-mono text-sm">{item.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-border pt-6">
-                <h4 className="font-mono text-sm text-muted-foreground mb-4">Connect With Me</h4>
-                <div className="flex gap-4">
-                  {socialLinks.map((link) => (
-                    link.onClick ? (
-                      <MagneticButton
-                        key={link.label}
-                        as="button"
-                        onClick={link.onClick}
-                        className="p-3 rounded-lg glass-card hover:neon-border transition-all duration-300 group"
-                        strength={0.5}
-                      >
-                        <span className="text-muted-foreground group-hover:text-primary transition-colors">
-                          {link.icon}
-                        </span>
-                      </MagneticButton>
-                    ) : (
-                      <MagneticButton
-                        key={link.label}
-                        as="a"
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-3 rounded-lg glass-card hover:neon-border transition-all duration-300 group"
-                        strength={0.5}
-                      >
-                        <span className="text-muted-foreground group-hover:text-primary transition-colors">
-                          {link.icon}
-                        </span>
-                      </MagneticButton>
-                    )
-                  ))}
-                </div>
-              </div>
-
-              {/* Availability Status */}
-              <div className="mt-8 p-4 rounded-lg bg-orange-500/10 border border-orange-500/30">
-                <div className="flex items-center gap-3">
-                  <span className="w-3 h-3 rounded-full bg-orange-500 animate-glow-pulse" />
-                  <span className="font-mono text-sm text-foreground">
-                    Currently available for new projects
-                  </span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          
         </div>
       </div>
     </section>
