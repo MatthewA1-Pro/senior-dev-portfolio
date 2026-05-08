@@ -7,10 +7,11 @@ import { useCinematicAudio } from "@/hooks/useCinematicAudio";
 
 const navLinks = [
   { href: "#home", label: "Home" },
+  { href: "#about", label: "The Ninja Way" },
   { href: "#skills", label: "Skills" },
-  { href: "#projects", label: "Projects" },
+  { href: "#projects", label: "S-Rank Missions" },
   { href: "#ai-gallery", label: "AI Gallery" },
-  { href: "#contact", label: "Contact" },
+  { href: "#contact", label: "Ichiraku" },
 ];
 
 export const Navigation = () => {
