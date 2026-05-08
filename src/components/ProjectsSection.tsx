@@ -188,18 +188,6 @@ export const ProjectsSection = () => {
 
   return (
     <section id="projects" className="py-32 relative overflow-hidden bg-[#050505]">
-      {/* Atmospheric Baryon Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background z-10" />
-        <motion.div 
-          className="w-full h-full opacity-20 grayscale scale-110"
-          animate={{ scale: [1.1, 1.15, 1.1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <BaryonNaruto />
-        </motion.div>
-      </div>
-
       <div className="container mx-auto px-6 relative z-20">
         {/* Section Header */}
         <ScrollReveal className="text-center mb-20">
@@ -210,25 +198,39 @@ export const ProjectsSection = () => {
             </p>
             <div className="h-[1px] w-8 bg-primary/40" />
           </div>
-          <h2 className="text-5xl md:text-7xl font-display tracking-wider mb-6">
-            <span className="text-white/20">S-RANK</span> MISSIONS
+          <h2 className="text-5xl md:text-8xl font-display tracking-wider mb-6">
+            <span className="text-white">S-RANK</span> MISSIONS
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            A archive of high-level missions requiring advanced system architecture and 
-            tactical AI integration. Execution is always absolute.
-          </p>
         </ScrollReveal>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard 
-              key={project.title} 
-              project={project} 
-              index={index} 
-              onPreview={setPreviewProject}
-            />
-          ))}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Projects Grid */}
+          <div className="lg:col-span-8 order-2 lg:order-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {projects.map((project, index) => (
+                <ProjectCard 
+                  key={project.title} 
+                  project={project} 
+                  index={index} 
+                  onPreview={setPreviewProject}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Baryon Mode Character - HIGH VISIBILITY */}
+          <div className="lg:col-span-4 order-1 lg:order-2 h-[60vh] lg:h-[80vh] relative">
+            <motion.div 
+              className="w-full h-full scale-125"
+              initial={{ opacity: 0, scale: 1 }}
+              whileInView={{ opacity: 1, scale: 1.25 }}
+              viewport={{ once: true }}
+            >
+              <BaryonNaruto />
+            </motion.div>
+            {/* Background Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-red-600/20 rounded-full blur-[120px] -z-1" />
+          </div>
         </div>
       </div>
 

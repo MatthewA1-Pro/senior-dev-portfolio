@@ -22,12 +22,12 @@ export const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-24 relative overflow-hidden bg-background">
+    <section id="contact" className="py-24 min-h-[80vh] relative overflow-hidden bg-background">
       {/* Background: Immersive Ichiraku Experience */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 h-full w-full">
         <RamenShop />
         {/* Dark vignette to focus on form */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/20 to-transparent z-1" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/10 to-transparent z-1" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">

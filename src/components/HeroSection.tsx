@@ -32,10 +32,8 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
               </span>
             </div>
             
-            <h1 className="text-7xl md:text-9xl font-display tracking-tight mb-8 leading-[0.9]">
-              <span className="text-white opacity-90">MATTHEW</span>
-              <br />
-              <span className="gradient-text">ADEDIGBA</span>
+            <h1 className="text-8xl md:text-[12rem] font-display tracking-tight mb-8 leading-[0.8]">
+              <span className="gradient-text">MATTHEW</span>
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-lg mb-12 leading-relaxed">

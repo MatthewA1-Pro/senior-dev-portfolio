@@ -55,19 +55,19 @@ const Index = () => {
         {appState === 'running' && (
           <motion.div 
             key="running-intro"
-            className="fixed inset-0 z-[100] bg-background flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-[100] bg-background flex items-center justify-center"
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1 }}
           >
             <motion.div
-              className="w-full h-full"
+              className="w-full h-full relative"
               initial={{ x: "-100%" }}
               animate={{ x: "100%" }}
-              transition={{ duration: 2.5, ease: "linear" }}
+              transition={{ duration: 2.8, ease: "linear" }}
             >
-              <RunningNaruto scale={1.5} />
-              {/* Chakra Trail */}
-              <div className="absolute top-1/2 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent blur-sm" />
+              <RunningNaruto scale={2.5} />
+              {/* Enhanced Chakra Trail */}
+              <div className="absolute top-1/2 left-0 w-full h-24 -translate-y-1/2 bg-gradient-to-r from-transparent via-primary/20 to-transparent blur-[50px] pointer-events-none" />
             </motion.div>
           </motion.div>
         )}

@@ -15,37 +15,35 @@ export const HeroNaruto = () => {
         dpr={[1, isMobile ? 1 : 1.5]} 
         gl={{ antialias: !isMobile, powerPreference: "high-performance" }}
       >
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={isMobile ? 55 : 35} />
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1.5} castShadow />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={isMobile ? 55 : 40} />
+        <ambientLight intensity={0.7} />
+        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} castShadow />
+        <pointLight position={[-10, -10, -10]} intensity={1} color="#ffaa44" />
         
         <Suspense fallback={null}>
-          <group position={[0, -1.2, 0]}>
+          {/* Shifted DOWN (from -1.2 to -2.0) and Increased Scale */}
+          <group position={[0, isMobile ? -1.8 : -2.2, 0]}>
             <OptimizedModel 
               url="/models/naruto_shippuden.glb" 
-              scale={isMobile ? 1.5 : 2.2}
+              scale={isMobile ? 1.8 : 2.5}
               position={[0, 0, 0]}
               float={true}
-              mouseResponse={0.1} // Enabled parallax
+              mouseResponse={0.15}
             />
             
-            {/* Truth Seeking Orbs - Rotating slowly */}
+            {/* Truth Seeking Orbs */}
             <TruthSeekingOrbs />
           </group>
           
           <Environment preset="night" />
-          {!isMobile && <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />}
+          {!isMobile && <ContactShadows position={[0, -2, 0]} opacity={0.6} scale={10} blur={2.5} far={4} />}
         </Suspense>
         
-        {/* Subtle camera drift for parallax feel */}
         <OrbitControls 
           enableZoom={false} 
           enablePan={false} 
-          minPolarAngle={Math.PI / 2.2} 
-          maxPolarAngle={Math.PI / 1.8}
-          minAzimuthAngle={-Math.PI / 12}
-          maxAzimuthAngle={Math.PI / 12}
+          minPolarAngle={Math.PI / 2.5} 
+          maxPolarAngle={Math.PI / 1.5}
           makeDefault 
         />
       </Canvas>
@@ -58,7 +56,7 @@ const TruthSeekingOrbs = () => {
   
   useFrame(({ clock }) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = clock.getElapsedTime() * 0.3;
+      groupRef.current.rotation.y = clock.getElapsedTime() * 0.5;
     }
   });
 
@@ -66,12 +64,12 @@ const TruthSeekingOrbs = () => {
     <group ref={groupRef} position={[0, 1.4, 0]}>
       {[...Array(6)].map((_, i) => {
         const angle = (i / 6) * Math.PI * 2;
-        const x = Math.cos(angle) * 1.8;
-        const z = Math.sin(angle) * 1.8;
+        const x = Math.cos(angle) * 1.5;
+        const z = Math.sin(angle) * 1.5;
         return (
-          <Float key={i} speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-            <Sphere args={[0.1, 16, 16]} position={[x, Math.sin(angle * 2) * 0.3, z]}>
-              <meshBasicMaterial color="#050505" />
+          <Float key={i} speed={3} rotationIntensity={1} floatIntensity={1}>
+            <Sphere args={[0.12, 16, 16]} position={[x, Math.sin(angle * 2) * 0.4, z]}>
+              <meshBasicMaterial color="#000000" />
             </Sphere>
           </Float>
         );
@@ -80,22 +78,26 @@ const TruthSeekingOrbs = () => {
   );
 };
 
-// 2. Projects: Baryon Mode Naruto (Atmospheric Accent)
+// 2. Projects: Baryon Mode Naruto (High Visibility)
 export const BaryonNaruto = () => {
+  const isMobile = useIsMobile();
   return (
     <div className="w-full h-full">
-      <Canvas dpr={[1, 1]} gl={{ antialias: false }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 4]} fov={50} />
-        <ambientLight intensity={0.5} />
-        <pointLight position={[5, 5, 5]} color="#ff4400" intensity={1} />
+      <Canvas dpr={[1, 1.5]} gl={{ antialias: true }}>
+        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+        <ambientLight intensity={0.8} />
+        <pointLight position={[5, 5, 5]} color="#ff4400" intensity={3} />
+        <spotLight position={[-5, 10, 5]} intensity={2} color="#ff0000" />
         
         <Suspense fallback={null}>
-          <OptimizedModel 
-            url="/models/naruto_baryon.glb" 
-            scale={2.0}
-            position={[0, -1, 0]}
-            float={true}
-          />
+          <group position={[0, -1.5, 0]}>
+            <OptimizedModel 
+              url="/models/naruto_baryon.glb" 
+              scale={isMobile ? 1.8 : 2.8}
+              position={[0, 0, 0]}
+              float={true}
+            />
+          </group>
           <Environment preset="sunset" />
         </Suspense>
       </Canvas>
@@ -103,59 +105,57 @@ export const BaryonNaruto = () => {
   );
 };
 
-// 3. Contact: Ichiraku Ramen Shop (Immersive Environment)
+// 3. Contact: Ichiraku Ramen Shop (Large Scale)
 export const RamenShop = () => {
   const isMobile = useIsMobile();
   
   return (
     <div className="w-full h-full">
-      <Canvas dpr={[1, 1.2]} shadows gl={{ antialias: !isMobile }}>
-        <PerspectiveCamera makeDefault position={[7, 3, 12]} fov={30} />
-        <ambientLight intensity={0.6} />
+      <Canvas dpr={[1, 1.5]} shadows gl={{ antialias: true }}>
+        <PerspectiveCamera makeDefault position={[10, 5, 15]} fov={35} />
+        <ambientLight intensity={0.8} />
         
-        {/* Warm Cozy Lighting */}
-        <pointLight position={[2, 2, 2]} color="#ffaa44" intensity={2} distance={15} />
-        <pointLight position={[-2, 1, 3]} color="#ffcc88" intensity={1.5} distance={10} />
-        <spotLight position={[0, 10, 0]} intensity={1.2} angle={0.5} penumbra={1} castShadow />
+        {/* Warm Intense Lighting */}
+        <pointLight position={[5, 5, 5]} color="#ffaa44" intensity={3} distance={20} />
+        <pointLight position={[-5, 2, 5]} color="#ff6600" intensity={2} distance={15} />
+        <spotLight position={[0, 15, 0]} intensity={2} angle={0.6} penumbra={1} castShadow />
 
         <Suspense fallback={<ModelLoader />}>
-          <OptimizedModel 
-            url="/models/ichiraku_ramen_-_naruto.glb" 
-            scale={isMobile ? 0.08 : 0.12}
-            position={[0, -1, 0]}
-            rotation={[0, -Math.PI / 4, 0]}
-            float={false}
-          />
+          {/* Increased Scale Significantly */}
+          <group position={[0, -2, 0]}>
+            <OptimizedModel 
+              url="/models/ichiraku_ramen_-_naruto.glb" 
+              scale={isMobile ? 0.15 : 0.25}
+              position={[0, 0, 0]}
+              rotation={[0, -Math.PI / 6, 0]}
+              float={false}
+            />
+          </group>
           <Environment preset="apartment" />
-          <ContactShadows position={[0, -1.01, 0]} opacity={0.5} scale={25} blur={2} />
+          <ContactShadows position={[0, -2.01, 0]} opacity={0.6} scale={30} blur={2} />
         </Suspense>
         
-        <OrbitControls 
-          enableZoom={false} 
-          enablePan={false}
-          minPolarAngle={Math.PI / 3}
-          maxPolarAngle={Math.PI / 1.8}
-          minAzimuthAngle={-Math.PI / 10}
-          maxAzimuthAngle={Math.PI / 10}
-        />
+        <OrbitControls enableZoom={false} enablePan={false} />
       </Canvas>
     </div>
   );
 };
 
-// 4. Entry Intro: Running Naruto (Introduction Dash)
+// 4. Entry Intro: Running Naruto (Standalone Character)
 export const RunningNaruto = ({ scale = 1 }: { scale?: number }) => {
   return (
-    <div className="w-full h-full overflow-visible">
-      <Canvas dpr={[1, 1]} gl={{ antialias: false, alpha: true }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 4]} fov={40} />
-        <ambientLight intensity={1.5} />
+    <div className="w-full h-full">
+      <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
+        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={45} />
+        <ambientLight intensity={2} />
+        <pointLight position={[0, 5, 5]} intensity={2} color="#ffcc00" />
+        
         <Suspense fallback={null}>
-          <group rotation={[0, Math.PI / 2, 0]}>
+          <group rotation={[0, Math.PI / 2, 0]} position={[0, -1, 0]}>
             <OptimizedModel 
               url="/models/naruto_shippuden.glb" 
-              scale={scale * 0.9}
-              position={[0, -0.8, 0]}
+              scale={scale * 1.5}
+              position={[0, 0, 0]}
               float={false}
               autoAnimate={true}
             />
