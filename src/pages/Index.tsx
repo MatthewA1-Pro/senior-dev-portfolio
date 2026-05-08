@@ -14,9 +14,9 @@ import { SoundToggle } from "@/components/SoundToggle";
 import { useCinematicAudio } from "@/hooks/useCinematicAudio";
 
 const Index = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isIntroComplete, setIsIntroComplete] = useState(false);
-  const [showNav, setShowNav] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // FORCED FALSE FOR DEBUGGING
+  const [isIntroComplete, setIsIntroComplete] = useState(true); // FORCED TRUE FOR DEBUGGING
+  const [showNav, setShowNav] = useState(true); // FORCED TRUE FOR DEBUGGING
   const [soundEnabledFromLoading, setSoundEnabledFromLoading] = useState(false);
 
   const {
