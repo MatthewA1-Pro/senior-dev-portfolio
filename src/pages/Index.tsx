@@ -59,23 +59,17 @@ const Index = () => {
   }, [isLoading, isSoundEnabled, playWhoosh, playTextReveal, playRevealMusic]);
 
   return (
-    <>
-      <AnimatePresence mode="wait">
-        {isLoading && (
-          <LoadingScreen 
-            onComplete={() => setIsLoading(false)} 
-            onSoundStateChange={handleSoundStateChange}
-          />
-        )}
-      </AnimatePresence>
-
-      {!isLoading && (
+    <div className="min-h-screen bg-background selection:bg-primary/30">
+      {isLoading ? (
+        <LoadingScreen 
+          onComplete={() => setIsLoading(false)} 
+          onSoundStateChange={handleSoundStateChange}
+        />
+      ) : (
         <motion.main
-          className={`relative cursor-none md:cursor-none ${!isIntroComplete ? 'overflow-hidden h-screen' : ''}`}
-          initial={{ opacity: 0 }}
+          className="relative"
+          initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          style={{ overflow: isIntroComplete ? 'auto' : 'hidden' }}
         >
           {/* Sound Toggle - persists after loading */}
           <SoundToggle
@@ -154,7 +148,7 @@ const Index = () => {
           </AnimatePresence>
         </motion.main>
       )}
-    </>
+    </div>
   );
 };
 
