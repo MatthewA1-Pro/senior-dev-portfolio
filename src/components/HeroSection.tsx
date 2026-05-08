@@ -54,15 +54,15 @@ export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
       {/* Naruto swirl background */}
       <div className="absolute inset-0 grid-bg opacity-30" />
       
-      {/* New Hero Naruto Centerpiece */}
-      <motion.div 
+      {/* New Hero Naruto Centerpiece - DISABLED FOR STABILITY */}
+      {/* <motion.div 
         className="absolute inset-0 z-0"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 2.5, ease: "easeOut", delay: 1 }}
       >
         <HeroNaruto />
-      </motion.div>
+      </motion.div> */}
       
       {/* Cinematic letterbox bars REMOVED FOR DEBUGGING */}
       
@@ -92,9 +92,9 @@ export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
           {/* Name - elegant anime typography with cinematic reveal */}
           <motion.h1
             className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display tracking-wider mb-8 sm:mb-10 leading-none"
-            initial={{ opacity: 0, y: 50, filter: "blur(10px)" }}
+            initial={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ delay: 1.8, duration: 1.2, ease: [0.25, 0.4, 0.25, 1] }}
+            transition={{ duration: 0 }}
           >
             <span className="gradient-text animate-gradient">MATTHEW</span>
           </motion.h1>
