@@ -54,14 +54,25 @@ export const HeroSection = ({ isIntroComplete = false }: HeroSectionProps) => {
       {/* Naruto swirl background */}
       <div className="absolute inset-0 grid-bg opacity-30" />
       
-      {/* Optimized Hero Naruto Centerpiece */}
+      {/* Cinematic 2D Hero Naruto - Guaranteed Stability */}
       <motion.div 
-        className="absolute inset-0 z-0"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
+        initial={{ opacity: 0, scale: 0.9, filter: "blur(20px)" }}
+        animate={{ opacity: 0.6, scale: 1, filter: "blur(0px)" }}
         transition={{ duration: 2.5, ease: "easeOut", delay: 1 }}
       >
-        <HeroNaruto />
+        <div className="relative w-full h-full flex items-center justify-center">
+          {/* Glowing Aura */}
+          <div className="absolute w-[60vh] h-[60vh] rounded-full bg-primary/20 blur-[120px] animate-pulse" />
+          <div className="absolute w-[40vh] h-[40vh] rounded-full bg-secondary/10 blur-[80px] animate-float" />
+          
+          {/* Subtle Silhouette / Energy shape */}
+          <div className="relative z-10 w-[50vh] h-[70vh] flex items-center justify-center">
+             <div className="w-1 h-full bg-gradient-to-b from-transparent via-primary/40 to-transparent blur-sm" />
+             <div className="absolute top-1/4 w-32 h-32 rounded-full border border-primary/30 animate-spin-slow" />
+             <div className="absolute top-1/4 w-48 h-48 rounded-full border border-secondary/20 animate-spin-slow" style={{ animationDirection: 'reverse' }} />
+          </div>
+        </div>
       </motion.div>
       
       {/* Cinematic letterbox bars REMOVED FOR DEBUGGING */}

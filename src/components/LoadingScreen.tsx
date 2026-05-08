@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Sphere, Float } from "@react-three/drei";
 import * as THREE from "three";
@@ -181,8 +181,32 @@ export const LoadingScreen = ({ onComplete, onSoundStateChange }: LoadingScreenP
         className="top-6 right-6"
       />
 
-      {/* 2D Network overlay - Z-index fixed */}
-      <div className="absolute inset-0 z-1 pointer-events-none opacity-60">
+      {/* 3D Rotating Chakra Globe - THE GLOBE STUFF */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <Canvas dpr={[1, 1]}>
+          <ambientLight intensity={0.5} />
+          <pointLight position={[10, 10, 10]} intensity={1} color="hsl(var(--primary))" />
+          <Suspense fallback={null}>
+            <Float speed={2} rotationIntensity={1} floatIntensity={1}>
+              <Sphere args={[2, 32, 32]}>
+                <meshPhongMaterial 
+                  color="hsl(var(--primary))" 
+                  wireframe 
+                  transparent 
+                  opacity={0.3} 
+                />
+              </Sphere>
+            </Float>
+            {/* Inner glowing core */}
+            <Sphere args={[0.5, 16, 16]}>
+              <meshBasicMaterial color="hsl(var(--primary))" />
+            </Sphere>
+          </Suspense>
+        </Canvas>
+      </div>
+
+      {/* 2D Network overlay - Subtle connectivity */}
+      <div className="absolute inset-0 z-1 pointer-events-none opacity-40">
         <NetworkNodes2D />
       </div>
 
