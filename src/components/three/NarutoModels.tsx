@@ -39,7 +39,7 @@ export const HeroNaruto = () => {
       <Canvas
         flat
         shadows={!isMobile}
-        dpr={[1, isMobile ? 1.25 : 1.75]}
+        dpr={[1, isMobile ? 2 : 1.75]}
         gl={{ antialias: !isMobile, powerPreference: 'high-performance' }}
       >
         <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={fov} />
@@ -53,7 +53,7 @@ export const HeroNaruto = () => {
         <Suspense fallback={<ModelLoader />}>
           {/* Below 1: his bounding box includes the orbs and rods floating round
               him, so fitting it exactly leaves his body well under half the frame. */}
-          <FitCamera url={HERO_MODEL} fitHeight={modelHeight} fov={fov} margin={0.86} />
+          <FitCamera url={HERO_MODEL} fitHeight={modelHeight} fov={fov} margin={isMobile ? 0.8 : 0.86} />
 
           <Float speed={1.1} rotationIntensity={0.07} floatIntensity={0.2}>
             <OptimizedModel
@@ -105,7 +105,7 @@ export const BaryonNaruto = () => {
 
   return (
     <div className="w-full h-full">
-      <Canvas flat dpr={[1, isMobile ? 1.25 : 1.5]} gl={{ antialias: !isMobile }}>
+      <Canvas flat dpr={[1, isMobile ? 1.75 : 1.5]} gl={{ antialias: !isMobile }}>
         <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={42} />
 
         <Suspense fallback={<ModelLoader />}>
@@ -192,7 +192,7 @@ export const RamenShop = () => {
 
   return (
     <div className="w-full h-full">
-      <Canvas flat dpr={[1, isMobile ? 1.25 : 1.5]} shadows={!isMobile} gl={{ antialias: !isMobile }}>
+      <Canvas flat dpr={[1, isMobile ? 1.75 : 1.5]} shadows={!isMobile} gl={{ antialias: !isMobile }}>
         <PerspectiveCamera makeDefault position={[10, 5, 15]} fov={fov} />
 
         {/* Base exposure: warm lantern sky over a dark street. The old rig was a
@@ -212,7 +212,7 @@ export const RamenShop = () => {
             url={RAMEN_MODEL}
             fitHeight={height}
             fov={fov}
-            margin={1.55}
+            margin={isMobile ? 1.2 : 1.55}
             direction={[0.62, 0.3, 0.72]}
           />
           <OptimizedModel

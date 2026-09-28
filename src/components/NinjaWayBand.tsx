@@ -34,9 +34,10 @@ export const NinjaWayBand = () => {
   const imageY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
 
   return (
-    <section ref={ref} className="relative py-24 bg-background" aria-label="The Ninja Way">
+    <section ref={ref} className="relative py-10 lg:py-24 bg-background" aria-label="The Ninja Way">
       <div className="container mx-auto px-6">
-        <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] min-h-[560px] lg:min-h-[640px]">
+        <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-[#07070b] lg:min-h-[640px]">
+          <div className="relative h-56 overflow-hidden sm:h-72 lg:absolute lg:inset-0 lg:h-auto">
           <motion.img
             src={konohaDusk}
             alt="Konoha village and the Hokage rock at dusk, Naruto looking out over it"
@@ -44,16 +45,19 @@ export const NinjaWayBand = () => {
             style={{ scale: imageScale, y: imageY, filter: "saturate(1.3) brightness(1.12)" }}
             loading="lazy"
           />
+          {/* Phones: the strip fades into the quote panel below it */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07070b] via-transparent to-transparent lg:hidden" />
+          </div>
 
-          {/* Legibility: a hard ink fade on the left, not a blur over the art */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#07070b]/95 via-[#07070b]/55 via-45% to-transparent to-75%" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#07070b]/70 via-transparent to-transparent" />
+          {/* Legibility on desktop: a hard ink fade on the left, not a blur over the art */}
+          <div className="absolute inset-0 hidden bg-gradient-to-r from-[#07070b]/95 via-[#07070b]/55 via-45% to-transparent to-75% lg:block" />
+          <div className="absolute inset-0 hidden bg-gradient-to-t from-[#07070b]/70 via-transparent to-transparent lg:block" />
           {/* Manga screentone keeps the upscaled art from reading soft */}
           <div className="absolute inset-0 screentone opacity-60 mix-blend-overlay" />
 
-          <div className="relative z-10 flex h-full min-h-[560px] lg:min-h-[640px] flex-col justify-center px-8 py-16 sm:px-14 lg:w-[70%]">
+          <div className="relative z-10 flex h-full flex-col justify-center px-6 pb-12 pt-2 sm:px-14 lg:min-h-[640px] lg:w-[70%] lg:py-16">
             <motion.p
-              className="mb-8 font-mono text-xs uppercase tracking-[0.45em] text-[hsl(var(--sunset))]"
+              className="mb-6 font-mono text-[10px] uppercase tracking-[0.3em] text-[hsl(var(--sunset))] sm:mb-8 sm:text-xs sm:tracking-[0.45em]"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
@@ -62,7 +66,7 @@ export const NinjaWayBand = () => {
               The Will of Fire
             </motion.p>
 
-            <blockquote className="font-display text-4xl leading-[1.12] tracking-wide text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] sm:text-5xl lg:text-[3.3rem]">
+            <blockquote className="font-display text-4xl leading-[1.12] tracking-wide text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] text-[2rem] sm:text-5xl lg:text-[3.3rem]">
               {LINES.map((line, i) => (
                 <motion.span
                   key={line.text}

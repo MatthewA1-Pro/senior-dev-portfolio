@@ -173,7 +173,7 @@ export const ProjectsSection = () => {
   const closePreview = useCallback(() => setPreview(null), []);
 
   return (
-    <section id="projects" className="relative bg-background py-28 lg:py-36">
+    <section id="projects" className="relative bg-background py-16 lg:py-36">
       <div className="container relative z-10 mx-auto px-6">
         <ScrollReveal className="mb-14 flex flex-col gap-6 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div>

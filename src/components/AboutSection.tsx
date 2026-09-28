@@ -55,7 +55,7 @@ const Poster = ({
 
 export const AboutSection = () => {
   return (
-    <section id="about" className="relative overflow-hidden bg-background py-28 lg:py-36">
+    <section id="about" className="relative overflow-hidden bg-background py-16 lg:py-36">
       <div className="container relative z-10 mx-auto px-6">
         <ScrollReveal className="mb-16 text-center lg:mb-24">
           <div className="mb-4 inline-block rounded-md border border-primary/30 bg-primary/10 px-3 py-1">

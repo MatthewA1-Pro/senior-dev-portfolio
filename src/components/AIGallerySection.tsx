@@ -158,12 +158,12 @@ export const AIGallerySection = () => {
   const closePreview = useCallback(() => setPreview(null), []);
 
   return (
-    <section id="ai-gallery" className="py-32 relative overflow-hidden">
+    <section id="ai-gallery" className="py-16 lg:py-32 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
         {/* Header beside the manga poster: back turned, walking between the pages */}
         <div className="mb-16 grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
           <motion.figure
-            className="relative mx-auto w-full max-w-[340px] overflow-hidden rounded-2xl border border-white/10 lg:col-span-4"
+            className="relative mx-auto w-full max-w-[230px] sm:max-w-[340px] overflow-hidden rounded-2xl border border-white/10 lg:col-span-4"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

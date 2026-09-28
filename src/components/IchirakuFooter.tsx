@@ -50,7 +50,7 @@ export const IchirakuFooter = () => {
     <footer id="contact" className="relative overflow-hidden bg-background">
       {/* Scene band: the shop, clear and lit, with only a thin edge fade */}
       <div
-        className="relative h-[68vh] min-h-[480px]"
+        className="relative h-[46vh] min-h-[320px] sm:h-[68vh] sm:min-h-[480px]"
         style={{ background: "radial-gradient(ellipse at 50% 70%, #3a1d0c 0%, #140b07 55%, hsl(var(--background)) 100%)" }}
       >
         <ViewportMount className="absolute inset-0">
@@ -64,7 +64,7 @@ export const IchirakuFooter = () => {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
 
-        <div className="pointer-events-none container relative z-10 mx-auto flex h-full items-end px-6 pb-10">
+        <div className="pointer-events-none container relative z-10 mx-auto hidden h-full items-end px-6 pb-10 sm:flex">
           <div className="flex w-full items-end justify-between gap-6">
             <div>
               <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.4em] text-[hsl(var(--sunset))]">

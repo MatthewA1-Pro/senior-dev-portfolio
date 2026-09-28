@@ -19,7 +19,7 @@ const JOBS = [
   // Back turned between manga pages - AI Gallery header.
   { in: '6.jpg', out: 'manga-walk.webp', crop: { left: 0, top: 280, width: 736, height: 1028 } },
   // Village and Hokage rock at dusk, below the baked-in quote - quote band.
-  { in: '7.jpg', out: 'konoha-dusk.webp', crop: { left: 0, top: 720, width: 736, height: 428 } },
+  { in: '7.jpg', out: 'konoha-dusk.webp', crop: { left: 0, top: 758, width: 736, height: 390 } },
   // Kurama over Naruto - Skills banner.
   // The source has an 8px light border down its left edge; crop past it.
   { in: '8.jpg', out: 'kurama.webp', crop: { left: 10, top: 40, width: 726, height: 620 } },

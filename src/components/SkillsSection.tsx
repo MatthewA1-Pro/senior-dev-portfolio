@@ -143,7 +143,7 @@ const SkillCard = ({ category, index }: { category: SkillCategory; index: number
 
 export const SkillsSection = () => {
   return (
-    <section id="skills" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
+    <section id="skills" className="py-10 sm:py-24 lg:py-32 relative overflow-hidden">
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Nine-Tails banner: the stack framed as chakra Naruto draws on */}

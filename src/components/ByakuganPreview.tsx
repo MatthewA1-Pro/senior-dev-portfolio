@@ -200,7 +200,7 @@ export const ByakuganPreview = ({ item, onClose }: { item: ByakuganItem | null; 
             {phase === "seeing" && (
               <motion.div
                 key="panel"
-                className="relative z-10 grid w-full max-w-5xl overflow-hidden rounded-2xl border bg-[#0d0b16] md:grid-cols-5"
+                className="relative z-10 grid max-h-[88vh] w-full max-w-5xl overflow-y-auto rounded-2xl border bg-[#0d0b16] md:max-h-none md:grid-cols-5 md:overflow-hidden"
                 style={{ borderColor: "rgba(203,188,255,0.28)", boxShadow: "0 0 0 1px rgba(203,188,255,0.06), 0 30px 80px rgba(0,0,0,0.7)" }}
                 initial={{ opacity: 0, scale: 0.94, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}

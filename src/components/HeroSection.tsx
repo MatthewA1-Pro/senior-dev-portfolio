@@ -52,7 +52,7 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
         }
         transition={{ duration: 0.55, ease: "easeOut" }}
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-12 items-center">
           
           {/* Left Side: Content */}
           <motion.div
@@ -106,7 +106,7 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
           
           {/* Right Side: 3D Sage Centerpiece */}
           <motion.div 
-            className="relative h-[62vh] lg:h-[86vh] z-10 cursor-grab active:cursor-grabbing"
+            className="relative order-first lg:order-none h-[44vh] sm:h-[55vh] lg:h-[86vh] z-10 cursor-grab active:cursor-grabbing"
             initial={{ opacity: 0, scale: 0.82 }}
             animate={isIntroComplete ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
@@ -123,7 +123,7 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
 
       {/* Scroll indicator - Cinematic Style */}
       <motion.div 
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-4"
         initial={{ opacity: 0 }}
         animate={isIntroComplete ? { opacity: 1 } : {}}
         transition={{ delay: 2 }}
