@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Code2, Database, Palette, Brain, Terminal, Cloud } from "lucide-react";
-import { ScrollReveal, Parallax } from "./ScrollReveal";
+import { ScrollReveal } from "./ScrollReveal";
+import kurama from "@/assets/naruto/kurama.webp";
 
 interface Skill {
   name: string;
@@ -143,22 +144,32 @@ const SkillCard = ({ category, index }: { category: SkillCategory; index: number
 export const SkillsSection = () => {
   return (
     <section id="skills" className="py-16 sm:py-24 lg:py-32 relative overflow-hidden">
-      {/* Background effects with parallax */}
-      <Parallax speed={-0.3} className="absolute inset-0">
-        <div className="grid-bg opacity-20 w-full h-full" />
-      </Parallax>
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-64 sm:h-96 bg-primary/10 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Section Header */}
-        <ScrollReveal className="text-center mb-10 sm:mb-16">
-          <p className="font-mono text-primary mb-2 text-xs sm:text-sm">{"// Skills & Expertise"}</p>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display tracking-wide mb-3 sm:mb-4">
-            <span className="gradient-text">Tech Stack</span>
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
-            Years of experience across multiple domains, from traditional development to cutting-edge AI tools.
-          </p>
+        {/* Nine-Tails banner: the stack framed as chakra Naruto draws on */}
+        <ScrollReveal className="mb-12 sm:mb-16">
+          <div className="relative overflow-hidden rounded-3xl border border-[hsl(var(--kurama))]/30 bg-[#140603]">
+            <img
+              src={kurama}
+              alt="Kurama the Nine-Tails looming over Naruto in a storm of orange chakra"
+              className="absolute inset-y-0 right-0 h-full w-full object-cover object-[center_62%] sm:w-[72%]"
+              loading="lazy"
+            />
+            {/* Hard ink fade toward the copy side */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#140603] from-30% via-[#140603]/60 via-50% to-transparent" />
+            <div className="relative z-10 px-6 py-14 sm:px-12 sm:py-20 sm:w-[60%]">
+              <p className="mb-3 font-mono text-xs uppercase tracking-[0.4em] text-[hsl(var(--kurama))]">
+                <span className="font-japanese mr-3 text-sm">九尾</span>Nine-Tails Chakra
+              </p>
+              <h2 className="mb-4 font-display text-4xl tracking-wide sm:text-5xl md:text-6xl">
+                <span className="gradient-text">Tech Stack</span>
+              </h2>
+              <p className="max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
+                The reserves I draw on - from traditional full-stack engineering to cutting-edge AI tooling,
+                channelled into every build.
+              </p>
+            </div>
+          </div>
         </ScrollReveal>
 
         {/* Skills Grid */}

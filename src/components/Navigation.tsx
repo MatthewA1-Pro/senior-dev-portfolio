@@ -51,12 +51,10 @@ export const Navigation = () => {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled 
-            ? "bg-background/20 backdrop-blur-2xl border-b border-primary/10 shadow-lg shadow-primary/5" 
+            ? "bg-background/95 border-b border-white/[0.06] shadow-lg shadow-black/40" 
             : "bg-transparent"
         }`}
       >
-        {/* Glassmorphism gradient overlay */}
-        <div className={`absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 transition-opacity duration-500 ${isScrolled ? 'opacity-100' : 'opacity-0'}`} />
         
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between relative z-10">
           <a 

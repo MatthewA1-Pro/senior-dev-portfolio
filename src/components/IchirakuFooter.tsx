@@ -25,9 +25,9 @@ const CONTACT_CHANNELS = [
 ];
 
 /**
- * The closing scene. Ichiraku is the backdrop for the whole ending rather than
- * a decorative panel behind a form, so contact details, the message form and
- * the site footer all sit inside the one shot.
+ * The closing scene. The shop gets its own unobstructed band first - it used
+ * to sit behind the form under two full-width scrims, which is a large part of
+ * why it read as faint - and the contact block follows beneath it.
  */
 export const IchirakuFooter = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,20 +48,40 @@ export const IchirakuFooter = () => {
 
   return (
     <footer id="contact" className="relative overflow-hidden bg-background">
-      {/* The shop itself, held behind everything for the full section. */}
-      <ViewportMount className="absolute inset-0 z-0">
-        <ErrorBoundary fallback={null}>
-          <Suspense fallback={null}>
-            <RamenShop />
-          </Suspense>
-        </ErrorBoundary>
-      </ViewportMount>
+      {/* Scene band: the shop, clear and lit, with only a thin edge fade */}
+      <div
+        className="relative h-[68vh] min-h-[480px]"
+        style={{ background: "radial-gradient(ellipse at 50% 70%, #3a1d0c 0%, #140b07 55%, hsl(var(--background)) 100%)" }}
+      >
+        <ViewportMount className="absolute inset-0">
+          <ErrorBoundary fallback={null}>
+            <Suspense fallback={null}>
+              <RamenShop />
+            </Suspense>
+          </ErrorBoundary>
+        </ViewportMount>
 
-      {/* Readability scrims: darkest on the left where the copy sits. */}
-      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-r from-background via-background/75 to-background/20" />
-      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-t from-background via-transparent to-background/80" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
 
-      <div className="container relative z-10 mx-auto px-6 py-28 lg:py-36">
+        <div className="pointer-events-none container relative z-10 mx-auto flex h-full items-end px-6 pb-10">
+          <div className="flex w-full items-end justify-between gap-6">
+            <div>
+              <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.4em] text-[hsl(var(--sunset))]">
+                Konoha · After the mission
+              </p>
+              <p className="font-display text-4xl text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] md:text-6xl">
+                Ichiraku Ramen
+              </p>
+            </div>
+            <span className="hidden font-japanese text-5xl text-[hsl(var(--sunset))] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] sm:block">
+              一楽
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="container relative z-10 mx-auto px-6 py-20 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: the invitation */}
           <div>
@@ -120,7 +140,7 @@ export const IchirakuFooter = () => {
                   </>
                 );
                 const className =
-                  "flex items-center gap-5 p-5 rounded-2xl border border-border bg-card/20 backdrop-blur-md transition-all group";
+                  "flex items-center gap-5 p-5 rounded-2xl border border-white/[0.08] bg-card transition-all group";
 
                 return (
                   <motion.div
@@ -151,7 +171,6 @@ export const IchirakuFooter = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-[100px] animate-pulse pointer-events-none" />
 
             <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
               <div className="space-y-6">
@@ -232,7 +251,7 @@ export const IchirakuFooter = () => {
       </div>
 
       {/* Closing bar */}
-      <div className="relative z-10 border-t border-border/60 bg-background/70 backdrop-blur-md">
+      <div className="relative z-10 border-t border-white/[0.06] bg-[#08080c]">
         <div className="container mx-auto px-6 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <motion.a href="#home" className="font-mono text-xl font-bold" whileHover={{ scale: 1.05 }}>

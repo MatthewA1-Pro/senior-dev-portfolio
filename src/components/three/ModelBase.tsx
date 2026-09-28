@@ -40,6 +40,17 @@ export function useModel(url: string) {
         const mat = source.clone() as THREE.MeshStandardMaterial;
         if (mat.map) mat.map.colorSpace = THREE.SRGBColorSpace;
         if (mat.emissiveMap) mat.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+
+        // Unlit, untextured materials (Baryon's vertex-coloured shell) carry no
+        // alpha to blend, but a transparent flag still pushes them into the
+        // sorted pass where overlapping shells show through each other - the
+        // "see-through" look. Opaque is correct for them.
+        const basic = mat as unknown as THREE.MeshBasicMaterial;
+        if (basic.isMeshBasicMaterial && !basic.map && basic.opacity >= 1) {
+          basic.transparent = false;
+          basic.depthWrite = true;
+        }
+
         mat.needsUpdate = true;
         return mat;
       };
@@ -210,28 +221,43 @@ export function FitCamera({
   fitHeight,
   fov,
   margin = 1.1,
+  direction = [0, 0, 1],
 }: {
   url: string;
   fitHeight: number;
   fov: number;
   margin?: number;
+  /** Which side the camera sits on, e.g. a 3/4 view of a building. */
+  direction?: [number, number, number];
 }) {
   const { size } = useModel(url);
   const camera = useThree((s) => s.camera);
+  const viewport = useThree((s) => s.size);
   const controls = useThree((s) => s.controls) as { update?: () => void } | null;
+  const [dx, dy, dz] = direction;
 
   useLayoutEffect(() => {
-    if (size.y <= 0) return;
+    if (size.y <= 0 || viewport.height <= 0) return;
     const s = fitHeight / size.y;
-    const radius =
-      0.5 * Math.sqrt((size.x * s) ** 2 + (size.y * s) ** 2 + (size.z * s) ** 2);
-    const distance = (radius / Math.sin((fov / 2) * THREE.MathUtils.DEG2RAD)) * margin;
+    const h = size.y * s;
+    // Seen off-axis, a building's footprint projects wider than its x extent.
+    const w = (dx !== 0 || dz !== 1 ? Math.max(size.x, size.z) : size.x) * s;
 
-    camera.position.set(0, 0, distance);
+    // Fit the silhouette against the canvas's real aspect ratio. Fitting the
+    // bounding sphere instead (the previous approach) counted the orbs and rods
+    // floating round him in depth, and pulled the camera back until the hero
+    // was a speck.
+    const aspect = viewport.width / viewport.height;
+    const vHalf = (fov / 2) * THREE.MathUtils.DEG2RAD;
+    const hHalf = Math.atan(Math.tan(vHalf) * aspect);
+    const distance = Math.max(h / 2 / Math.tan(vHalf), w / 2 / Math.tan(hHalf)) * margin;
+
+    const dir = new THREE.Vector3(dx, dy, dz).normalize();
+    camera.position.copy(dir.multiplyScalar(distance));
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
     controls?.update?.();
-  }, [size, fitHeight, fov, margin, camera, controls]);
+  }, [size, fitHeight, fov, margin, camera, controls, viewport.width, viewport.height, dx, dy, dz]);
 
   return null;
 }

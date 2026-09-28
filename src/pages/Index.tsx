@@ -12,12 +12,15 @@ import { SakuraPetals } from "@/components/SakuraPetals";
 import { ScrollProgress } from "@/components/ScrollReveal";
 import { IntroSequence } from "@/components/three/IntroSequence";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { RasenganBurst } from "@/components/RasenganBurst";
+import { NinjaWayBand } from "@/components/NinjaWayBand";
 
 type AppState = "loading" | "intro" | "revealed";
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>("loading");
   const [showNav, setShowNav] = useState(false);
+  const [bursting, setBursting] = useState(false);
 
   // The page must not scroll underneath the opening shot.
   useEffect(() => {
@@ -36,7 +39,11 @@ const Index = () => {
   }, []);
 
   const handleLoaded = useCallback(() => setAppState("intro"), []);
-  const handleIntroDone = useCallback(() => setAppState("revealed"), []);
+  const handleIntroDone = useCallback(() => {
+    setBursting(true);
+    setAppState("revealed");
+  }, []);
+  const handleBurstDone = useCallback(() => setBursting(false), []);
 
   const revealed = appState === "revealed";
 
@@ -54,24 +61,15 @@ const Index = () => {
         )}
       </AnimatePresence>
 
-      {/* Carries the white-out of the rasengan impact across the handoff, so the
-          hero canvas mounts while the frame is still blown out. */}
-      <AnimatePresence>
-        {revealed && (
-          <motion.div
-            key="impact-fade"
-            className="fixed inset-0 z-[110] bg-white pointer-events-none"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: "easeOut" }}
-          />
-        )}
-      </AnimatePresence>
+      {/* The rasengan detonates open from the centre to reveal the site. */}
+      {bursting && <RasenganBurst onDone={handleBurstDone} />}
 
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: revealed ? 1 : 0 }}
-        transition={{ duration: 0.8 }}
+        // Near-instant: the page has to already be there for the burst's hole
+        // to reveal it.
+        transition={{ duration: 0.15 }}
         aria-hidden={!revealed}
       >
         {revealed && <ScrollProgress />}
@@ -90,6 +88,7 @@ const Index = () => {
 
         <HeroSection isIntroComplete={revealed} />
         <AboutSection />
+        <NinjaWayBand />
         <SkillsSection />
         <ProjectsSection />
         <AIGallerySection />

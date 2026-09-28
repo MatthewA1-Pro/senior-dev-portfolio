@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { OptimizedModel, useIsMobile } from './ModelBase';
 import { Rasengan } from './Rasengan';
 import { StudioEnvironment } from './Lighting';
+import { CHAKRA_FILL } from '../RasenganBurst';
 
 const RUN_MODEL = '/models/naruto_uzumaki_running_animation.glb';
 
@@ -217,8 +218,9 @@ export const IntroSequence = ({ onComplete }: { onComplete: () => void }) => {
 
   const handleShotEnd = useCallback(() => {
     setFlash(true);
-    // Hand over at the peak of the white-out so the swap to the hero is hidden.
-    window.setTimeout(onComplete, 420);
+    // Hand over once the frame is fully the rasengan's core. RasenganBurst
+    // starts on that same gradient, so the cut is invisible.
+    window.setTimeout(onComplete, 230);
   }, [onComplete]);
 
   return (
@@ -256,10 +258,11 @@ export const IntroSequence = ({ onComplete }: { onComplete: () => void }) => {
         {flash && (
           <motion.div
             key="chakra-flash"
-            className="pointer-events-none absolute inset-0 bg-white"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.28, ease: 'easeIn' }}
+            className="pointer-events-none absolute inset-0"
+            style={{ background: CHAKRA_FILL }}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2, ease: 'easeIn' }}
           />
         )}
       </AnimatePresence>

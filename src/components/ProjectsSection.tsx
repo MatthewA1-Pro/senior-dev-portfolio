@@ -1,20 +1,21 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, ArrowUpRight, Eye, X } from "lucide-react";
-import { useState, lazy, Suspense } from "react";
-import { useJutsuSounds } from "@/hooks/useJutsuSounds";
-import { useTilt3D } from "@/hooks/useTilt3D";
-import { ScrollReveal, Parallax } from "./ScrollReveal";
+import { motion } from "framer-motion";
+import { ArrowUpRight, Eye } from "lucide-react";
+import { useState, lazy, Suspense, useCallback } from "react";
+import { ScrollReveal } from "./ScrollReveal";
 import ErrorBoundary from "./ErrorBoundary";
 import { ViewportMount } from "./ViewportMount";
-
-// 2MB of geometry that sits below the fold - keep it out of the initial load.
-const BaryonNaruto = lazy(() =>
-  import("./three/NarutoModels").then((m) => ({ default: m.BaryonNaruto })),
-);
+import { ByakuganPreview, type ByakuganItem } from "./ByakuganPreview";
 
 import projectHumindly from "@/assets/project-humindly.png";
 import projectIchranavigator from "@/assets/project-ichranavigator.png";
 import projectJointheworld from "@/assets/project-jointheworld.png";
+
+// 2MB of geometry below the fold - keep it out of the initial load.
+const BaryonNaruto = lazy(() =>
+  import("./three/NarutoModels").then((m) => ({ default: m.BaryonNaruto })),
+);
+
+type Rank = "S" | "A";
 
 interface Project {
   title: string;
@@ -22,238 +23,212 @@ interface Project {
   image: string;
   tags: string[];
   liveUrl?: string;
-  featured?: boolean;
+  rank: Rank;
+  /** What the client got out of it, one line. */
+  outcome: string;
 }
 
 const projects: Project[] = [
   {
     title: "Humindly",
-    description: "AI-powered recruitment platform combining the speed of AI with human precision to accelerate hiring in Tech, Finance, Pharma & Engineering.",
+    description:
+      "AI-powered recruitment platform combining the speed of AI with human precision to accelerate hiring in Tech, Finance, Pharma & Engineering.",
     image: projectHumindly,
     tags: ["React", "Node.js", "AI/ML", "PostgreSQL", "TypeScript"],
     liveUrl: "https://humindly.fr",
-    featured: true,
+    rank: "S",
+    outcome: "AI-assisted matching across four hiring verticals",
   },
   {
     title: "ICHRA Navigator",
-    description: "Healthcare benefits navigation platform simplifying ICHRA compliance and employee health plan selection for modern employers.",
+    description:
+      "Healthcare benefits navigation platform simplifying ICHRA compliance and employee health plan selection for modern employers.",
     image: projectIchranavigator,
     tags: ["React", "TypeScript", "Supabase", "Tailwind CSS"],
     liveUrl: "https://ichranavigator.com",
-    featured: true,
+    rank: "S",
+    outcome: "Compliance assessment in under 90 seconds",
   },
   {
     title: "Join The World",
-    description: "Global community platform connecting travelers and digital nomads for authentic local experiences and entrepreneurship.",
+    description:
+      "Global community platform connecting travelers and digital nomads for authentic local experiences and entrepreneurship.",
     image: projectJointheworld,
     tags: ["React", "Node.js", "Real-time", "PostgreSQL"],
     liveUrl: "https://jointheworld.co",
+    rank: "A",
+    outcome: "Real-time community for travellers and founders",
   },
 ];
 
-// Byakugan Preview Modal
-const ByakuganPreview = ({ 
-  project, 
-  isOpen, 
-  onClose 
-}: { 
-  project: Project | null; 
-  isOpen: boolean; 
-  onClose: () => void;
-}) => {
-  if (!project || !isOpen) return null;
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div
-            className="absolute inset-0 bg-black/95 backdrop-blur-md"
-            onClick={onClose}
-          />
-          
-          <motion.div
-            className="relative z-10 w-full max-w-4xl max-h-[90vh] bg-card rounded-2xl overflow-hidden shadow-2xl border border-primary/30 flex flex-col"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border bg-muted/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <Eye className="w-4 h-4 text-primary-foreground" />
-                </div>
-                <h3 className="font-bold text-lg">{project.title}</h3>
-              </div>
-              <button onClick={onClose} className="p-2 hover:bg-muted rounded-full">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="relative flex-grow bg-background overflow-hidden">
-              <iframe
-                src={project.liveUrl}
-                className="w-full h-full min-h-[400px] border-0"
-                title={project.title}
-              />
-              {/* Scanning Effect */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none bg-gradient-to-b from-primary/5 to-transparent"
-                animate={{ y: ['-100%', '100%'] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              />
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+const RANK_STYLE: Record<Rank, string> = {
+  S: "border-[hsl(var(--sage-red))] text-[hsl(var(--sage-red))] bg-[#1a0706]/90",
+  A: "border-primary text-primary bg-[#1a0d04]/90",
 };
 
-const ProjectCard = ({ project, index, onPreview }: { project: Project; index: number; onPreview: (project: Project) => void }) => {
-  return (
-    <motion.div
-      className={`glass-card overflow-hidden group relative ${
-        project.featured ? "md:col-span-2" : ""
-      }`}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
-      whileHover={{ y: -5 }}
+/** A hanko-style rank stamp, pressed on at an angle like an official seal. */
+const RankStamp = ({ rank }: { rank: Rank }) => (
+  <div
+    className={`flex h-14 w-14 -rotate-12 flex-col items-center justify-center rounded-full border-2 ${RANK_STYLE[rank]}`}
+    aria-label={`${rank}-rank mission`}
+  >
+    <span className="font-display text-2xl leading-none">{rank}</span>
+    <span className="font-mono text-[7px] uppercase tracking-[0.2em]">Rank</span>
+  </div>
+);
+
+const MissionCard = ({
+  project,
+  index,
+  onPreview,
+}: {
+  project: Project;
+  index: number;
+  onPreview: (p: Project) => void;
+}) => (
+  <motion.article
+    className="group grid overflow-hidden rounded-2xl border border-white/[0.08] bg-card transition-colors duration-300 hover:border-primary/60 sm:grid-cols-[1.05fr_1fr]"
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-60px" }}
+    transition={{ delay: index * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+  >
+    {/* Dossier photo */}
+    <button
+      type="button"
+      onClick={() => onPreview(project)}
+      className="relative aspect-[16/11] overflow-hidden bg-black text-left sm:aspect-auto sm:min-h-[260px]"
+      aria-label={`Preview ${project.title} with Byakugan`}
     >
-      {/* Chakra Pulse Effect on Hover */}
-      <motion.div 
-        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"
-        style={{
-          boxShadow: 'inset 0 0 50px hsl(var(--primary) / 0.15)',
-        }}
+      <img
+        src={project.image}
+        alt={`${project.title} screenshot`}
+        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+        loading="lazy"
       />
-      
-      {/* Image */}
-      <div className="relative aspect-video overflow-hidden">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
-        
-        {/* Quick Actions */}
-        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-          <button
-            onClick={() => onPreview(project)}
-            className="p-2 rounded-full bg-primary/80 backdrop-blur-sm text-white hover:bg-primary transition-colors"
+      <div className="absolute left-4 top-4">
+        <RankStamp rank={project.rank} />
+      </div>
+      <span className="absolute bottom-3 left-4 rounded bg-black/75 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.3em] text-white/85">
+        Mission {String(index + 1).padStart(2, "0")}
+      </span>
+    </button>
+
+    {/* Briefing */}
+    <div className="flex flex-col p-6">
+      <h3 className="mb-2 text-2xl font-bold text-white transition-colors group-hover:text-primary">
+        {project.title}
+      </h3>
+      <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{project.description}</p>
+      <p className="mb-4 text-sm text-primary/90">{project.outcome}</p>
+
+      <div className="mb-5 flex flex-wrap gap-1.5">
+        {project.tags.map((tag) => (
+          <span
+            key={tag}
+            className="rounded border border-white/10 bg-white/[0.04] px-2 py-0.5 font-mono text-[10px] text-white/70"
           >
-            <Eye className="w-4 h-4" />
-          </button>
-          {project.liveUrl && (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-white transition-colors"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          )}
-        </div>
+            {tag}
+          </span>
+        ))}
       </div>
 
-      {/* Content */}
-      <div className="p-6 relative z-20">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
-            {project.title}
-          </h3>
-          <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-        </div>
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
-          {project.description}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <span key={tag} className="px-2 py-0.5 text-[10px] font-mono rounded bg-muted text-muted-foreground border border-border">
-              {tag}
-            </span>
-          ))}
-        </div>
+      <div className="mt-auto flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => onPreview(project)}
+          className="inline-flex items-center gap-2 rounded-lg border border-[#cbbcff]/35 bg-[#cbbcff]/[0.08] px-3.5 py-2 font-mono text-xs uppercase tracking-widest text-[#d9ceff] transition-colors hover:bg-[#cbbcff]/20"
+        >
+          <Eye className="h-4 w-4" /> Byakugan
+        </button>
+        {project.liveUrl && (
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 font-mono text-xs uppercase tracking-widest text-white/70 transition-colors hover:text-primary"
+          >
+            Live <ArrowUpRight className="h-4 w-4" />
+          </a>
+        )}
       </div>
-    </motion.div>
-  );
-};
+    </div>
+  </motion.article>
+);
 
 export const ProjectsSection = () => {
-  const [previewProject, setPreviewProject] = useState<Project | null>(null);
+  const [preview, setPreview] = useState<ByakuganItem | null>(null);
+
+  const openPreview = useCallback((p: Project) => {
+    setPreview({
+      title: p.title,
+      description: p.description,
+      image: p.image,
+      url: p.liveUrl,
+      tags: p.tags,
+      note: p.outcome,
+      badge: `${p.rank}-Rank Mission`,
+    });
+  }, []);
+  const closePreview = useCallback(() => setPreview(null), []);
 
   return (
-    <section id="projects" className="py-32 relative overflow-hidden bg-[#050505]">
-      <div className="container mx-auto px-6 relative z-20">
-        {/* Section Header */}
-        <ScrollReveal className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div className="h-[1px] w-8 bg-primary/40" />
-            <p className="font-mono text-primary text-xs tracking-[0.3em] uppercase">
-              Operational Intel
+    <section id="projects" className="relative bg-background py-28 lg:py-36">
+      <div className="container relative z-10 mx-auto px-6">
+        <ScrollReveal className="mb-14 flex flex-col gap-6 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="mb-3 font-mono text-xs uppercase tracking-[0.35em] text-primary">
+              <span className="font-japanese mr-3 text-sm">任務</span>Operational Intel
             </p>
-            <div className="h-[1px] w-8 bg-primary/40" />
+            <h2 className="font-display text-5xl tracking-wide text-white md:text-7xl">
+              S-Rank <span className="gradient-text">Missions</span>
+            </h2>
           </div>
-          <h2 className="text-5xl md:text-8xl font-display tracking-wider mb-6">
-            <span className="text-white">S-RANK</span> MISSIONS
-          </h2>
+          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+            Shipped work for real clients. Open any dossier with the Byakugan to inspect it without
+            leaving the page.
+          </p>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Projects Grid */}
-          <div className="lg:col-span-8 order-2 lg:order-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {projects.map((project, index) => (
-                <ProjectCard 
-                  key={project.title} 
-                  project={project} 
-                  index={index} 
-                  onPreview={setPreviewProject}
-                />
-              ))}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+          {/* Baryon Mode, pinned while the missions scroll past */}
+          <div className="lg:col-span-5">
+            <div className="lg:sticky lg:top-24">
+              <div
+                className="relative h-[52vh] overflow-hidden rounded-3xl border border-[hsl(var(--sage-red))]/35 lg:h-[72vh]"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at 50% 60%, hsl(var(--sage-red) / 0.55) 0%, hsl(var(--crimson)) 45%, #0b0406 100%)",
+                }}
+              >
+                <ViewportMount className="absolute inset-0">
+                  <ErrorBoundary fallback={null}>
+                    <Suspense fallback={null}>
+                      <BaryonNaruto />
+                    </Suspense>
+                  </ErrorBoundary>
+                </ViewportMount>
+
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/80 to-transparent p-5 pt-16">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-white/70">Final form</p>
+                    <p className="font-display text-2xl text-white">Baryon Mode</p>
+                  </div>
+                  <span className="font-japanese text-3xl text-[hsl(var(--sunset))]">重粒子</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Baryon Mode Character - HIGH VISIBILITY */}
-          <div className="lg:col-span-4 order-1 lg:order-2 h-[60vh] lg:h-[80vh] relative">
-            {/* The 125% blow-up existed to compensate for the model being
-                framed too small; FitCamera handles that now, and the scale was
-                cropping his head and pushing the canvas past the viewport. */}
-            <motion.div
-              className="w-full h-full"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <ViewportMount className="w-full h-full">
-                <ErrorBoundary fallback={null}>
-                  <Suspense fallback={null}>
-                    <BaryonNaruto />
-                  </Suspense>
-                </ErrorBoundary>
-              </ViewportMount>
-            </motion.div>
-            {/* Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-red-600/20 rounded-full blur-[120px] -z-1" />
+          <div className="flex flex-col gap-6 lg:col-span-7">
+            {projects.map((project, index) => (
+              <MissionCard key={project.title} project={project} index={index} onPreview={openPreview} />
+            ))}
           </div>
         </div>
       </div>
 
-      <ByakuganPreview
-        project={previewProject}
-        isOpen={!!previewProject}
-        onClose={() => setPreviewProject(null)}
-      />
+      <ByakuganPreview item={preview} onClose={closePreview} />
     </section>
   );
 };

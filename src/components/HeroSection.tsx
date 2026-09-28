@@ -10,6 +10,20 @@ const HeroNaruto = lazy(() =>
 );
 import { MagneticButton } from "./ScrollReveal";
 
+/** Archimedean spiral - the Uzumaki swirl - as an SVG path. */
+const HERO_SPIRAL = (() => {
+  const turns = 4;
+  const steps = turns * 72;
+  const pts: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const a = t * turns * Math.PI * 2;
+    const r = 3 + 52 * t;
+    pts.push(`${(60 + Math.cos(a) * r).toFixed(2)},${(60 + Math.sin(a) * r).toFixed(2)}`);
+  }
+  return `M${pts.join(" L")}`;
+})();
+
 interface HeroSectionProps {
   isIntroComplete: boolean;
 }
@@ -17,13 +31,27 @@ interface HeroSectionProps {
 export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-background">
-      {/* Background Atmosphere */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 grid-bg opacity-5" />
-        <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-primary/5 to-transparent" />
-      </div>
+      {/* Crisp Uzumaki line-art behind the Sage. Stroke, not blur: the old
+          blurred glow blobs were what made the page look hazy. */}
+      <svg
+        aria-hidden
+        viewBox="0 0 120 120"
+        className="pointer-events-none absolute right-[-6%] top-1/2 hidden h-[115vh] -translate-y-1/2 lg:block"
+      >
+        <path d={HERO_SPIRAL} fill="none" stroke="hsl(var(--primary))" strokeOpacity={0.14} strokeWidth={0.5} />
+        <circle cx="60" cy="60" r="57" fill="none" stroke="hsl(var(--primary))" strokeOpacity={0.1} strokeWidth={0.3} />
+      </svg>
 
-      <div className="container mx-auto px-6 relative z-10">
+      {/* Impact shake as the rasengan burst clears */}
+      <motion.div
+        className="container mx-auto px-6 relative z-10"
+        animate={
+          isIntroComplete
+            ? { x: [0, -14, 11, -7, 4, 0], y: [0, 7, -6, 3, -1, 0] }
+            : {}
+        }
+        transition={{ duration: 0.55, ease: "easeOut" }}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
           {/* Left Side: Content */}
@@ -31,7 +59,7 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
             className="z-20"
             initial={{ opacity: 0, x: -50 }}
             animate={isIntroComplete ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 1, delay: 0.5 }}
+            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-8">
               <span className="text-[10px] font-mono tracking-widest text-primary uppercase">
@@ -39,7 +67,7 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
               </span>
             </div>
             
-            <h1 className="text-8xl md:text-[12rem] font-display tracking-tight mb-8 leading-[0.8]">
+            <h1 className="text-7xl md:text-[8.5rem] xl:text-[10rem] font-display tracking-tight mb-8 leading-[0.85]">
               <span className="gradient-text">MATTHEW</span>
             </h1>
             
@@ -78,23 +106,21 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
           
           {/* Right Side: 3D Sage Centerpiece */}
           <motion.div 
-            className="relative h-[70vh] lg:h-[90vh] z-10 cursor-grab active:cursor-grabbing"
-            initial={{ opacity: 0, scale: 0.9, x: 100 }}
-            animate={isIntroComplete ? { opacity: 1, scale: 1, x: 0 } : {}}
-            transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
+            className="relative h-[62vh] lg:h-[86vh] z-10 cursor-grab active:cursor-grabbing"
+            initial={{ opacity: 0, scale: 0.82 }}
+            animate={isIntroComplete ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
           >
             <ErrorBoundary fallback={null}>
               <Suspense fallback={null}>
                 <HeroNaruto />
               </Suspense>
             </ErrorBoundary>
-            {/* Subtle Aura Glow behind model */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/10 rounded-full blur-[100px] -z-1 pointer-events-none" />
           </motion.div>
           
         </div>
-      </div>
-      
+      </motion.div>
+
       {/* Scroll indicator - Cinematic Style */}
       <motion.div 
         className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"

@@ -4,51 +4,58 @@
 
 @layer base {
   :root {
-    /* Konoha at night: warm ink rather than blue-grey */
-    --background: 24 14% 5%;
-    --foreground: 30 18% 95%;
+    /* Clean ink. The previous warm-brown base plus stacked orange glows read
+       as a muddy haze over everything; a neutral near-black lets the orange
+       and red actually pop, the way they do on the reference posters. */
+    --background: 230 14% 5%;
+    --foreground: 36 30% 95%;
 
-    --card: 24 14% 9%;
-    --card-foreground: 30 18% 95%;
+    --card: 230 12% 9%;
+    --card-foreground: 36 30% 95%;
 
-    --popover: 24 14% 9%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 230 12% 9%;
+    --popover-foreground: 36 30% 95%;
 
-    /* Naruto's jumpsuit orange leads. Chakra blue was primary before, which
-       read as generic sci-fi rather than Konoha. */
-    --primary: 24 96% 54%;
+    /* Naruto's jumpsuit orange leads */
+    --primary: 24 92% 54%;
     --primary-foreground: 24 60% 7%;
 
-    /* Chakra blue is now the counterpoint, not the lead */
-    --secondary: 205 92% 56%;
-    --secondary-foreground: 222 30% 6%;
+    /* Chakra blue as the counterpoint */
+    --secondary: 206 86% 56%;
+    --secondary-foreground: 230 30% 6%;
 
-    --muted: 222 18% 14%;
-    --muted-foreground: 30 10% 66%;
+    --muted: 230 10% 14%;
+    --muted-foreground: 30 8% 68%;
 
-    --accent: 205 92% 56%;
-    --accent-foreground: 222 30% 6%;
+    --accent: 206 86% 56%;
+    --accent-foreground: 230 30% 6%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 30 20% 95%;
+    --destructive-foreground: 36 30% 95%;
 
-    --border: 26 22% 16%;
-    --input: 26 22% 16%;
-    --ring: 24 96% 54%;
+    --border: 230 10% 17%;
+    --input: 230 10% 17%;
+    --ring: 24 92% 54%;
 
     --radius: 0.5rem;
 
-    /* Konoha palette */
-    --anime-blue: 205 92% 56%;
-    --anime-orange: 24 96% 54%;
-    --anime-dark: 222 28% 4%;
-    --konoha-leaf: 96 45% 42%;
-    --scroll-tan: 38 45% 78%;
+    /* Palette pulled from the reference art */
+    --sage-red: 8 73% 45%;          /* Sage Mode cloak */
+    --crimson: 355 76% 27%;         /* crimson backdrop poster */
+    --kurama: 25 100% 50%;          /* Nine-Tails flame */
+    --sunset: 35 100% 64%;          /* Konoha at dusk */
+    --night-teal: 204 43% 21%;      /* mountain sky, "that's my Ninja way" */
+    --manga-paper: 0 0% 93%;        /* manga panel pages */
+    --byakugan: 254 100% 87%;       /* Hinata's lavender */
+    --byakugan-deep: 254 35% 10%;
+
+    --anime-blue: 206 86% 56%;
+    --anime-orange: 24 92% 54%;
+    --anime-dark: 230 14% 4%;
     --uzumaki-red: 355 72% 47%;
-    
-    /* Subtle cinematic glows */
-    --glow-primary: 0 0 20px hsl(var(--primary) / 0.25), 0 0 40px hsl(var(--primary) / 0.1);
-    --glow-secondary: 0 0 20px hsl(var(--secondary) / 0.25), 0 0 40px hsl(var(--secondary) / 0.1);
+
+    --glow-primary: 0 0 20px hsl(var(--primary) / 0.35);
+    --glow-secondary: 0 0 20px hsl(var(--secondary) / 0.35);
   }
 }
 
@@ -59,9 +66,6 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    background-image: 
-      radial-gradient(ellipse at 20% 0%, hsl(var(--anime-blue) / 0.05) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 100%, hsl(var(--anime-orange) / 0.03) 0%, transparent 50%);
   }
 
   html {
@@ -80,12 +84,12 @@
 }
 
 @layer components {
-  /* Anime-style glass card with soft edges */
+  /* Solid card. It used to be 40% translucent with backdrop-blur, sat on top
+     of blurred glow blobs - which is what gave the whole site its cloudy,
+     low-contrast look. */
   .glass-card {
-    @apply bg-card/40 backdrop-blur-md border border-white/5 rounded-lg;
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.3),
-      inset 0 1px 0 hsl(var(--foreground) / 0.02);
+    @apply bg-card border border-white/[0.07] rounded-xl;
+    box-shadow: 0 10px 30px hsl(0 0% 0% / 0.35);
   }
 
   /* Crimson accent text */
@@ -100,10 +104,20 @@
     box-shadow: var(--glow-primary);
   }
 
-  /* Gradient text - anime style warm colors */
+  /* Sunset -> jumpsuit orange -> Sage cloak red. The old orange -> blue ramp
+     passed through grey in the middle, which is why the name looked washed
+     out halfway across. */
   .gradient-text {
-    @apply bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent font-display;
-    background-size: 200% auto;
+    @apply font-display;
+    background-image: linear-gradient(
+      90deg,
+      hsl(var(--sunset)) 0%,
+      hsl(var(--primary)) 45%,
+      hsl(var(--sage-red)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   /* Golden legendary text */
@@ -113,21 +127,15 @@
     filter: drop-shadow(0 0 8px hsl(var(--anime-blue) / 0.3));
   }
 
-  /* Anime-style background with flowing gradients */
-  .grid-bg {
-    background: 
-      radial-gradient(ellipse at 30% 20%, hsl(var(--anime-blue) / 0.04) 0%, transparent 40%),
-      radial-gradient(ellipse at 70% 80%, hsl(var(--anime-orange) / 0.03) 0%, transparent 40%),
-      radial-gradient(ellipse at 50% 50%, hsl(var(--anime-blue) / 0.02) 0%, transparent 60%);
+  .jutsu-card {
+    @apply bg-card border border-primary/25 rounded-xl;
+    box-shadow: 0 10px 30px hsl(0 0% 0% / 0.35);
   }
 
-  /* Anime card with depth */
-  .jutsu-card {
-    @apply bg-card/60 backdrop-blur-lg border border-primary/20 rounded-lg;
-    box-shadow: 
-      0 4px 24px hsl(0 0% 0% / 0.4),
-      0 0 0 1px hsl(var(--primary) / 0.1),
-      inset 0 1px 0 hsl(var(--foreground) / 0.05);
+  /* Manga screen-tone dots: crisp texture instead of a blurred wash */
+  .screentone {
+    background-image: radial-gradient(hsl(var(--foreground) / 0.08) 1px, transparent 1.2px);
+    background-size: 7px 7px;
   }
 
   /* Flowing energy animation */

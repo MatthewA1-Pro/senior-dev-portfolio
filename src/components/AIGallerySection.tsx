@@ -1,6 +1,8 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Wand2, ArrowRight, Eye, X } from "lucide-react";
-import { useState } from "react";
+import { motion } from "framer-motion";
+import { Sparkles, Wand2, ArrowRight, Eye } from "lucide-react";
+import { useState, useCallback } from "react";
+import { ByakuganPreview, type ByakuganItem } from "./ByakuganPreview";
+import mangaWalk from "@/assets/naruto/manga-walk.webp";
 import { useJutsuSounds } from "@/hooks/useJutsuSounds";
 import { useTilt3D } from "@/hooks/useTilt3D";
 
@@ -41,127 +43,6 @@ const aiProjects: AIProject[] = [
   },
 ];
 
-// Byakugan Preview Modal
-const ByakuganPreview = ({ 
-  project, 
-  isOpen, 
-  onClose 
-}: { 
-  project: AIProject | null; 
-  isOpen: boolean; 
-  onClose: () => void;
-}) => {
-  if (!project || !isOpen) return null;
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* Backdrop with Byakugan effect */}
-          <motion.div
-            className="absolute inset-0 bg-background/95 backdrop-blur-md"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-          
-          {/* Byakugan veins effect */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(12)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute bg-gradient-to-r from-purple-500/20 to-transparent h-0.5"
-                style={{
-                  left: '50%',
-                  top: '50%',
-                  width: '50vw',
-                  transformOrigin: 'left center',
-                  transform: `rotate(${i * 30}deg)`,
-                }}
-                initial={{ scaleX: 0, opacity: 0 }}
-                animate={{ scaleX: 1, opacity: [0, 0.6, 0.3] }}
-                transition={{ delay: i * 0.03, duration: 0.5 }}
-              />
-            ))}
-          </div>
-
-          {/* Modal Content */}
-          <motion.div
-            className="relative z-10 w-full max-w-4xl max-h-[90vh] bg-card rounded-2xl overflow-hidden shadow-2xl border border-purple-500/30 flex flex-col"
-            initial={{ scale: 0.8, opacity: 0, rotateX: -15 }}
-            animate={{ scale: 1, opacity: 1, rotateX: 0 }}
-            exit={{ scale: 0.8, opacity: 0, rotateX: 15 }}
-            transition={{ type: "spring", damping: 25 }}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border bg-muted/50 flex-shrink-0">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                  <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-base sm:text-lg truncate max-w-[150px] sm:max-w-xs">{project.title}</h3>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">Byakugan Preview Mode</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 sm:gap-2">
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-primary text-primary-foreground text-xs sm:text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-2"
-                >
-                  Visit <ArrowRight className="w-3 h-3" />
-                </a>
-                <button
-                  onClick={onClose}
-                  className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Preview iframe */}
-            <div className="relative flex-grow bg-background overflow-hidden">
-              <div className="w-full h-full aspect-video min-h-[300px] sm:min-h-[450px]">
-                <iframe
-                  src={project.url}
-                  className="w-full h-full border-0"
-                  title={`${project.title} Preview`}
-                  loading="lazy"
-                />
-              </div>
-              
-              {/* Scanning overlay effect */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none bg-gradient-to-b from-purple-500/5 to-transparent"
-                animate={{ y: ['-100%', '100%'] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              />
-            </div>
-
-            {/* Footer info */}
-            <div className="p-3 sm:p-4 bg-muted/30 border-t border-border flex-shrink-0">
-              <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2">{project.description}</p>
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-primary">
-                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="font-medium truncate">{project.result}</span>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
 const AIProjectCard = ({ project, index, onPreview }: { project: AIProject; index: number; onPreview: (project: AIProject) => void }) => {
   const { ref, tiltStyle, handleMouseMove, handleMouseLeave } = useTilt3D(12);
 
@@ -201,7 +82,7 @@ const AIProjectCard = ({ project, index, onPreview }: { project: AIProject; inde
           {/* Byakugan Preview Button */}
           <button
             onClick={() => onPreview(project)}
-            className="absolute top-4 left-4 p-2 rounded-full bg-purple-500/80 backdrop-blur-sm hover:bg-purple-400 text-white transition-colors opacity-0 group-hover:opacity-100"
+            className="absolute top-4 left-4 p-2 rounded-full bg-[#cbbcff] text-[#15102a] hover:bg-[#ddd3ff] text-white transition-colors opacity-0 group-hover:opacity-100"
             title="Byakugan Preview"
           >
             <Eye className="w-5 h-5" />
@@ -241,7 +122,7 @@ const AIProjectCard = ({ project, index, onPreview }: { project: AIProject; inde
         <div className="flex items-center gap-4">
           <button
             onClick={() => onPreview(project)}
-            className="inline-flex items-center gap-2 text-sm font-mono text-purple-400 hover:text-purple-300 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-mono text-[#cbbcff] hover:text-[#e4dcff] transition-colors"
           >
             <Eye className="w-4 h-4" /> Preview
           </button>
@@ -260,25 +141,43 @@ const AIProjectCard = ({ project, index, onPreview }: { project: AIProject; inde
 };
 
 export const AIGallerySection = () => {
-  const [previewProject, setPreviewProject] = useState<AIProject | null>(null);
+  const [preview, setPreview] = useState<ByakuganItem | null>(null);
   const { playByakuganSound } = useJutsuSounds();
 
   const handlePreview = (project: AIProject) => {
     playByakuganSound();
-    setPreviewProject(project);
+    setPreview({
+      title: project.title,
+      description: project.description,
+      image: project.image,
+      url: project.url,
+      note: project.result,
+      badge: `Built with ${project.platform}`,
+    });
   };
+  const closePreview = useCallback(() => setPreview(null), []);
 
   return (
     <section id="ai-gallery" className="py-32 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 grid-bg opacity-20" />
-      <div className="absolute top-1/2 left-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
-
       <div className="container mx-auto px-6 relative z-10">
-        {/* Section Header */}
+        {/* Header beside the manga poster: back turned, walking between the pages */}
+        <div className="mb-16 grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
+          <motion.figure
+            className="relative mx-auto w-full max-w-[340px] overflow-hidden rounded-2xl border border-white/10 lg:col-span-4"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
+            <img
+              src={mangaWalk}
+              alt="Naruto seen from behind, walking between walls of manga pages"
+              className="block h-full w-full object-cover"
+              loading="lazy"
+            />
+          </motion.figure>
         <motion.div
-          className="text-center mb-16"
+          className="text-center lg:text-left lg:col-span-8"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -303,16 +202,18 @@ export const AIGallerySection = () => {
             <span className="gradient-text">AI & No-Code Gallery</span>
           </motion.h2>
           <motion.p 
-            className="text-muted-foreground max-w-2xl mx-auto"
+            className="text-muted-foreground max-w-2xl mx-auto lg:mx-0"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
           >
-            Showcasing the power of AI-assisted development and prompt engineering. 
-            Use <Eye className="w-4 h-4 inline text-purple-400" /> Byakugan to preview without leaving.
+            Every chapter written with AI as a sparring partner - prompt engineering, agents and rapid
+            builds. Use <Eye className="w-4 h-4 inline text-[#cbbcff]" /> Byakugan to inspect one without
+            leaving the page.
           </motion.p>
         </motion.div>
+        </div>
 
         {/* AI Skills Banner */}
         <motion.div
@@ -399,12 +300,7 @@ export const AIGallerySection = () => {
         </motion.div>
       </div>
 
-      {/* Byakugan Preview Modal */}
-      <ByakuganPreview
-        project={previewProject}
-        isOpen={!!previewProject}
-        onClose={() => setPreviewProject(null)}
-      />
+      <ByakuganPreview item={preview} onClose={closePreview} />
     </section>
   );
 };
