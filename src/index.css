@@ -4,43 +4,47 @@
 
 @layer base {
   :root {
-    /* Premium Cinematic Anime Palette */
-    --background: 225 30% 6%;
-    --foreground: 210 20% 95%;
+    /* Konoha at night: warm ink rather than blue-grey */
+    --background: 24 14% 5%;
+    --foreground: 30 18% 95%;
 
-    --card: 225 25% 10%;
-    --card-foreground: 210 20% 95%;
+    --card: 24 14% 9%;
+    --card-foreground: 30 18% 95%;
 
-    --popover: 225 25% 10%;
+    --popover: 24 14% 9%;
     --popover-foreground: 210 20% 95%;
 
-    /* Deep Chakra Blue as primary */
-    --primary: 215 90% 55%;
-    --primary-foreground: 210 20% 95%;
+    /* Naruto's jumpsuit orange leads. Chakra blue was primary before, which
+       read as generic sci-fi rather than Konoha. */
+    --primary: 24 96% 54%;
+    --primary-foreground: 24 60% 7%;
 
-    /* Chakra Orange as secondary/accent */
-    --secondary: 25 95% 55%;
-    --secondary-foreground: 225 30% 6%;
+    /* Chakra blue is now the counterpoint, not the lead */
+    --secondary: 205 92% 56%;
+    --secondary-foreground: 222 30% 6%;
 
-    --muted: 225 20% 15%;
-    --muted-foreground: 215 15% 65%;
+    --muted: 222 18% 14%;
+    --muted-foreground: 30 10% 66%;
 
-    --accent: 25 95% 55%;
-    --accent-foreground: 225 30% 6%;
+    --accent: 205 92% 56%;
+    --accent-foreground: 222 30% 6%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 20% 95%;
+    --destructive-foreground: 30 20% 95%;
 
-    --border: 215 30% 15%;
-    --input: 215 30% 15%;
-    --ring: 215 90% 55%;
+    --border: 26 22% 16%;
+    --input: 26 22% 16%;
+    --ring: 24 96% 54%;
 
     --radius: 0.5rem;
 
-    /* Cinematic Accents */
-    --anime-blue: 215 90% 55%;
-    --anime-orange: 25 95% 55%;
-    --anime-dark: 225 30% 5%;
+    /* Konoha palette */
+    --anime-blue: 205 92% 56%;
+    --anime-orange: 24 96% 54%;
+    --anime-dark: 222 28% 4%;
+    --konoha-leaf: 96 45% 42%;
+    --scroll-tan: 38 45% 78%;
+    --uzumaki-red: 355 72% 47%;
     
     /* Subtle cinematic glows */
     --glow-primary: 0 0 20px hsl(var(--primary) / 0.25), 0 0 40px hsl(var(--primary) / 0.1);
@@ -64,15 +68,14 @@
     scroll-behavior: smooth;
   }
 
-  /* Hide default cursor on desktop when custom cursor is active */
-  @media (pointer: fine) {
-    body {
-      cursor: none;
-    }
-    
-    a, button, [role="button"], .magnetic-hover {
-      cursor: none;
-    }
+  /* The native cursor stays. A JS-driven replacement re-rendered React on
+     every mousemove and lagged behind the real pointer, which made hovering
+     feel broken. */
+  a,
+  button,
+  [role="button"],
+  .magnetic-hover {
+    cursor: pointer;
   }
 }
 

@@ -45,20 +45,26 @@ const FRAGMENT = /* glsl */ `
   }
 
   void main() {
-    // Spiral the noise around the Y axis so the shell reads as rotating chakra
-    // rather than drifting fog.
-    float angle = atan(vPos.z, vPos.x);
-    float radius = length(vPos.xz);
-    float swirl = angle + uTime * 3.2 + radius * 7.0;
+    // Spherical coordinates, so the bands wrap the ball as a helix. Soft noise
+    // alone just read as a glowing sphere; the spiral is what makes it a
+    // rasengan rather than a light.
+    vec3 p = normalize(vPos);
+    float azimuth = atan(p.z, p.x);
+    float polar = acos(clamp(p.y, -1.0, 1.0));
 
-    float n  = noise(vec3(cos(swirl) * 2.0, vPos.y * 3.0 - uTime * 2.0, sin(swirl) * 2.0));
-    n += 0.5 * noise(vec3(cos(swirl) * 4.5, vPos.y * 6.0 - uTime * 3.4, sin(swirl) * 4.5));
-    n = clamp(n, 0.0, 1.0);
+    // Two counter-wound arm sets winding from pole to pole.
+    float armsA = sin(azimuth * 2.0 + polar * 6.5 - uTime * 9.0);
+    float armsB = sin(azimuth * 3.0 - polar * 5.0 + uTime * 6.5);
+    float spiral = smoothstep(0.15, 0.95, max(armsA, armsB * 0.8));
 
-    float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0);
+    // Turbulence keeps the arms from looking like clean stripes.
+    float n = noise(vec3(p.xy * 5.0, uTime * 1.6));
+    spiral = clamp(spiral * 0.85 + n * 0.3, 0.0, 1.0);
 
-    vec3 color = mix(uCoreColor, uEdgeColor, n);
-    float alpha = (0.28 + n * 0.55 + fresnel * 0.65) * uOpacity;
+    float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 1.8);
+
+    vec3 color = mix(uEdgeColor, uCoreColor, spiral);
+    float alpha = (0.18 + spiral * 0.75 + fresnel * 0.5) * uOpacity;
 
     gl_FragColor = vec4(color, clamp(alpha, 0.0, 1.0));
   }
@@ -80,8 +86,8 @@ export const Rasengan = ({ scale = 1, intensity = 1 }: RasenganProps) => {
     () => ({
       uTime: { value: 0 },
       uOpacity: { value: 1 },
-      uCoreColor: { value: new THREE.Color('#dff4ff') },
-      uEdgeColor: { value: new THREE.Color('#2b8cff') },
+      uCoreColor: { value: new THREE.Color('#d6f2ff') },
+      uEdgeColor: { value: new THREE.Color('#1b7fff') },
     }),
     [],
   );
@@ -91,15 +97,15 @@ export const Rasengan = ({ scale = 1, intensity = 1 }: RasenganProps) => {
     uniforms.uTime.value = t;
 
     if (shellRef.current) {
-      shellRef.current.rotation.y = t * 1.6;
+      shellRef.current.rotation.y = t * 3.4;
       shellRef.current.rotation.x = Math.sin(t * 0.8) * 0.25;
     }
     if (innerShellRef.current) {
-      innerShellRef.current.rotation.y = -t * 2.4;
+      innerShellRef.current.rotation.y = -t * 5.2;
       innerShellRef.current.rotation.z = t * 0.9;
     }
     if (ringsRef.current) {
-      ringsRef.current.rotation.y = t * 2.8;
+      ringsRef.current.rotation.y = t * 5.5;
       ringsRef.current.rotation.x = Math.sin(t * 1.4) * 0.4;
     }
     if (lightRef.current) {
@@ -110,10 +116,21 @@ export const Rasengan = ({ scale = 1, intensity = 1 }: RasenganProps) => {
 
   return (
     <group scale={scale}>
-      {/* Hot core */}
+      {/* Hot core, kept small so the spiralling shell is what you read */}
       <mesh>
-        <sphereGeometry args={[0.55, 32, 32]} />
-        <meshBasicMaterial color="#eaf8ff" toneMapped={false} />
+        <sphereGeometry args={[0.42, 32, 32]} />
+        <meshBasicMaterial color="#f2fbff" toneMapped={false} />
+      </mesh>
+      <mesh scale={1.18}>
+        <sphereGeometry args={[0.42, 32, 32]} />
+        <meshBasicMaterial
+          color="#9ad8ff"
+          transparent
+          opacity={0.55}
+          toneMapped={false}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
       </mesh>
 
       {/* Counter-rotating swirl shells */}

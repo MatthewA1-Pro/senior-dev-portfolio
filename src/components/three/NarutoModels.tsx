@@ -4,12 +4,14 @@ import {
   ContactShadows,
   PerspectiveCamera,
   Float,
-  Sphere,
   OrbitControls,
 } from '@react-three/drei';
 import * as THREE from 'three';
-import { OptimizedModel, ModelLoader, useIsMobile } from './ModelBase';
+import { OptimizedModel, ModelLoader, FitCamera, useIsMobile } from './ModelBase';
 import { StudioEnvironment } from './Lighting';
+
+const HERO_MODEL = '/models/naruto_shippuden.glb';
+const BARYON_MODEL = '/models/naruto_baryon.glb';
 
 /**
  * Lighting note: these models are Sketchfab exports with baked-in diffuse
@@ -23,54 +25,18 @@ import { StudioEnvironment } from './Lighting';
 // 1. Hero: the Sage with his truth-seeking orbs
 // ---------------------------------------------------------------------------
 
-/**
- * Gudodama read as invisible before: they were pure black meshBasicMaterial
- * spheres sitting on a near-black page. A black core inside an additive violet
- * shell keeps them black while still reading against the background.
+/*
+ * Note: naruto_shippuden.glb already ships its own truth-seeking orbs as
+ * sphere001..008 meshes, which is why its bounding depth (1.91) exceeds its
+ * height (1.56). An earlier hand-built set of orbs here was drawing a second,
+ * misaligned copy of them.
  */
-const TruthSeekingOrbs = () => {
-  const groupRef = useRef<THREE.Group>(null);
-
-  useFrame(({ clock }) => {
-    if (groupRef.current) groupRef.current.rotation.y = clock.getElapsedTime() * 0.55;
-  });
-
-  return (
-    <group ref={groupRef} position={[0, 1.4, 0]}>
-      {Array.from({ length: 6 }, (_, i) => {
-        const angle = (i / 6) * Math.PI * 2;
-        const position: [number, number, number] = [
-          Math.cos(angle) * 1.6,
-          Math.sin(angle * 2) * 0.5,
-          Math.sin(angle) * 1.6,
-        ];
-        return (
-          <Float key={i} speed={3} rotationIntensity={1.2} floatIntensity={1.2}>
-            <group position={position}>
-              <Sphere args={[0.1, 20, 20]}>
-                <meshBasicMaterial color="#05030a" toneMapped={false} />
-              </Sphere>
-              <Sphere args={[0.15, 20, 20]}>
-                <meshBasicMaterial
-                  color="#7b4dff"
-                  transparent
-                  opacity={0.45}
-                  side={THREE.BackSide}
-                  blending={THREE.AdditiveBlending}
-                  depthWrite={false}
-                  toneMapped={false}
-                />
-              </Sphere>
-            </group>
-          </Float>
-        );
-      })}
-    </group>
-  );
-};
 
 export const HeroNaruto = () => {
   const isMobile = useIsMobile();
+
+  const fov = isMobile ? 52 : 40;
+  const modelHeight = isMobile ? 2.6 : 3.0;
 
   return (
     <div className="w-full h-full">
@@ -79,37 +45,43 @@ export const HeroNaruto = () => {
         dpr={[1, isMobile ? 1.25 : 1.75]}
         gl={{ antialias: !isMobile, powerPreference: 'high-performance' }}
       >
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={isMobile ? 55 : 40} />
+        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={fov} />
 
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[3, 6, 5]} intensity={1.7} color="#ffffff" castShadow />
-        <pointLight position={[-5, 1, -4]} intensity={2.4} color="#ff9a44" distance={22} />
-        <pointLight position={[4, 2, -5]} intensity={1.8} color="#3f8cff" distance={22} />
+        <ambientLight intensity={0.65} />
+        <directionalLight position={[3, 6, 5]} intensity={1.8} color="#fff4e6" castShadow />
+        <pointLight position={[-5, 1, -4]} intensity={2.6} color="#ff8a2b" distance={24} />
+        <pointLight position={[4, 2, -5]} intensity={1.7} color="#3f9dff" distance={24} />
 
         <Suspense fallback={<ModelLoader />}>
-          <group position={[0, isMobile ? -1.5 : -2.0, 0]}>
+          <FitCamera url={HERO_MODEL} fitHeight={modelHeight} fov={fov} margin={1.3} />
+
+          <Float speed={1.1} rotationIntensity={0.07} floatIntensity={0.25}>
             <OptimizedModel
-              url="/models/naruto_shippuden.glb"
-              fitHeight={isMobile ? 2.6 : 3.4}
-              ground
-              float
-              mouseResponse={0.2}
+              url={HERO_MODEL}
+              fitHeight={modelHeight}
+              center
+              mouseResponse={0.15}
               autoAnimate={false}
             />
-            <TruthSeekingOrbs />
-          </group>
+          </Float>
 
           <StudioEnvironment variant="hero" />
           {!isMobile && (
-            <ContactShadows position={[0, -2, 0]} opacity={0.55} scale={10} blur={2.5} far={4} />
+            <ContactShadows
+              position={[0, -modelHeight / 2, 0]}
+              opacity={0.5}
+              scale={10}
+              blur={2.5}
+              far={4}
+            />
           )}
         </Suspense>
 
         <OrbitControls
           enableZoom={false}
           enablePan={false}
-          minPolarAngle={Math.PI / 2.5}
-          maxPolarAngle={Math.PI / 1.5}
+          minPolarAngle={Math.PI / 2.6}
+          maxPolarAngle={Math.PI / 1.7}
           makeDefault
         />
       </Canvas>
@@ -132,20 +104,21 @@ export const BaryonNaruto = () => {
   return (
     <div className="w-full h-full">
       <Canvas dpr={[1, isMobile ? 1.25 : 1.5]} gl={{ antialias: !isMobile }}>
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={50} />
         <ambientLight intensity={0.8} />
         <pointLight position={[5, 5, 5]} color="#ff5522" intensity={2.5} distance={25} />
 
         <Suspense fallback={<ModelLoader />}>
-          <group position={[0, -1.5, 0]}>
+          <FitCamera url={BARYON_MODEL} fitHeight={isMobile ? 2.8 : 3.4} fov={50} margin={1.05} />
+
+          <Float speed={1.2} rotationIntensity={0.1} floatIntensity={0.3}>
             <OptimizedModel
-              url="/models/naruto_baryon.glb"
-              fitHeight={isMobile ? 2.6 : 3.6}
-              ground
-              float
+              url={BARYON_MODEL}
+              fitHeight={isMobile ? 2.8 : 3.4}
+              center
               autoAnimate={false}
             />
-          </group>
+          </Float>
         </Suspense>
       </Canvas>
     </div>

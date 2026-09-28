@@ -9,11 +9,15 @@ import { StudioEnvironment } from './Lighting';
 
 const RUN_MODEL = '/models/naruto_uzumaki_running_animation.glb';
 
-/** Beat boundaries of the opening shot, in seconds. */
+/**
+ * Beat boundaries of the opening shot, in seconds. The middle beat is
+ * deliberately long: the jutsu needs to be on screen, close and spinning, long
+ * enough to register as a rasengan rather than a blue glow.
+ */
 const BEATS = {
-  trackingEnd: 2.6,
-  raiseEnd: 3.4,
-  total: 4.2,
+  trackingEnd: 2.4,
+  raiseEnd: 4.4,
+  total: 5.2,
 };
 
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
@@ -85,10 +89,13 @@ const Shot = ({ onComplete }: { onComplete: () => void }) => {
   const lookTarget = useMemo(() => new THREE.Vector3(0, 1.1, 0), []);
   const lungeTarget = useMemo(() => new THREE.Vector3(), []);
 
-  // The mixamo rig bone names carry an export suffix, so match on the stem.
+  // three's GLTFLoader strips illegal characters from node names, so this rig's
+  // "mixamorig:RightHand_035" arrives as "mixamorigRightHand_035". Matching on
+  // the colon silently never bound, which left the jutsu parked at the origin
+  // by his feet instead of in his hand.
   const bindHand = useCallback((root: THREE.Object3D) => {
     root.traverse((o) => {
-      if (!handBone.current && /mixamorig:RightHand_/i.test(o.name)) handBone.current = o;
+      if (!handBone.current && /RightHand_\d/i.test(o.name)) handBone.current = o;
     });
   }, []);
 
@@ -109,6 +116,13 @@ const Shot = ({ onComplete }: { onComplete: () => void }) => {
     // mixamo bones carry non-uniform scale that would squash the sphere.
     if (handBone.current && rasenganRef.current) {
       handBone.current.getWorldPosition(handWorld);
+      // Nudge it outward from his centre line so it sits in the palm rather
+      // than sinking into his torso as the arm swings through the stride.
+      const outX = handWorld.x;
+      const outZ = handWorld.z;
+      const reach = Math.hypot(outX, outZ) || 1;
+      handWorld.x += (outX / reach) * 0.22;
+      handWorld.z += (outZ / reach) * 0.22;
       rasenganRef.current.position.lerp(handWorld, 0.5);
     }
 
@@ -116,7 +130,7 @@ const Shot = ({ onComplete }: { onComplete: () => void }) => {
       // Beat 1 - tracking dolly: sweep from behind his shoulder to side-on.
       const p = easeInOut(clamp01(t / BEATS.trackingEnd));
       const angle = THREE.MathUtils.lerp(-2.5, -1.35, p);
-      const dist = THREE.MathUtils.lerp(9, 5.2, p);
+      const dist = THREE.MathUtils.lerp(6.0, 3.6, p);
       cam.position.set(
         Math.cos(angle) * dist,
         THREE.MathUtils.lerp(2.6, 1.5, p),
@@ -125,28 +139,33 @@ const Shot = ({ onComplete }: { onComplete: () => void }) => {
       lookTarget.set(0, 1.1, 0);
       if (rasenganRef.current) {
         rasenganRef.current.scale.setScalar(
-          THREE.MathUtils.lerp(0, 0.42, clamp01((t - 0.8) / 1.4)),
+          THREE.MathUtils.lerp(0, 0.3, clamp01((t - 0.5) / 1.2)),
         );
       }
     } else if (t < BEATS.raiseEnd) {
-      // Beat 2 - he swings the jutsu round to face us; camera drops to the hand.
+      // Beat 2 - he swings the jutsu round to face us and the camera pushes in
+      // close on the hand, so the spiral fills a good part of the frame.
       const p = easeInOut(clamp01((t - BEATS.trackingEnd) / (BEATS.raiseEnd - BEATS.trackingEnd)));
-      const angle = THREE.MathUtils.lerp(-1.35, -0.2, p);
-      const dist = THREE.MathUtils.lerp(5.2, 3.4, p);
+      const angle = THREE.MathUtils.lerp(-1.35, -0.15, p);
+      const dist = THREE.MathUtils.lerp(3.6, 2.4, p);
       cam.position.set(
         Math.cos(angle) * dist,
-        THREE.MathUtils.lerp(1.5, 1.35, p),
+        THREE.MathUtils.lerp(1.5, 1.2, p),
         Math.sin(angle) * dist,
       );
-      lookTarget.lerp(handWorld, 0.08);
-      if (rasenganRef.current) rasenganRef.current.scale.setScalar(THREE.MathUtils.lerp(0.42, 0.72, p));
+      // Settle onto the jutsu itself rather than his centre of mass.
+      lookTarget.lerp(handWorld, 0.12);
+      // The camera is tight on his hand from here, so the floor adds nothing
+      // except a hard edge where it grazes the sphere.
+      if (groundRef.current) groundRef.current.visible = false;
+      if (rasenganRef.current) rasenganRef.current.scale.setScalar(THREE.MathUtils.lerp(0.3, 0.42, p));
     } else {
       // Beat 3 - the jutsu is thrust into the lens and blows the frame out.
       const p = easeIn(clamp01((t - BEATS.raiseEnd) / (BEATS.total - BEATS.raiseEnd)));
       lungeTarget.set(handWorld.x + 0.9, handWorld.y, handWorld.z + 1.6);
       cam.position.lerp(lungeTarget, 0.12);
       lookTarget.lerp(handWorld, 0.2);
-      if (rasenganRef.current) rasenganRef.current.scale.setScalar(0.72 + p * 9);
+      if (rasenganRef.current) rasenganRef.current.scale.setScalar(0.42 + p * 9);
       // Once the jutsu is bigger than the set, the ground plane slices a hard
       // flat edge across it. Drop the floor for the impact frame.
       if (groundRef.current) groundRef.current.visible = false;
@@ -163,9 +182,10 @@ const Shot = ({ onComplete }: { onComplete: () => void }) => {
     <>
       <PerspectiveCamera ref={cameraRef} makeDefault fov={42} near={0.1} far={120} />
 
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[4, 8, 4]} intensity={1.4} color="#cfe4ff" />
-      <pointLight position={[-6, 2, -3]} intensity={2.2} color="#ff8a3d" distance={20} />
+      <ambientLight intensity={1.1} />
+      <directionalLight position={[4, 8, 4]} intensity={2.6} color="#cfe4ff" />
+      <pointLight position={[-6, 2, -3]} intensity={3.2} color="#ff8a3d" distance={22} />
+      <directionalLight position={[-3, 3, -6]} intensity={1.2} color="#ffb070" />
 
       {/* Rotated to face +X so he runs across the frame, left to right.
           fitHeight puts him at human scale regardless of the export's units,

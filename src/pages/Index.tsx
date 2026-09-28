@@ -9,7 +9,7 @@ import { ProjectsSection } from "@/components/ProjectsSection";
 import { AIGallerySection } from "@/components/AIGallerySection";
 import { IchirakuFooter } from "@/components/IchirakuFooter";
 import { SakuraPetals } from "@/components/SakuraPetals";
-import { ScrollProgress, CursorFollower } from "@/components/ScrollReveal";
+import { ScrollProgress } from "@/components/ScrollReveal";
 import { IntroSequence } from "@/components/three/IntroSequence";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -42,8 +42,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30 relative">
-      <CursorFollower />
-
       <AnimatePresence mode="wait">
         {appState === "loading" && <LoadingScreen key="loader" onComplete={handleLoaded} />}
 

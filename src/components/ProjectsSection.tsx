@@ -226,10 +226,13 @@ export const ProjectsSection = () => {
 
           {/* Baryon Mode Character - HIGH VISIBILITY */}
           <div className="lg:col-span-4 order-1 lg:order-2 h-[60vh] lg:h-[80vh] relative">
-            <motion.div 
-              className="w-full h-full scale-125"
-              initial={{ opacity: 0, scale: 1 }}
-              whileInView={{ opacity: 1, scale: 1.25 }}
+            {/* The 125% blow-up existed to compensate for the model being
+                framed too small; FitCamera handles that now, and the scale was
+                cropping his head and pushing the canvas past the viewport. */}
+            <motion.div
+              className="w-full h-full"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
               <ViewportMount className="w-full h-full">

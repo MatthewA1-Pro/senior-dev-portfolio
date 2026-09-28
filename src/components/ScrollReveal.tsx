@@ -451,6 +451,9 @@ interface MagneticButtonProps {
   onClick?: (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
   target?: string;
   rel?: string;
+  /** Lets the control fill its container, e.g. a full-width form submit. */
+  fullWidth?: boolean;
+  type?: 'button' | 'submit';
 }
 
 export const MagneticButton = ({ 
@@ -461,7 +464,9 @@ export const MagneticButton = ({
   href,
   onClick,
   target,
-  rel
+  rel,
+  fullWidth = false,
+  type = 'button'
 }: MagneticButtonProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
@@ -497,25 +502,30 @@ export const MagneticButton = ({
 
   const Component = motion.div;
 
+  // The caller's className goes on the interactive element itself, not on the
+  // magnetic wrapper. It used to land on the wrapper while the real <a>/<button>
+  // inside stayed a plain block, so layout classes like `flex items-center
+  // gap-3` never applied to the label and icon - which is why button icons sat
+  // above or beside their text instead of inline with it.
   const content = (
     <Component
       ref={ref}
-      className={`magnetic-hover inline-block ${className}`}
+      className={`magnetic-hover ${fullWidth ? 'block w-full' : 'inline-block'}`}
       style={{ x: springX, y: springY, scale: springScale }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {as === 'a' && href ? (
-        <a href={href} target={target} rel={rel} onClick={onClick} className="block">
+        <a href={href} target={target} rel={rel} onClick={onClick} className={className}>
           {children}
         </a>
       ) : as === 'button' ? (
-        <button onClick={onClick} className="block w-full">
+        <button type={type} onClick={onClick} className={className}>
           {children}
         </button>
       ) : (
-        children
+        <div className={className}>{children}</div>
       )}
     </Component>
   );

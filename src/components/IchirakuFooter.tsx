@@ -223,7 +223,7 @@ export const IchirakuFooter = () => {
                 </div>
               </div>
 
-              <MagneticButton className="w-full py-5 bg-primary text-primary-foreground rounded-xl font-bold text-xs tracking-widest uppercase hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 flex items-center justify-center gap-3">
+              <MagneticButton type="submit" fullWidth className="w-full py-5 bg-primary text-primary-foreground rounded-xl font-bold text-xs tracking-widest uppercase hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 flex items-center justify-center gap-3">
                 {isSubmitting ? "TRANSMITTING..." : "SEND INTEL"} <Send className="w-4 h-4" />
               </MagneticButton>
             </form>

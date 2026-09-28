@@ -1,6 +1,6 @@
-import { useMemo, useEffect, useRef, useState } from 'react';
+import { useMemo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useGLTF, useProgress, Html, useAnimations, Float } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import * as THREE from 'three';
 
@@ -53,11 +53,41 @@ export function useModel(url: string) {
     // authored in different units - one of them is roughly a hundred times the
     // size of another. Measuring here lets callers ask for a world height and
     // stop guessing magic scale numbers that only framed correctly by accident.
+    // Descendant world matrices are stale on a fresh clone, and Box3 reads
+    // them, so measure only after forcing an update.
+    root.updateWorldMatrix(false, true);
+
     const box = new THREE.Box3().setFromObject(root);
+
+    // Box3.setFromObject measures a SkinnedMesh from its node transform and
+    // bind-pose geometry, which can be nowhere near where it actually renders -
+    // the running model measures 0.06 units that way while its skeleton spans
+    // 1.7. Union in the bone positions so skinned characters are sized by the
+    // rig that actually drives them.
+    const bonePoint = new THREE.Vector3();
+    root.traverse((child) => {
+      const skinned = child as THREE.SkinnedMesh;
+      if (!skinned.isSkinnedMesh || !skinned.skeleton) return;
+      skinned.skeleton.bones.forEach((bone) => {
+        bone.updateWorldMatrix(true, false);
+        box.expandByPoint(bonePoint.setFromMatrixPosition(bone.matrixWorld));
+      });
+    });
     const size = new THREE.Vector3();
     box.getSize(size);
 
-    return { root, animations, size, minY: box.min.y };
+    const boxCenter = new THREE.Vector3();
+    box.getCenter(boxCenter);
+
+    if (typeof window !== 'undefined' && window.localStorage?.getItem('debugModels')) {
+      console.log(
+        `MODELSIZE ${url} size=${size.x.toFixed(3)},${size.y.toFixed(3)},${size.z.toFixed(3)}` +
+          ` center=${boxCenter.x.toFixed(3)},${boxCenter.y.toFixed(3)},${boxCenter.z.toFixed(3)}` +
+          ` minY=${box.min.y.toFixed(3)}`,
+      );
+    }
+
+    return { root, animations, size, boxCenter, minY: box.min.y };
   }, [scene, animations]);
 }
 
@@ -77,8 +107,15 @@ interface OptimizedModelProps {
    * in. Prefer this over `scale` so camera work stays in predictable units.
    */
   fitHeight?: number;
-  /** With `fitHeight`, drops the model so its lowest point rests on y=0. */
+  /** Drops the model so its lowest point rests on y=0. */
   ground?: boolean;
+  /**
+   * Puts the model's measured bounding-box centre on the origin. Preferred over
+   * drei's <Center>, which measures in a layout effect and did not reliably
+   * re-measure once the model resolved from Suspense, leaving the figure
+   * offset far enough that only its legs were in frame.
+   */
+  center?: boolean;
   /** Called once with the cloned root, e.g. to find a bone to attach to. */
   onReady?: (root: THREE.Object3D) => void;
 }
@@ -93,18 +130,22 @@ export function OptimizedModel({
   float = false,
   fitHeight,
   ground = false,
+  center = false,
   onReady,
 }: OptimizedModelProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const { root, animations, size, minY } = useModel(url);
+  const { root, animations, size, boxCenter, minY } = useModel(url);
   const { actions } = useAnimations(animations, root);
 
   const finalScale = fitHeight && size.y > 0 ? (fitHeight / size.y) * scale : scale;
-  const finalPosition: [number, number, number] = [
-    position[0],
-    position[1] - (ground ? minY * finalScale : 0),
-    position[2],
-  ];
+
+  // Offsets stay in the model's own units, because they are applied inside the
+  // scaling group below.
+  const offset: [number, number, number] = center
+    ? [-boxCenter.x, -boxCenter.y, -boxCenter.z]
+    : ground
+      ? [0, -minY, 0]
+      : [0, 0, 0];
 
   useEffect(() => {
     if (!autoAnimate) return;
@@ -126,9 +167,23 @@ export function OptimizedModel({
     g.rotation.y = THREE.MathUtils.lerp(g.rotation.y, state.mouse.x * mouseResponse, 0.08);
   });
 
+  // Nothing is set on the primitive itself. R3F assigns transform props
+  // directly onto the object, which REPLACES the root transform the GLTF was
+  // authored with - several of these models carry a unit-conversion scale
+  // there, so writing scale onto the primitive discarded it and rendered the
+  // model at the wrong size after it had been measured with it. Wrapping in
+  // plain groups composes with the authored transform instead.
   const model = (
-    <group ref={groupRef}>
-      <primitive object={root} position={finalPosition} rotation={rotation} scale={finalScale} />
+    <group position={position} rotation={rotation}>
+      {/* Separate group so the mouse-follow rotation does not fight the
+          static rotation prop. */}
+      <group ref={groupRef}>
+        <group scale={finalScale}>
+          <group position={offset}>
+            <primitive object={root} />
+          </group>
+        </group>
+      </group>
     </group>
   );
 
@@ -139,6 +194,46 @@ export function OptimizedModel({
   ) : (
     model
   );
+}
+
+/**
+ * Pulls the camera back to fit a model, derived from its measured bounding
+ * sphere rather than a hand-tuned distance.
+ *
+ * Fitting on height alone is not enough here: this hero model's bounding box is
+ * deeper (3.7 world units) than it is tall, because of the orbs and rods
+ * floating around him, so the nearest geometry sits far closer to the lens than
+ * his centre and overflowed the frame every time.
+ */
+export function FitCamera({
+  url,
+  fitHeight,
+  fov,
+  margin = 1.1,
+}: {
+  url: string;
+  fitHeight: number;
+  fov: number;
+  margin?: number;
+}) {
+  const { size } = useModel(url);
+  const camera = useThree((s) => s.camera);
+  const controls = useThree((s) => s.controls) as { update?: () => void } | null;
+
+  useLayoutEffect(() => {
+    if (size.y <= 0) return;
+    const s = fitHeight / size.y;
+    const radius =
+      0.5 * Math.sqrt((size.x * s) ** 2 + (size.y * s) ** 2 + (size.z * s) ** 2);
+    const distance = (radius / Math.sin((fov / 2) * THREE.MathUtils.DEG2RAD)) * margin;
+
+    camera.position.set(0, 0, distance);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+    controls?.update?.();
+  }, [size, fitHeight, fov, margin, camera, controls]);
+
+  return null;
 }
 
 /** In-canvas loading indicator for Suspense fallbacks. */

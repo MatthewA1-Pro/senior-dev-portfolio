@@ -18,7 +18,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Languages",
     icon: <Code2 className="w-6 h-6" />,
-    color: "from-orange-500 to-orange-600",
+    color: "from-orange-500 to-amber-600",
     skills: [
       { name: "JavaScript/TypeScript", level: 95 },
       { name: "Python", level: 90 },
@@ -30,7 +30,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Frontend",
     icon: <Palette className="w-6 h-6" />,
-    color: "from-red-600 to-red-700",
+    color: "from-sky-500 to-blue-600",
     skills: [
       { name: "React/Next.js", level: 95 },
       { name: "Vue.js", level: 85 },
@@ -42,7 +42,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Backend",
     icon: <Terminal className="w-6 h-6" />,
-    color: "from-purple-600 to-purple-700",
+    color: "from-emerald-500 to-green-700",
     skills: [
       { name: "Node.js/Express", level: 95 },
       { name: "FastAPI/Django", level: 90 },
@@ -54,7 +54,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Database",
     icon: <Database className="w-6 h-6" />,
-    color: "from-amber-500 to-amber-600",
+    color: "from-amber-400 to-yellow-600",
     skills: [
       { name: "PostgreSQL", level: 90 },
       { name: "MongoDB", level: 90 },
@@ -66,7 +66,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "Cloud & DevOps",
     icon: <Cloud className="w-6 h-6" />,
-    color: "from-orange-600 to-red-600",
+    color: "from-rose-500 to-red-700",
     skills: [
       { name: "AWS/GCP", level: 85 },
       { name: "Docker/Kubernetes", level: 80 },
@@ -78,7 +78,7 @@ const skillCategories: SkillCategory[] = [
   {
     title: "AI & No-Code",
     icon: <Brain className="w-6 h-6" />,
-    color: "from-purple-500 to-red-500",
+    color: "from-orange-400 to-rose-600",
     skills: [
       { name: "Lovable/Cursor", level: 95 },
       { name: "Prompt Engineering", level: 95 },
