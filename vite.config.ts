@@ -15,4 +15,17 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split the heavy 3D and animation vendors so they cache independently
+        // of site code, which changes far more often.
+        manualChunks: {
+          three: ["three"],
+          r3f: ["@react-three/fiber", "@react-three/drei"],
+          motion: ["framer-motion"],
+        },
+      },
+    },
+  },
 }));

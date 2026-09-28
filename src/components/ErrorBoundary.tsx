@@ -2,6 +2,12 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 
 interface Props {
   children?: ReactNode;
+  /**
+   * Rendered instead of the full-page error state. Used to scope a failure to
+   * one WebGL canvas so a driver or model problem degrades that section
+   * instead of blanking the whole site.
+   */
+  fallback?: ReactNode;
 }
 
 interface State {
@@ -23,6 +29,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
+      if (this.props.fallback !== undefined) return this.props.fallback;
       return (
         <div style={{ 
           background: '#0a0b14', 
@@ -56,7 +63,7 @@ class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return this.children;
+    return this.props.children;
   }
 }
 

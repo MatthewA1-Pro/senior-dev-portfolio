@@ -1,10 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, ArrowUpRight, Eye, X } from "lucide-react";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useJutsuSounds } from "@/hooks/useJutsuSounds";
 import { useTilt3D } from "@/hooks/useTilt3D";
 import { ScrollReveal, Parallax } from "./ScrollReveal";
-import { BaryonNaruto } from "./three/NarutoModels";
+import ErrorBoundary from "./ErrorBoundary";
+import { ViewportMount } from "./ViewportMount";
+
+// 2MB of geometry that sits below the fold - keep it out of the initial load.
+const BaryonNaruto = lazy(() =>
+  import("./three/NarutoModels").then((m) => ({ default: m.BaryonNaruto })),
+);
 
 import projectHumindly from "@/assets/project-humindly.png";
 import projectIchranavigator from "@/assets/project-ichranavigator.png";
@@ -226,7 +232,13 @@ export const ProjectsSection = () => {
               whileInView={{ opacity: 1, scale: 1.25 }}
               viewport={{ once: true }}
             >
-              <BaryonNaruto />
+              <ViewportMount className="w-full h-full">
+                <ErrorBoundary fallback={null}>
+                  <Suspense fallback={null}>
+                    <BaryonNaruto />
+                  </Suspense>
+                </ErrorBoundary>
+              </ViewportMount>
             </motion.div>
             {/* Background Glow */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-red-600/20 rounded-full blur-[120px] -z-1" />

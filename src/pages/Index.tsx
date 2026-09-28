@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Navigation } from "@/components/Navigation";
@@ -7,82 +7,77 @@ import { AboutSection } from "@/components/AboutSection";
 import { SkillsSection } from "@/components/SkillsSection";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { AIGallerySection } from "@/components/AIGallerySection";
-import { ContactSection } from "@/components/ContactSection";
-import { Footer } from "@/components/Footer";
+import { IchirakuFooter } from "@/components/IchirakuFooter";
 import { SakuraPetals } from "@/components/SakuraPetals";
 import { ScrollProgress, CursorFollower } from "@/components/ScrollReveal";
-import { RunningNaruto } from "@/components/three/NarutoModels";
+import { IntroSequence } from "@/components/three/IntroSequence";
+import ErrorBoundary from "@/components/ErrorBoundary";
+
+type AppState = "loading" | "intro" | "revealed";
 
 const Index = () => {
-  const [appState, setAppState] = useState<'loading' | 'running' | 'revealed'>('loading');
+  const [appState, setAppState] = useState<AppState>("loading");
   const [showNav, setShowNav] = useState(false);
 
-  // Handle Scroll Locking
+  // The page must not scroll underneath the opening shot.
   useEffect(() => {
-    if (appState === 'loading' || appState === 'running') {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-      // Fade in nav after scroll unlocks
-      const navTimer = setTimeout(() => setShowNav(true), 800);
-      return () => clearTimeout(navTimer);
-    }
+    const locked = appState !== "revealed";
+    document.body.style.overflow = locked ? "hidden" : "auto";
+    if (locked) return;
+
+    const navTimer = window.setTimeout(() => setShowNav(true), 900);
+    return () => window.clearTimeout(navTimer);
   }, [appState]);
 
-  // Transition from Running to Revealed
   useEffect(() => {
-    if (appState === 'running') {
-      const timer = setTimeout(() => setAppState('revealed'), 2800);
-      return () => clearTimeout(timer);
-    }
-  }, [appState]);
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  const handleLoaded = useCallback(() => setAppState("intro"), []);
+  const handleIntroDone = useCallback(() => setAppState("revealed"), []);
+
+  const revealed = appState === "revealed";
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30 relative">
-      {/* Global Cinematic Cursor */}
       <CursorFollower />
 
       <AnimatePresence mode="wait">
-        {/* PHASE 1: Loading Screen (Minimalist) */}
-        {appState === 'loading' && (
-          <LoadingScreen 
-            key="loader"
-            onComplete={() => setAppState('running')} 
-          />
-        )}
+        {appState === "loading" && <LoadingScreen key="loader" onComplete={handleLoaded} />}
 
-        {/* PHASE 2: Entry Animation (The Run) */}
-        {appState === 'running' && (
-          <motion.div 
-            key="running-intro"
-            className="fixed inset-0 z-[100] bg-background flex items-center justify-center"
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <motion.div
-              className="w-full h-full relative"
-              initial={{ x: "-100%" }}
-              animate={{ x: "100%" }}
-              transition={{ duration: 2.8, ease: "linear" }}
-            >
-              <RunningNaruto scale={2.5} />
-              {/* Enhanced Chakra Trail */}
-              <div className="absolute top-1/2 left-0 w-full h-24 -translate-y-1/2 bg-gradient-to-r from-transparent via-primary/20 to-transparent blur-[50px] pointer-events-none" />
-            </motion.div>
-          </motion.div>
+        {appState === "intro" && (
+          /* If WebGL fails here the visitor would be stranded on a black screen,
+             so a failed opening shot skips straight to the site. */
+          <ErrorBoundary key="intro" fallback={<SkipIntro onMount={handleIntroDone} />}>
+            <IntroSequence onComplete={handleIntroDone} />
+          </ErrorBoundary>
         )}
       </AnimatePresence>
 
-      {/* PHASE 3: Main Content */}
+      {/* Carries the white-out of the rasengan impact across the handoff, so the
+          hero canvas mounts while the frame is still blown out. */}
+      <AnimatePresence>
+        {revealed && (
+          <motion.div
+            key="impact-fade"
+            className="fixed inset-0 z-[110] bg-white pointer-events-none"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+          />
+        )}
+      </AnimatePresence>
+
       <motion.main
         initial={{ opacity: 0 }}
-        animate={appState === 'revealed' ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 1 }}
+        animate={{ opacity: revealed ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+        aria-hidden={!revealed}
       >
-        {/* Scroll Progress Bar */}
-        {appState === 'revealed' && <ScrollProgress />}
-        
-        {/* Navigation */}
+        {revealed && <ScrollProgress />}
+
         <AnimatePresence>
           {showNav && (
             <motion.div
@@ -95,20 +90,25 @@ const Index = () => {
           )}
         </AnimatePresence>
 
-        {/* Sections */}
-        <HeroSection isIntroComplete={appState === 'revealed'} />
+        <HeroSection isIntroComplete={revealed} />
         <AboutSection />
         <SkillsSection />
         <ProjectsSection />
         <AIGallerySection />
-        <ContactSection />
-        <Footer />
-        
-        {/* Ambient Effects */}
+        <IchirakuFooter />
+
         <SakuraPetals />
       </motion.main>
     </div>
   );
+};
+
+/** Fallback that immediately advances past a broken opening sequence. */
+const SkipIntro = ({ onMount }: { onMount: () => void }) => {
+  useEffect(() => {
+    onMount();
+  }, [onMount]);
+  return null;
 };
 
 export default Index;

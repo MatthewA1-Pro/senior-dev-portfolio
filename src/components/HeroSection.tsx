@@ -1,6 +1,13 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
-import { HeroNaruto } from "./three/NarutoModels";
+import { lazy, Suspense } from "react";
+import ErrorBoundary from "./ErrorBoundary";
+
+// Dynamic so the three.js scenes form their own chunk. It loads behind the
+// opening sequence, so it is always warm by the time the hero is revealed.
+const HeroNaruto = lazy(() =>
+  import("./three/NarutoModels").then((m) => ({ default: m.HeroNaruto })),
+);
 import { MagneticButton } from "./ScrollReveal";
 
 interface HeroSectionProps {
@@ -76,7 +83,11 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
             animate={isIntroComplete ? { opacity: 1, scale: 1, x: 0 } : {}}
             transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
           >
-            <HeroNaruto />
+            <ErrorBoundary fallback={null}>
+              <Suspense fallback={null}>
+                <HeroNaruto />
+              </Suspense>
+            </ErrorBoundary>
             {/* Subtle Aura Glow behind model */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/10 rounded-full blur-[100px] -z-1 pointer-events-none" />
           </motion.div>
