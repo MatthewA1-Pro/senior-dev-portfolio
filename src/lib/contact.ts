@@ -16,6 +16,21 @@ export const whatsappUrl = (text: string = DEFAULT_WHATSAPP_MESSAGE) =>
 
 export const WHATSAPP_URL = whatsappUrl();
 
-/** Opens the visitor's own mail app with the message already written. */
+/**
+ * Opens the visitor's own mail app with the message already written. Only
+ * works where a desktop mail app is configured, so it is the fallback.
+ */
 export const mailtoUrl = (subject: string, body: string) =>
   `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+/** Gmail's web compose window, pre-addressed and pre-written. */
+export const gmailComposeUrl = (subject: string, body: string) =>
+  `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL)}&su=${encodeURIComponent(
+    subject,
+  )}&body=${encodeURIComponent(body)}`;
+
+/** Outlook on the web's compose window, pre-addressed and pre-written. */
+export const outlookComposeUrl = (subject: string, body: string) =>
+  `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(EMAIL)}&subject=${encodeURIComponent(
+    subject,
+  )}&body=${encodeURIComponent(body)}`;

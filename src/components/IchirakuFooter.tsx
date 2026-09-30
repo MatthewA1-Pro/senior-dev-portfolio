@@ -14,6 +14,8 @@ import {
   WHATSAPP_URL,
   whatsappUrl,
   mailtoUrl,
+  gmailComposeUrl,
+  outlookComposeUrl,
 } from "@/lib/contact";
 
 const RamenShop = lazy(() =>
@@ -67,11 +69,12 @@ const OrderTicket = () => {
   ]
     .filter(Boolean)
     .join("\n\n");
+  const subject = `Portfolio enquiry: ${item.bowl}`;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-[hsl(var(--sunset))]/25 bg-[#f4e9d6] text-[#2a1a10] shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+    <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111217] text-white shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
       {/* Noren-style header strip */}
-      <div className="flex items-center justify-between bg-[#8f1d18] px-6 py-4 text-[#f8ecd8]">
+      <div className="flex items-center justify-between border-b border-white/[0.06] bg-gradient-to-r from-[#6e1512] to-[#8f1d18] px-6 py-4 text-[#f8ecd8]">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#f8ecd8]/75">Order ticket</p>
           <p className="font-display text-2xl">Ichiraku Ramen</p>
@@ -81,7 +84,7 @@ const OrderTicket = () => {
 
       <div className="space-y-6 p-6 sm:p-8">
         <fieldset>
-          <legend className="mb-3 font-mono text-[10px] uppercase tracking-[0.3em] text-[#7a4a2a]">
+          <legend className="mb-3 font-mono text-[10px] uppercase tracking-[0.3em] text-[hsl(var(--sunset))]">
             What are you ordering?
           </legend>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -91,7 +94,7 @@ const OrderTicket = () => {
                 <label
                   key={m.id}
                   className={`flex cursor-pointer items-start gap-3 rounded-xl border-2 p-3 transition-colors ${
-                    active ? "border-[#c8321f] bg-[#c8321f]/10" : "border-[#2a1a10]/10 hover:border-[#2a1a10]/30"
+                    active ? "border-primary bg-primary/10" : "border-white/[0.08] bg-white/[0.02] hover:border-white/25"
                   }`}
                 >
                   <input
@@ -102,10 +105,10 @@ const OrderTicket = () => {
                     onChange={() => setChoice(m.id)}
                     className="sr-only"
                   />
-                  <span className="font-japanese mt-0.5 w-9 shrink-0 text-lg leading-none text-[#c8321f]">{m.kanji}</span>
+                  <span className="font-japanese mt-0.5 w-9 shrink-0 text-lg leading-none text-primary">{m.kanji}</span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-bold">{m.bowl}</span>
-                    <span className="block text-xs leading-snug text-[#2a1a10]/70">{m.job}</span>
+                    <span className="block text-sm font-bold text-white">{m.bowl}</span>
+                    <span className="block text-xs leading-snug text-white/60">{m.job}</span>
                   </span>
                 </label>
               );
@@ -115,7 +118,7 @@ const OrderTicket = () => {
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="order-name" className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.3em] text-[#7a4a2a]">
+            <label htmlFor="order-name" className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.3em] text-[hsl(var(--sunset))]">
               Name for the order
             </label>
             <input
@@ -124,11 +127,11 @@ const OrderTicket = () => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
               autoComplete="name"
-              className="w-full rounded-lg border border-[#2a1a10]/15 bg-white/70 px-3 py-2.5 text-sm placeholder:text-[#2a1a10]/40 focus:border-[#c8321f] focus:outline-none"
+              className="w-full rounded-lg border border-white/10 bg-[#0b0c10] px-3 py-2.5 text-sm text-white placeholder:text-white/35 focus:border-primary focus:outline-none"
             />
           </div>
           <div>
-            <label htmlFor="order-note" className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.3em] text-[#7a4a2a]">
+            <label htmlFor="order-note" className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.3em] text-[hsl(var(--sunset))]">
               Note for the chef <span className="normal-case tracking-normal">(optional)</span>
             </label>
             <textarea
@@ -137,7 +140,7 @@ const OrderTicket = () => {
               onChange={(e) => setNote(e.target.value)}
               rows={3}
               placeholder="A line or two about the project, timeline or budget"
-              className="w-full resize-none rounded-lg border border-[#2a1a10]/15 bg-white/70 px-3 py-2.5 text-sm placeholder:text-[#2a1a10]/40 focus:border-[#c8321f] focus:outline-none"
+              className="w-full resize-none rounded-lg border border-white/10 bg-[#0b0c10] px-3 py-2.5 text-sm text-white placeholder:text-white/35 focus:border-primary focus:outline-none"
             />
           </div>
         </div>
@@ -151,15 +154,38 @@ const OrderTicket = () => {
           >
             <WhatsAppIcon className="h-5 w-5" /> Send on WhatsApp
           </a>
+          {/* Straight into Gmail's compose window, addressed and written. A
+              plain mailto: link did nothing for anyone without a desktop mail
+              app configured, which is most people. */}
           <a
-            href={mailtoUrl(`Portfolio enquiry: ${item.bowl}`, body)}
-            className="flex items-center justify-center gap-2.5 rounded-xl bg-[#2a1a10] px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-[#f4e9d6] transition-transform hover:scale-[1.02]"
+            href={gmailComposeUrl(subject, body)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2.5 rounded-xl bg-primary px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-primary-foreground transition-transform hover:scale-[1.02]"
           >
             <Mail className="h-5 w-5" /> Send by email
           </a>
         </div>
-        <p className="text-center text-xs text-[#2a1a10]/60">
-          Opens WhatsApp or your email app with this order already written - just press send.
+        <p className="text-center text-xs leading-relaxed text-white/50">
+          Opens WhatsApp or Gmail with your order already written - just press send.
+          <br />
+          Not on Gmail? Send it with{" "}
+          <a
+            href={outlookComposeUrl(subject, body)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-primary"
+          >
+            Outlook
+          </a>{" "}
+          or{" "}
+          <a
+            href={mailtoUrl(subject, body)}
+            className="text-white/75 underline decoration-white/30 underline-offset-2 hover:text-primary"
+          >
+            your mail app
+          </a>
+          .
         </p>
       </div>
     </div>
