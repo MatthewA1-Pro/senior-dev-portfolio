@@ -1,22 +1,24 @@
 import { Suspense, lazy, useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Send, Phone, MapPin, MessageCircle, Heart } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Mail, Phone, MapPin, Github, Linkedin, ArrowUp } from "lucide-react";
 import { MagneticButton } from "./ScrollReveal";
 import ErrorBoundary from "./ErrorBoundary";
 import { ViewportMount } from "./ViewportMount";
+import { WhatsAppIcon } from "./icons/WhatsAppIcon";
+import {
+  EMAIL,
+  PHONE_DISPLAY,
+  PHONE_INTL,
+  GITHUB_URL,
+  LINKEDIN_URL,
+  WHATSAPP_URL,
+  whatsappUrl,
+  mailtoUrl,
+} from "@/lib/contact";
 
 const RamenShop = lazy(() =>
   import("./three/NarutoModels").then((m) => ({ default: m.RamenShop })),
 );
-
-const EMAIL = "oderinwalematthew3@gmail.com";
-/** 0913 850 8184 in international form, reused for tel: and wa.me links. */
-const PHONE_INTL = "2349138508184";
-const PHONE_DISPLAY = "+234 913 850 8184";
-const WHATSAPP_URL = `https://wa.me/${PHONE_INTL}?text=${encodeURIComponent(
-  "Hi Matthew, I saw your portfolio and I have a mission for you.",
-)}`;
 
 const CONTACT_CHANNELS = [
   { icon: Mail, label: "Messenger Hawk", value: EMAIL, href: `mailto:${EMAIL}` },
@@ -24,27 +26,152 @@ const CONTACT_CHANNELS = [
   { icon: MapPin, label: "Current Sector", value: "Lagos, Nigeria", href: undefined },
 ];
 
+/** The menu board: each bowl is a kind of job. */
+const MENU = [
+  { id: "miso", kanji: "味噌", bowl: "Miso Ramen", job: "A full-stack build, start to launch" },
+  { id: "shoyu", kanji: "醤油", bowl: "Shoyu Ramen", job: "AI features, agents or LLM integration" },
+  { id: "tonkotsu", kanji: "豚骨", bowl: "Tonkotsu Ramen", job: "Rescue, fix or speed up an existing app" },
+  { id: "tea", kanji: "お茶", bowl: "Just tea", job: "No project yet - just a conversation" },
+] as const;
+
+const NAV = [
+  { href: "#about", label: "The Ninja Way" },
+  { href: "#skills", label: "Skills" },
+  { href: "#projects", label: "S-Rank Missions" },
+  { href: "#ai-gallery", label: "AI Gallery" },
+];
+
+const SOCIALS = [
+  { icon: Github, href: GITHUB_URL, label: "GitHub" },
+  { icon: Linkedin, href: LINKEDIN_URL, label: "LinkedIn" },
+  { icon: WhatsAppIcon, href: WHATSAPP_URL, label: "WhatsApp" },
+];
+
 /**
- * The closing scene. The shop gets its own unobstructed band first - it used
- * to sit behind the form under two full-width scrims, which is a large part of
- * why it read as faint - and the contact block follows beneath it.
+ * An Ichiraku order ticket in place of the old contact form. That form faked a
+ * "sent" toast and delivered nothing, because no email service is configured.
+ * The ticket composes the message and hands it to WhatsApp or the visitor's own
+ * mail app, so both routes genuinely reach Matthew with no server involved.
+ */
+const OrderTicket = () => {
+  const [choice, setChoice] = useState<(typeof MENU)[number]["id"]>("miso");
+  const [name, setName] = useState("");
+  const [note, setNote] = useState("");
+
+  const item = MENU.find((m) => m.id === choice) ?? MENU[0];
+  const greeting = name.trim() ? `Hi Matthew, I'm ${name.trim()}.` : "Hi Matthew,";
+  const body = [
+    greeting,
+    `I saw your portfolio and I'd like to order: ${item.bowl} - ${item.job}.`,
+    note.trim(),
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-[hsl(var(--sunset))]/25 bg-[#f4e9d6] text-[#2a1a10] shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+      {/* Noren-style header strip */}
+      <div className="flex items-center justify-between bg-[#8f1d18] px-6 py-4 text-[#f8ecd8]">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#f8ecd8]/75">Order ticket</p>
+          <p className="font-display text-2xl">Ichiraku Ramen</p>
+        </div>
+        <span className="font-japanese text-4xl leading-none">一楽</span>
+      </div>
+
+      <div className="space-y-6 p-6 sm:p-8">
+        <fieldset>
+          <legend className="mb-3 font-mono text-[10px] uppercase tracking-[0.3em] text-[#7a4a2a]">
+            What are you ordering?
+          </legend>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {MENU.map((m) => {
+              const active = m.id === choice;
+              return (
+                <label
+                  key={m.id}
+                  className={`flex cursor-pointer items-start gap-3 rounded-xl border-2 p-3 transition-colors ${
+                    active ? "border-[#c8321f] bg-[#c8321f]/10" : "border-[#2a1a10]/10 hover:border-[#2a1a10]/30"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="bowl"
+                    value={m.id}
+                    checked={active}
+                    onChange={() => setChoice(m.id)}
+                    className="sr-only"
+                  />
+                  <span className="font-japanese mt-0.5 w-9 shrink-0 text-lg leading-none text-[#c8321f]">{m.kanji}</span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold">{m.bowl}</span>
+                    <span className="block text-xs leading-snug text-[#2a1a10]/70">{m.job}</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="order-name" className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.3em] text-[#7a4a2a]">
+              Name for the order
+            </label>
+            <input
+              id="order-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              autoComplete="name"
+              className="w-full rounded-lg border border-[#2a1a10]/15 bg-white/70 px-3 py-2.5 text-sm placeholder:text-[#2a1a10]/40 focus:border-[#c8321f] focus:outline-none"
+            />
+          </div>
+          <div>
+            <label htmlFor="order-note" className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.3em] text-[#7a4a2a]">
+              Note for the chef <span className="normal-case tracking-normal">(optional)</span>
+            </label>
+            <textarea
+              id="order-note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              rows={3}
+              placeholder="A line or two about the project, timeline or budget"
+              className="w-full resize-none rounded-lg border border-[#2a1a10]/15 bg-white/70 px-3 py-2.5 text-sm placeholder:text-[#2a1a10]/40 focus:border-[#c8321f] focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <a
+            href={whatsappUrl(body)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-[#06241a] transition-transform hover:scale-[1.02]"
+          >
+            <WhatsAppIcon className="h-5 w-5" /> Send on WhatsApp
+          </a>
+          <a
+            href={mailtoUrl(`Portfolio enquiry: ${item.bowl}`, body)}
+            className="flex items-center justify-center gap-2.5 rounded-xl bg-[#2a1a10] px-4 py-3.5 text-sm font-bold uppercase tracking-widest text-[#f4e9d6] transition-transform hover:scale-[1.02]"
+          >
+            <Mail className="h-5 w-5" /> Send by email
+          </a>
+        </div>
+        <p className="text-center text-xs text-[#2a1a10]/60">
+          Opens WhatsApp or your email app with this order already written - just press send.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * The closing scene: the shop in its own unobstructed band, then the contact
+ * block, then the footer.
  */
 export const IchirakuFooter = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
   const currentYear = new Date().getFullYear();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast({
-        title: "Intel Transmitted",
-        description: "Your message has been successfully delivered via messenger hawk.",
-      });
-    }, 1500);
-  };
 
   return (
     <footer id="contact" className="relative overflow-hidden bg-background">
@@ -81,31 +208,24 @@ export const IchirakuFooter = () => {
         </div>
       </div>
 
-      <div className="container relative z-10 mx-auto px-6 py-20 lg:py-28">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="container relative z-10 mx-auto px-6 py-16 lg:py-28">
+        <div className="grid grid-cols-1 items-start gap-14 lg:grid-cols-2 lg:gap-16">
           {/* Left: the invitation */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="inline-block px-3 py-1 bg-primary/10 border border-primary/20 rounded-md mb-4">
-                <span className="font-mono text-[10px] tracking-widest text-primary uppercase">
-                  End of the Trail
-                </span>
+          <div className="min-w-0">
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <div className="mb-4 inline-block rounded-md border border-primary/20 bg-primary/10 px-3 py-1">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-primary">End of the Trail</span>
               </div>
-              <h2 className="text-4xl md:text-6xl font-display tracking-wide mb-6">
+              <h2 className="mb-6 font-display text-4xl tracking-wide md:text-6xl">
                 Meet Me At <br />
                 <span className="gradient-text">Ichiraku</span>
               </h2>
-              <p className="text-muted-foreground text-lg mb-10 leading-relaxed max-w-md">
-                Whether you have a high-stakes mission or just want to talk system architecture
-                over a warm bowl of ramen, my transceiver is always open.
+              <p className="mb-10 max-w-md text-lg leading-relaxed text-muted-foreground">
+                Whether you have a high-stakes mission or just want to talk system architecture over a
+                warm bowl of ramen, my transceiver is always open.
               </p>
             </motion.div>
 
-            {/* WhatsApp first: it is the channel that reaches me fastest. */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -117,9 +237,9 @@ export const IchirakuFooter = () => {
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-5 bg-[#25D366] text-[#06241a] rounded-full font-bold text-sm tracking-widest uppercase flex items-center gap-3 shadow-lg shadow-[#25D366]/20"
+                className="flex items-center gap-3 rounded-full bg-[#25D366] px-7 py-4 text-sm font-bold uppercase tracking-widest text-[#06241a] shadow-lg shadow-[#25D366]/20 sm:px-8 sm:py-5"
               >
-                <MessageCircle className="w-5 h-5" />
+                <WhatsAppIcon className="h-5 w-5" />
                 Message me on WhatsApp
               </MagneticButton>
             </motion.div>
@@ -128,19 +248,21 @@ export const IchirakuFooter = () => {
               {CONTACT_CHANNELS.map((channel, i) => {
                 const inner = (
                   <>
-                    <div className="p-3.5 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
-                      <channel.icon className="w-5 h-5" />
+                    <div className="shrink-0 rounded-xl bg-primary/10 p-3.5 text-primary transition-transform duration-300 group-hover:scale-110">
+                      <channel.icon className="h-5 w-5" />
                     </div>
-                    <div>
-                      <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-1">
+                    {/* min-w-0 + break-all: without them a long email pushed
+                        past the card edge on narrow phones. */}
+                    <div className="min-w-0">
+                      <p className="mb-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                         {channel.label}
                       </p>
-                      <p className="font-medium text-white/90">{channel.value}</p>
+                      <p className="break-all text-[15px] font-medium text-white/90 sm:text-base">{channel.value}</p>
                     </div>
                   </>
                 );
                 const className =
-                  "flex items-center gap-5 p-5 rounded-2xl border border-white/[0.08] bg-card transition-all group";
+                  "group flex items-center gap-4 rounded-2xl border border-white/[0.08] bg-card p-4 transition-all sm:gap-5 sm:p-5";
 
                 return (
                   <motion.div
@@ -163,132 +285,78 @@ export const IchirakuFooter = () => {
             </div>
           </div>
 
-          {/* Right: the order slip */}
+          {/* Right: the order ticket */}
           <motion.div
-            className="glass-card p-8 sm:p-10 relative overflow-hidden"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            className="min-w-0"
+            initial={{ opacity: 0, y: 30, rotate: 0 }}
+            whileInView={{ opacity: 1, y: 0, rotate: -1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.7 }}
           >
-
-            <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="contact-name"
-                      className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em]"
-                    >
-                      Designation
-                    </label>
-                    <input
-                      id="contact-name"
-                      name="name"
-                      required
-                      type="text"
-                      placeholder="Your name"
-                      className="w-full bg-background/40 border-b border-border py-2 focus:outline-none focus:border-primary transition-colors text-sm"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="contact-email"
-                      className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em]"
-                    >
-                      Transceiver ID
-                    </label>
-                    <input
-                      id="contact-email"
-                      name="email"
-                      required
-                      type="email"
-                      placeholder="Your email"
-                      className="w-full bg-background/40 border-b border-border py-2 focus:outline-none focus:border-primary transition-colors text-sm"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="contact-subject"
-                    className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em]"
-                  >
-                    Mission Type
-                  </label>
-                  <input
-                    id="contact-subject"
-                    name="subject"
-                    required
-                    type="text"
-                    placeholder="Subject of transmission"
-                    className="w-full bg-background/40 border-b border-border py-2 focus:outline-none focus:border-primary transition-colors text-sm"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="contact-message"
-                    className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em]"
-                  >
-                    The Intel
-                  </label>
-                  <textarea
-                    id="contact-message"
-                    name="message"
-                    required
-                    rows={4}
-                    placeholder="State your business, shinobi..."
-                    className="w-full bg-background/40 border border-border/20 p-4 rounded-xl focus:outline-none focus:border-primary/50 transition-colors text-sm resize-none"
-                  />
-                </div>
-              </div>
-
-              <MagneticButton type="submit" fullWidth className="w-full py-5 bg-primary text-primary-foreground rounded-xl font-bold text-xs tracking-widest uppercase hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 flex items-center justify-center gap-3">
-                {isSubmitting ? "TRANSMITTING..." : "SEND INTEL"} <Send className="w-4 h-4" />
-              </MagneticButton>
-            </form>
+            <OrderTicket />
           </motion.div>
         </div>
       </div>
 
-      {/* Closing bar */}
-      <div className="relative z-10 border-t border-white/[0.06] bg-[#08080c]">
-        <div className="container mx-auto px-6 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <motion.a href="#home" className="font-mono text-xl font-bold" whileHover={{ scale: 1.05 }}>
-              <span className="text-primary">M</span>
-              <span className="text-foreground">.</span>
-            </motion.a>
-
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground font-mono flex items-center gap-1 justify-center">
-                © {currentYear} Matthew. Built with{" "}
-                <Heart className="w-4 h-4 text-destructive inline" /> and{" "}
-                <span className="text-primary">AI</span>
+      {/* Footer */}
+      <div className="relative z-10 border-t border-white/[0.06] bg-[#07070a]">
+        <div className="container mx-auto px-6 pb-8 pt-14">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+            <div>
+              <a href="#home" className="font-display text-3xl">
+                <span className="text-primary">M</span>
+                <span className="text-foreground">.</span>
+              </a>
+              <p className="mt-4 text-lg text-white">Matthew Oderinwale</p>
+              <p className="mt-1 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                Full-stack and AI engineer in Lagos, Nigeria, shipping products for clients worldwide.
               </p>
+            </div>
+
+            <nav aria-label="Footer">
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.35em] text-[hsl(var(--sunset))]">The path</p>
+              <ul className="space-y-2.5">
+                {NAV.map((link) => (
+                  <li key={link.href}>
+                    <a href={link.href} className="text-sm text-muted-foreground transition-colors hover:text-primary">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div>
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.35em] text-[hsl(var(--sunset))]">Find me</p>
+              <div className="flex gap-3">
+                {SOCIALS.map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white/75 transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <s.icon className="h-5 w-5" />
+                  </a>
+                ))}
+              </div>
               <a
-                href={`mailto:${EMAIL}`}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors font-mono"
+                href="#home"
+                className="mt-6 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-primary"
               >
-                {EMAIL}
+                <ArrowUp className="h-3.5 w-3.5" /> Back to the village
               </a>
             </div>
+          </div>
 
-            <div className="flex items-center gap-6">
-              {[
-                { href: "#skills", label: "Skills" },
-                { href: "#projects", label: "Projects" },
-                { href: WHATSAPP_URL, label: "WhatsApp", external: true },
-              ].map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors font-mono"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
+          <div className="mt-12 flex flex-col gap-3 border-t border-white/[0.06] pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p>© {currentYear} Matthew Oderinwale. All rights reserved.</p>
+            <p className="flex items-center gap-2">
+              <span className="font-japanese text-sm text-primary">火の意志</span>
+              <span>Never going back on my word - that's my Ninja way.</span>
+            </p>
           </div>
         </div>
       </div>

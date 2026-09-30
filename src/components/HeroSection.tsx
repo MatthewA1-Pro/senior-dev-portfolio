@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowRight, Github, Linkedin } from "lucide-react";
 import { lazy, Suspense } from "react";
 import ErrorBoundary from "./ErrorBoundary";
+import { WhatsAppIcon } from "./icons/WhatsAppIcon";
+import { GITHUB_URL, LINKEDIN_URL, WHATSAPP_URL } from "@/lib/contact";
 
 // Dynamic so the three.js scenes form their own chunk. It loads behind the
 // opening sequence, so it is always warm by the time the hero is revealed.
@@ -105,14 +107,16 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
               
               <div className="flex items-center gap-6 ml-4">
                 {[
-                  { icon: Github, href: "https://github.com/MatthewA1-Pro" },
-                  { icon: Linkedin, href: "https://linkedin.com" },
-                  { icon: Mail, href: "mailto:oderinwalematthew3@gmail.com" }
-                ].map((social, i) => (
+                  { icon: Github, href: GITHUB_URL, label: "GitHub" },
+                  { icon: Linkedin, href: LINKEDIN_URL, label: "LinkedIn" },
+                  { icon: WhatsAppIcon, href: WHATSAPP_URL, label: "WhatsApp" },
+                ].map((social) => (
                   <motion.a
-                    key={i}
+                    key={social.label}
                     href={social.href}
                     target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
                     className="text-muted-foreground hover:text-primary transition-colors"
                     whileHover={{ y: -5, scale: 1.1 }}
                   >
