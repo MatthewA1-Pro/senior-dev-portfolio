@@ -262,6 +262,51 @@ export function FitCamera({
   return null;
 }
 
+/**
+ * Render loop for a canvas: continuous while it is on screen and enabled,
+ * otherwise on demand (one frame on mount or change, then idle).
+ *
+ * Without this every mounted scene rendered at full rate forever. After
+ * scrolling past the hero, Baryon and Ichiraku, all three were drawing
+ * off-screen at once, which is what took the page to ~18fps on a mid-range
+ * device. Demand mode still renders the first frame, so shaders compile and
+ * textures upload ahead of time rather than on the first visible frame.
+ */
+export function useFrameloop(
+  ref: React.RefObject<HTMLElement>,
+  enabled = true,
+): 'always' | 'demand' {
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      rootMargin: '100px',
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return enabled && inView ? 'always' : 'demand';
+}
+
+/**
+ * Fetches and decodes the below-the-fold models once the browser is idle, so
+ * the network wait and Draco decode are off the scroll path by the time their
+ * sections mount.
+ */
+export function preloadDeferredModels() {
+  const run = () => {
+    useGLTF.preload('/models/naruto_baryon.glb', DRACO_PATH);
+    useGLTF.preload('/models/ichiraku_ramen_-_naruto.glb', DRACO_PATH);
+  };
+  const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => number })
+    .requestIdleCallback;
+  if (idle) idle(run);
+  else window.setTimeout(run, 1500);
+}
+
 /** In-canvas loading indicator for Suspense fallbacks. */
 export function ModelLoader() {
   const { progress } = useProgress();

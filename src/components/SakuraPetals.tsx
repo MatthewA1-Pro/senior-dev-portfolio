@@ -127,13 +127,6 @@ export const SakuraPetals = () => {
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-[2]">
-      {/* Wind visual indicator - using opacity instead of gradient */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none bg-pink-200/5"
-        animate={{ opacity: windActive ? 1 : 0 }}
-        transition={{ duration: 0.4 }}
-      />
-
       {/* Main petals */}
       {petals.map((petal) => (
         <motion.div

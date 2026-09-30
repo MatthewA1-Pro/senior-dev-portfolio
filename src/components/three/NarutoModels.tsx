@@ -2,7 +2,7 @@ import { Suspense, useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { ContactShadows, PerspectiveCamera, Float, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { OptimizedModel, ModelLoader, FitCamera, useIsMobile } from './ModelBase';
+import { OptimizedModel, ModelLoader, FitCamera, useIsMobile, useFrameloop } from './ModelBase';
 import { StudioEnvironment } from './Lighting';
 
 const HERO_MODEL = '/models/naruto_shippuden.glb';
@@ -28,16 +28,19 @@ const RAMEN_MODEL = '/models/ichiraku_ramen_-_naruto.glb';
  * naruto_shippuden.glb ships its own truth-seeking orbs (sphere001..008), which
  * is why its bounding depth rivals its height.
  */
-export const HeroNaruto = () => {
+export const HeroNaruto = ({ active = true }: { active?: boolean }) => {
   const isMobile = useIsMobile();
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const frameloop = useFrameloop(wrapRef, active);
 
   const fov = isMobile ? 50 : 38;
   const modelHeight = 3.0;
 
   return (
-    <div className="w-full h-full">
+    <div ref={wrapRef} className="w-full h-full">
       <Canvas
         flat
+        frameloop={frameloop}
         shadows={!isMobile}
         dpr={[1, isMobile ? 2 : 1.75]}
         gl={{ antialias: !isMobile, powerPreference: 'high-performance' }}
@@ -73,6 +76,9 @@ export const HeroNaruto = () => {
               scale={10}
               blur={2.5}
               far={4}
+              // Bake once: re-rendering this depth pass every frame was pure
+              // overhead for a shadow under a figure that barely moves.
+              frames={1}
             />
           )}
         </Suspense>
@@ -101,11 +107,13 @@ export const HeroNaruto = () => {
  */
 export const BaryonNaruto = () => {
   const isMobile = useIsMobile();
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const frameloop = useFrameloop(wrapRef);
   const height = isMobile ? 2.8 : 3.4;
 
   return (
-    <div className="w-full h-full">
-      <Canvas flat dpr={[1, isMobile ? 1.75 : 1.5]} gl={{ antialias: !isMobile }}>
+    <div ref={wrapRef} className="w-full h-full">
+      <Canvas flat frameloop={frameloop} dpr={[1, isMobile ? 1.75 : 1.5]} gl={{ antialias: !isMobile }}>
         <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={42} />
 
         <Suspense fallback={<ModelLoader />}>
@@ -187,12 +195,14 @@ const Steam = ({ count = 36, spread = 5 }: { count?: number; spread?: number }) 
 
 export const RamenShop = () => {
   const isMobile = useIsMobile();
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const frameloop = useFrameloop(wrapRef);
   const height = isMobile ? 5.2 : 6.5;
   const fov = isMobile ? 45 : 30;
 
   return (
-    <div className="w-full h-full">
-      <Canvas flat dpr={[1, isMobile ? 1.75 : 1.5]} shadows={!isMobile} gl={{ antialias: !isMobile }}>
+    <div ref={wrapRef} className="w-full h-full">
+      <Canvas flat frameloop={frameloop} dpr={[1, isMobile ? 1.75 : 1.5]} shadows={!isMobile} gl={{ antialias: !isMobile }}>
         <PerspectiveCamera makeDefault position={[10, 5, 15]} fov={fov} />
 
         {/* Base exposure: warm lantern sky over a dark street. The old rig was a
@@ -225,7 +235,7 @@ export const RamenShop = () => {
           <Steam />
           <StudioEnvironment variant="lantern" />
           {!isMobile && (
-            <ContactShadows position={[0, -height / 2, 0]} opacity={0.5} scale={30} blur={2} />
+            <ContactShadows position={[0, -height / 2, 0]} opacity={0.5} scale={30} blur={2} frames={1} />
           )}
         </Suspense>
 

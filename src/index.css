@@ -198,6 +198,47 @@
   }
 }
 
+/* Loader animations. Plain CSS transform/opacity animations run on the
+   compositor, so they stay smooth while the main thread parses bundles and
+   decodes models - which is exactly when the loader is on screen. */
+.animate-orbit {
+  animation: orbit 2.1s linear infinite;
+  will-change: transform;
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-ember {
+  animation: ember var(--dur, 7s) ease-out var(--delay, 0s) infinite;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+@keyframes ember {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(var(--rise, -520px));
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-orbit,
+  .animate-ember {
+    animation: none;
+  }
+}
+
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);

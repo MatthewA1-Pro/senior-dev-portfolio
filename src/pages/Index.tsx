@@ -11,6 +11,7 @@ import { IchirakuFooter } from "@/components/IchirakuFooter";
 import { SakuraPetals } from "@/components/SakuraPetals";
 import { ScrollProgress } from "@/components/ScrollReveal";
 import { IntroSequence } from "@/components/three/IntroSequence";
+import { preloadDeferredModels } from "@/components/three/ModelBase";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { RasenganBurst } from "@/components/RasenganBurst";
 import { NinjaWayBand } from "@/components/NinjaWayBand";
@@ -29,6 +30,9 @@ const Index = () => {
     if (locked) return;
 
     const navTimer = window.setTimeout(() => setShowNav(true), 900);
+    // Fetch and decode the lower scenes' models while the visitor is still
+    // on the hero, not in the middle of scrolling to them.
+    preloadDeferredModels();
     return () => window.clearTimeout(navTimer);
   }, [appState]);
 
@@ -49,17 +53,20 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30 relative">
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {appState === "loading" && <LoadingScreen key="loader" onComplete={handleLoaded} />}
-
-        {appState === "intro" && (
-          /* If WebGL fails here the visitor would be stranded on a black screen,
-             so a failed opening shot skips straight to the site. */
-          <ErrorBoundary key="intro" fallback={<SkipIntro onMount={handleIntroDone} />}>
-            <IntroSequence onComplete={handleIntroDone} />
-          </ErrorBoundary>
-        )}
       </AnimatePresence>
+
+      {/* Mounted from the start, underneath the loader, holding its first frame
+          until it goes live - so the loader fades straight into a shot that is
+          already drawn instead of a black gap and a shader-compile hitch.
+          If WebGL fails the visitor would be stranded on a black screen, so a
+          failed opening shot skips straight to the site. */}
+      {appState !== "revealed" && (
+        <ErrorBoundary fallback={<SkipIntro onMount={handleIntroDone} />}>
+          <IntroSequence onComplete={handleIntroDone} active={appState === "intro"} />
+        </ErrorBoundary>
+      )}
 
       {/* The rasengan detonates open from the centre to reveal the site. */}
       {bursting && <RasenganBurst onDone={handleBurstDone} />}

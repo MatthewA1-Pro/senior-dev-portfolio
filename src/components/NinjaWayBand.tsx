@@ -42,7 +42,7 @@ export const NinjaWayBand = () => {
             src={konohaDusk}
             alt="Konoha village and the Hokage rock at dusk, Naruto looking out over it"
             className="absolute inset-0 h-full w-full object-cover object-bottom"
-            style={{ scale: imageScale, y: imageY, filter: "saturate(1.3) brightness(1.12)" }}
+            style={{ scale: imageScale, y: imageY }}
             loading="lazy"
           />
           {/* Phones: the strip fades into the quote panel below it */}

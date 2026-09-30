@@ -3,29 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Matthew | Anime-Themed Portfolio</title>
-    <meta name="description" content="Senior Full-Stack Developer Portfolio - Anime Themed">
+    <title>Matthew | Sage Level Developer</title>
+    <meta name="description" content="Full-stack and AI engineer. A Naruto-themed portfolio of shipped client work - that's my Ninja way." />
     <meta name="author" content="Matthew" />
+    <meta name="theme-color" content="#0b0c10" />
 
-    
-    
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9c810abf-ed4c-4f85-a58c-1446e2349ae2/id-preview-7aa5ffbd--0c748918-40d5-4231-9abc-5a5891303d29.lovable.app-1769014001208.png">
-
+    <meta property="og:title" content="Matthew | Sage Level Developer" />
+    <meta property="og:description" content="Full-stack and AI engineer. A Naruto-themed portfolio of shipped client work - that's my Ninja way." />
+    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Matthew" />
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9c810abf-ed4c-4f85-a58c-1446e2349ae2/id-preview-7aa5ffbd--0c748918-40d5-4231-9abc-5a5891303d29.lovable.app-1769014001208.png">
-    
+    <meta name="twitter:title" content="Matthew | Sage Level Developer" />
+    <meta name="twitter:description" content="Full-stack and AI engineer. A Naruto-themed portfolio of shipped client work - that's my Ninja way." />
+    <meta name="twitter:image" content="/og-image.jpg" />
+
+    <!-- The loading screen's silhouette and its light masks. Without these the
+         loader's first second showed nothing, because a CSS mask whose image
+         has not arrived hides its element entirely. -->
+    <link rel="preload" href="/naruto/sage-head.webp" as="image" type="image/webp" />
+    <link rel="preload" href="/naruto/sage-outline.png" as="image" type="image/png" />
+    <link rel="preload" href="/naruto/sage-outline-glow.png" as="image" type="image/png" />
+
+    <!-- The 3D models are Draco-compressed. Fetching the decoder here lets it
+         download alongside the app bundle while the loading screen is up,
+         instead of only after the first model request asks for it. These are
+         the two files DRACOLoader fetches when WebAssembly is available. -->
+    <link rel="preload" href="/draco/draco_wasm_wrapper.js" as="fetch" crossorigin />
+    <link rel="preload" href="/draco/draco_decoder.wasm" as="fetch" crossorigin />
+
     <!-- Anime brush-stroke and Japanese fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Kaushan+Script&family=Noto+Sans+JP:wght@400;500;700;900&family=Sawarabi+Mincho&family=Shippori+Mincho:wght@400;600;800&display=swap" rel="stylesheet">
-    <meta property="og:title" content="Matthew | Anime-Themed Portfolio">
-  <meta name="twitter:title" content="Matthew | Anime-Themed Portfolio">
-  <meta property="og:description" content="Senior Full-Stack Developer Portfolio - Anime Themed">
-  <meta name="twitter:description" content="Senior Full-Stack Developer Portfolio - Anime Themed">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Kaushan+Script&family=Noto+Sans+JP:wght@400;500;700;900&family=Sawarabi+Mincho&family=Shippori+Mincho:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
   <body>
     <div id="root"></div>

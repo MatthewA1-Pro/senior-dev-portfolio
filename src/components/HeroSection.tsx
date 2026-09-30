@@ -54,24 +54,43 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-12 items-center">
           
-          {/* Left Side: Content */}
+          {/* Phone-only title, so the name leads and the Sage sits under it */}
           <motion.div
-            className="z-20"
-            initial={{ opacity: 0, x: -50 }}
-            animate={isIntroComplete ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="order-1 lg:hidden"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isIntroComplete ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-8">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-5">
               <span className="text-[10px] font-mono tracking-widest text-primary uppercase">
                 Sage Level Developer
               </span>
             </div>
-            
-            <h1 className="text-7xl md:text-[8.5rem] xl:text-[10rem] font-display tracking-tight mb-8 leading-[0.85]">
+            <p className="text-[4.2rem] leading-[0.9] font-display tracking-tight" aria-hidden>
+              <span className="gradient-text">MATTHEW</span>
+            </p>
+          </motion.div>
+
+          {/* Left Side: Content (desktop), copy and actions (phones) */}
+          <motion.div
+            className="z-20 order-3 lg:order-1"
+            initial={{ opacity: 0, x: -50 }}
+            animate={isIntroComplete ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="hidden lg:inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-8">
+              <span className="text-[10px] font-mono tracking-widest text-primary uppercase">
+                Sage Level Developer
+              </span>
+            </div>
+
+            {/* The one real h1. On phones it is visually hidden (the title block
+                above shows the name) but stays available to screen readers. */}
+            <h1 className="sr-only lg:not-sr-only lg:block text-[8.5rem] xl:text-[10rem] font-display tracking-tight mb-8 leading-[0.85]">
               <span className="gradient-text">MATTHEW</span>
             </h1>
-            
-            <p className="text-xl text-muted-foreground max-w-lg mb-12 leading-relaxed">
+
+            <p className="text-lg lg:text-xl text-muted-foreground max-w-lg mb-8 lg:mb-12 leading-relaxed">
               Forging high-performance digital architectures with the precision of a master shinobi. Expert in Full-Stack Mastery and AI Innovation.
             </p>
             
@@ -106,14 +125,14 @@ export const HeroSection = ({ isIntroComplete }: HeroSectionProps) => {
           
           {/* Right Side: 3D Sage Centerpiece */}
           <motion.div 
-            className="relative order-first lg:order-none h-[44vh] sm:h-[55vh] lg:h-[86vh] z-10 cursor-grab active:cursor-grabbing"
+            className="relative order-2 h-[46vh] sm:h-[55vh] lg:h-[86vh] z-10 cursor-grab active:cursor-grabbing"
             initial={{ opacity: 0, scale: 0.82 }}
             animate={isIntroComplete ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
           >
             <ErrorBoundary fallback={null}>
               <Suspense fallback={null}>
-                <HeroNaruto />
+                <HeroNaruto active={isIntroComplete} />
               </Suspense>
             </ErrorBoundary>
           </motion.div>

@@ -119,7 +119,10 @@ export const Rasengan = ({ scale = 1, intensity = 1 }: RasenganProps) => {
       {/* Hot core, kept small so the spiralling shell is what you read */}
       <mesh>
         <sphereGeometry args={[0.42, 32, 32]} />
-        <meshBasicMaterial color="#f2fbff" toneMapped={false} />
+        {/* DoubleSide: at the end of the slam the camera passes inside the
+            core, and single-sided it vanished from the inside - the frame
+            flickered from white back to blue before the burst. */}
+        <meshBasicMaterial color="#f2fbff" toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
       <mesh scale={1.18}>
         <sphereGeometry args={[0.42, 32, 32]} />
